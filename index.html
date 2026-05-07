@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLUENT — Natural Language AI Programming Language</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0e;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --accent: #c8410a;
+    --accent2: #1a5c38;
+    --muted: #6b6560;
+    --rule: #d0c9bc;
+    --code-bg: #1a1916;
+    --code-text: #e8e0d0;
+    --highlight: #f0e6c8;
+    --tag-blue: #2563a8;
+    --tag-green: #1a5c38;
+    --tag-red: #c8410a;
+    --tag-gold: #8a6a00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 80px 60px 60px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid var(--accent);
+  }
+
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,65,10,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .masthead::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,92,56,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .lang-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .masthead h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 10vw, 128px);
+    letter-spacing: 0.04em;
+    line-height: 0.9;
+    color: var(--paper);
+    margin-bottom: 24px;
+  }
+
+  .masthead h1 span {
+    color: var(--accent);
+  }
+
+  .tagline {
+    font-family: 'EB Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: rgba(245,240,232,0.7);
+    max-width: 520px;
+    margin-bottom: 40px;
+    line-height: 1.5;
+  }
+
+  .version-strip {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    padding: 5px 12px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  .badge-version { background: var(--accent); color: white; }
+  .badge-status { background: var(--accent2); color: white; }
+  .badge-type { border: 1px solid rgba(245,240,232,0.3); color: rgba(245,240,232,0.6); }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+  }
+
+  nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 16px 18px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  nav a:hover { color: var(--ink); border-bottom-color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 60px;
+  }
+
+  section {
+    padding: 72px 0 48px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  h3 {
+    font-family: 'EB Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 40px 0 14px;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent);
+  }
+
+  h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 28px 0 10px;
+  }
+
+  p { margin-bottom: 16px; color: #1e1c1a; }
+
+  strong { color: var(--ink); font-weight: 600; }
+  em { font-style: italic; color: var(--accent2); }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 6px;
+    margin: 20px 0;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .code-header .filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(232,224,208,0.5);
+    letter-spacing: 0.06em;
+  }
+
+  .code-header .lang-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(200,65,10,0.15);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  pre {
+    padding: 22px 24px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--code-text);
+  }
+
+  /* syntax highlighting */
+  .kw  { color: #e07b54; font-weight: 500; }   /* keywords */
+  .mod { color: #8ab4f8; }                       /* model names */
+  .str { color: #a3d9a5; }                       /* strings */
+  .var { color: #f8d87c; }                       /* variables */
+  .op  { color: #c586c0; }                       /* operators */
+  .cmt { color: #6b7280; font-style: italic; }   /* comments */
+  .prov{ color: #60cdcd; font-weight: 500; }     /* providers */
+  .num { color: #b5cea8; }                       /* numbers */
+  .fn  { color: #dcdcaa; }                       /* function-like */
+  .ann { color: #9ca3af; }                       /* annotations */
+
+  /* ── GRAMMAR TABLE ── */
+  .grammar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .grammar-card {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 20px 22px;
+    border-left: 3px solid var(--accent);
+  }
+
+  .grammar-card.green { border-left-color: var(--accent2); }
+  .grammar-card.gold  { border-left-color: #8a6a00; }
+  .grammar-card.blue  { border-left-color: #2563a8; }
+
+  .grammar-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .grammar-card p {
+    font-size: 15px;
+    margin: 0;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .grammar-card code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+
+  /* ── PROVIDER TABLE ── */
+  .provider-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+
+  .provider-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .provider-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  .provider-table tr:hover td { background: var(--highlight); }
+
+  .provider-table .provider-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--tag-blue);
+  }
+
+  .provider-table .model-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  .cap-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin: 1px 2px;
+  }
+
+  .cap-text { background: #dbeafe; color: #1d4ed8; }
+  .cap-vision { background: #dcfce7; color: #15803d; }
+  .cap-code { background: #fef3c7; color: #b45309; }
+  .cap-audio { background: #fce7f3; color: #be185d; }
+  .cap-embed { background: #ede9fe; color: #7c3aed; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--highlight);
+    padding: 16px 20px;
+    border-radius: 0 6px 6px 0;
+    margin: 20px 0;
+    font-style: italic;
+    color: #3a3530;
+  }
+
+  .callout.info { border-left-color: var(--tag-blue); background: #e8f0fc; }
+  .callout.tip  { border-left-color: var(--accent2); background: #e6f4ed; }
+
+  /* ── PHILOSOPHY COLUMNS ── */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 28px 0;
+  }
+
+  .pillar {
+    padding: 24px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pillar::before {
+    content: attr(data-n);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(245,240,232,0.06);
+    position: absolute;
+    bottom: -8px; right: 8px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .pillar h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+
+  .pillar p {
+    font-size: 15px;
+    color: rgba(245,240,232,0.75);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ── PIPELINE VISUAL ── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 28px 0;
+    overflow-x: auto;
+    padding: 4px;
+  }
+
+  .pipe-step {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 120px;
+    position: relative;
+  }
+
+  .pipe-step .step-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(232,224,208,0.4);
+    margin-bottom: 6px;
+  }
+
+  .pipe-step .step-name { color: #e07b54; font-weight: 500; }
+
+  .pipe-arrow {
+    font-size: 20px;
+    color: var(--accent);
+    padding: 0 4px;
+    font-weight: bold;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(245,240,232,0.5);
+    padding: 40px 60px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  footer strong { color: var(--accent); }
+
+  @media(max-width: 680px) {
+    .masthead { padding: 48px 24px 40px; }
+    .container { padding: 0 24px; }
+    nav { padding: 0 8px; }
+    .grammar-grid { grid-template-columns: 1fr; }
+    .pillars { grid-template-columns: 1fr; }
+    h2 { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── MASTHEAD ── -->
+<div class="masthead">
+  <span class="lang-label">Language Specification · v1.0 · 2026</span>
+  <h1>FLU<span>ENT</span></h1>
+  <p class="tagline">A natural-language programming language built for the age of universal AI — where every model, every provider, every capability is one sentence away.</p>
+  <div class="version-strip">
+    <span class="badge badge-version">v1.0 Alpha</span>
+    <span class="badge badge-status">Proposal</span>
+    <span class="badge badge-type">NL · AI-Native · Universal</span>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#philosophy">Philosophy</a>
+  <a href="#syntax">Syntax</a>
+  <a href="#models">Model Binding</a>
+  <a href="#providers">Providers</a>
+  <a href="#control">Control Flow</a>
+  <a href="#pipelines">Pipelines</a>
+  <a href="#stdlib">Stdlib</a>
+  <a href="#examples">Examples</a>
+  <a href="#functions">Functions</a>
+  <a href="#agents">Agents</a>
+  <a href="#multimodal">Multimodal</a>
+  <a href="#testing">Testing</a>
+  <a href="#interop">Interop</a>
+  <a href="#runtime">Runtime</a>
+  <a href="#more-examples">More Examples</a>
+</nav>
+
+<div class="container">
+
+  <!-- ── PHILOSOPHY ── -->
+  <section id="philosophy">
+    <span class="section-label">01 — Origin & Philosophy</span>
+    <h2>Why Fluent?</h2>
+    <p>Every programming language since FORTRAN has been a compromise — a negotiation between human thought and machine execution, dressed in symbols that humans must learn to speak. <strong>Fluent abandons this compromise entirely.</strong></p>
+    <p>Fluent is written as you would instruct a deeply knowledgeable colleague: in complete, grammatical, English-like sentences. The runtime translates your intent into deterministic execution. There are no semicolons. No curly braces. No type annotations. Only <em>expression</em>.</p>
+    <p>At the same time, Fluent is built around a single, radical idea: <strong>AI models are first-class citizens</strong>. Calling GPT-4o, Claude 3.7, Gemini 2.5, Mistral, Llama, Cohere — or <em>any</em> registered model — requires no SDK, no HTTP boilerplate, no JSON marshalling. A single natural-language sentence invokes the model, receives the result, and continues the flow.</p>
+
+    <div class="pillars">
+      <div class="pillar" data-n="I">
+        <h4>Human First</h4>
+        <p>Programs read like paragraphs. Syntax emerges from grammar, not tokenomics. If you can describe it, you can program it.</p>
+      </div>
+      <div class="pillar" data-n="II">
+        <h4>AI Native</h4>
+        <p>Model invocation is a built-in primitive, not a library call. The type system understands "a response from a language model."</p>
+      </div>
+      <div class="pillar" data-n="III">
+        <h4>Provider Agnostic</h4>
+        <p>One unified interface covers every model from every provider. Switch from Claude to Gemini by changing one word.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Design Principle:</strong> A Fluent program should be readable — and partially understandable — by someone who has never seen code before.
+    </div>
+  </section>
+
+  <!-- ── SYNTAX ── -->
+  <section id="syntax">
+    <span class="section-label">02 — Language Syntax</span>
+    <h2>Syntax Reference</h2>
+
+    <p>Fluent has <strong>seven syntactic constructs</strong>. Each maps directly to English grammatical patterns. There is no formal grammar beyond these seven forms.</p>
+
+    <div class="grammar-grid">
+      <div class="grammar-card">
+        <div class="label">Declaration</div>
+        <p>Let <code>[name]</code> be <code>[value or expression]</code>.</p>
+      </div>
+      <div class="grammar-card green">
+        <div class="label">Assignment</div>
+        <p>Set <code>[name]</code> to <code>[value or expression]</code>.</p>
+      </div>
+      <div class="grammar-card gold">
+        <div class="label">Model Invocation</div>
+        <p>Ask <code>[model]</code> to <code>[instruction]</code> and call the result <code>[name]</code>.</p>
+      </div>
+      <div class="grammar-card blue">
+        <div class="label">Conditional</div>
+        <p>If <code>[condition]</code>, then <code>[action]</code>. Otherwise, <code>[action]</code>.</p>
+      </div>
+      <div class="grammar-card">
+        <div class="label">Iteration</div>
+        <p>For each <code>[item]</code> in <code>[collection]</code>, <code>[action]</code>.</p>
+      </div>
+      <div class="grammar-card green">
+        <div class="label">Pipeline</div>
+        <p>Pass <code>[value]</code> through <code>[step1]</code>, then through <code>[step2]</code>.</p>
+      </div>
+      <div class="grammar-card gold">
+        <div class="label">Definition</div>
+        <p>To <code>[verb phrase]</code>: <code>[body]</code>. End of <code>[name]</code>.</p>
+      </div>
+      <div class="grammar-card blue">
+        <div class="label">Error Handling</div>
+        <p>Try to <code>[action]</code>. If that fails, <code>[fallback]</code>.</p>
+      </div>
+    </div>
+
+    <h3>Comments & Annotations</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">comments.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- This is a single-line comment.</span>
+
+<span class="cmt">-- Annotations attach metadata to any declaration.</span>
+<span class="ann">@model(temperature: 0.7, max_tokens: 500)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"summarize the quarterly report"</span> <span class="kw">and call the result</span> <span class="var">summary</span>.</pre>
+    </div>
+
+    <h3>Data Types</h3>
+    <p>Fluent infers types from context. You may optionally declare types as English phrases.</p>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">types.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Scalar types</span>
+<span class="kw">Let</span> <span class="var">user_name</span> <span class="kw">be</span> <span class="str">"Harshal"</span>.               <span class="cmt">-- text</span>
+<span class="kw">Let</span> <span class="var">score</span> <span class="kw">be</span> <span class="num">42</span>.                           <span class="cmt">-- number</span>
+<span class="kw">Let</span> <span class="var">is_active</span> <span class="kw">be</span> true.                     <span class="cmt">-- boolean</span>
+<span class="kw">Let</span> <span class="var">today</span> <span class="kw">be</span> the current date.              <span class="cmt">-- date (inferred)</span>
+
+<span class="cmt">-- Collections</span>
+<span class="kw">Let</span> <span class="var">languages</span> <span class="kw">be</span> a list containing <span class="str">"Python"</span>, <span class="str">"Rust"</span>, and <span class="str">"Go"</span>.
+<span class="kw">Let</span> <span class="var">profile</span> <span class="kw">be</span> a record with name <span class="str">"Harshal"</span>, age <span class="num">30</span>, and city <span class="str">"Mumbai"</span>.
+
+<span class="cmt">-- AI-native types</span>
+<span class="kw">Let</span> <span class="var">reply</span> <span class="kw">be</span> a model response.              <span class="cmt">-- typed placeholder</span>
+<span class="kw">Let</span> <span class="var">embedding</span> <span class="kw">be</span> a vector of <span class="num">1536</span> numbers. <span class="cmt">-- embedding vector</span>
+<span class="kw">Let</span> <span class="var">frame</span> <span class="kw">be</span> an image.                      <span class="cmt">-- image type</span></pre>
+    </div>
+  </section>
+
+  <!-- ── MODEL BINDING ── -->
+  <section id="models">
+    <span class="section-label">03 — Model Binding</span>
+    <h2>Invoking AI Models</h2>
+
+    <p>Fluent treats model invocations as <strong>typed expressions</strong>, not side effects. Every "Ask" statement is pure: given the same inputs and parameters, it returns a deterministic result (seeded by temperature).</p>
+
+    <h3>Basic Invocation</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">invoke.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Minimal: ask any known model alias</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"explain quantum entanglement simply"</span> <span class="kw">and call the result</span> <span class="var">explanation</span>.
+
+<span class="cmt">-- With a variable prompt</span>
+<span class="kw">Let</span> <span class="var">topic</span> <span class="kw">be</span> <span class="str">"black holes"</span>.
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"write a haiku about"</span> <span class="var">topic</span> <span class="kw">and call the result</span> <span class="var">haiku</span>.
+
+<span class="cmt">-- Fully qualified model reference</span>
+<span class="kw">Ask</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-opus-4</span> <span class="kw">to</span> <span class="str">"analyze this legal contract for risks"</span>
+    <span class="kw">using document</span> <span class="var">contract_text</span>
+    <span class="kw">and call the result</span> <span class="var">risk_analysis</span>.</pre>
+    </div>
+
+    <h3>Parameters & Configuration</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">params.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Inline parameter annotation</span>
+<span class="ann">@model(temperature: 0.2, max_tokens: 1000, format: json)</span>
+<span class="kw">Ask</span> <span class="mod">gemini</span> <span class="kw">to</span> <span class="str">"extract all named entities from the article"</span>
+    <span class="kw">using text</span> <span class="var">article_body</span>
+    <span class="kw">and call the result</span> <span class="var">entities</span>.
+
+<span class="cmt">-- System instruction (persona)</span>
+<span class="ann">@system("You are a concise financial analyst. Respond only with numbers and brief reasoning.")</span>
+<span class="kw">Ask</span> <span class="mod">mistral</span> <span class="kw">to</span> <span class="str">"evaluate the risk score of this portfolio"</span>
+    <span class="kw">using data</span> <span class="var">portfolio_json</span>
+    <span class="kw">and call the result</span> <span class="var">risk_score</span>.
+
+<span class="cmt">-- Multimodal: text + image</span>
+<span class="kw">Ask</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">gpt-4o</span> <span class="kw">to</span> <span class="str">"describe what is unusual in this image"</span>
+    <span class="kw">using image</span> <span class="var">photo</span>
+    <span class="kw">and call the result</span> <span class="var">observation</span>.</pre>
+    </div>
+
+    <h3>Model Aliasing</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">aliases.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Define an alias for repeated use</span>
+<span class="kw">Define model</span> <span class="var">analyst</span> <span class="kw">as</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-sonnet-4-6</span>
+    <span class="kw">with</span> temperature <span class="num">0.1</span>, max_tokens <span class="num">2000</span>,
+    <span class="kw">system</span> <span class="str">"You are a precise data analyst. Always cite evidence."</span>.
+
+<span class="cmt">-- Now use the alias naturally</span>
+<span class="kw">Ask</span> <span class="var">analyst</span> <span class="kw">to</span> <span class="str">"find the key trends in this dataset"</span>
+    <span class="kw">using data</span> <span class="var">quarterly_data</span>
+    <span class="kw">and call the result</span> <span class="var">trends</span>.
+
+<span class="cmt">-- Swap provider without changing logic</span>
+<span class="kw">Define model</span> <span class="var">analyst</span> <span class="kw">as</span> <span class="prov">google</span><span class="op">/</span><span class="mod">gemini-2.5-pro</span>. <span class="cmt">-- one-line swap</span></pre>
+    </div>
+
+    <h3>Structured Output</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">structured.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Ask for a structured record back</span>
+<span class="ann">@returns(record with title: text, sentiment: text, score: number)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"analyze the sentiment of this review"</span>
+    <span class="kw">using text</span> <span class="var">review</span>
+    <span class="kw">and call the result</span> <span class="var">sentiment_result</span>.
+
+<span class="cmt">-- Access structured fields naturally</span>
+<span class="kw">If</span> <span class="var">sentiment_result</span><span class="op">.</span>score <span class="op">is greater than</span> <span class="num">0.8</span>,
+    <span class="kw">then</span> output <span class="str">"Highly positive review detected."</span>.
+<span class="kw">Otherwise</span>, output <span class="str">"Neutral or negative sentiment."</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── PROVIDERS ── -->
+  <section id="providers">
+    <span class="section-label">04 — Provider Registry</span>
+    <h2>Universal Provider Support</h2>
+    <p>The Fluent runtime ships with a <strong>built-in provider registry</strong>. Credentials are configured once in the environment; programs reference providers by name. Adding a new provider requires only a registry entry — no code changes.</p>
+
+    <div class="callout info">
+      <strong>Environment Setup:</strong> Credentials are set via <code>fluent env set ANTHROPIC_KEY="..."</code>. Programs never handle keys directly.
+    </div>
+
+    <table class="provider-table">
+      <thead>
+        <tr>
+          <th>Provider</th>
+          <th>Fluent Alias</th>
+          <th>Key Models</th>
+          <th>Capabilities</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="provider-name">Anthropic</td>
+          <td><code>anthropic</code> / <code>claude</code></td>
+          <td class="model-id">claude-opus-4, claude-sonnet-4-6, claude-haiku-4-5</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-vision">Vision</span><span class="cap-tag cap-code">Code</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">OpenAI</td>
+          <td><code>openai</code> / <code>gpt</code></td>
+          <td class="model-id">gpt-4o, gpt-4.1, o3, o4-mini</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-vision">Vision</span><span class="cap-tag cap-code">Code</span><span class="cap-tag cap-audio">Audio</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Google</td>
+          <td><code>google</code> / <code>gemini</code></td>
+          <td class="model-id">gemini-2.5-pro, gemini-2.5-flash, gemini-2.0</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-vision">Vision</span><span class="cap-tag cap-embed">Embed</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Mistral AI</td>
+          <td><code>mistral</code></td>
+          <td class="model-id">mistral-large-3, mistral-small, codestral</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-code">Code</span><span class="cap-tag cap-embed">Embed</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Meta (Llama)</td>
+          <td><code>meta</code> / <code>llama</code></td>
+          <td class="model-id">llama-4-scout, llama-4-maverick, llama-3.3</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-vision">Vision</span><span class="cap-tag cap-code">Code</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Cohere</td>
+          <td><code>cohere</code></td>
+          <td class="model-id">command-r-plus, command-r, embed-v3</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-embed">Embed</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Groq</td>
+          <td><code>groq</code></td>
+          <td class="model-id">llama-4-scout-instant, deepseek-r1</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-code">Code</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">DeepSeek</td>
+          <td><code>deepseek</code></td>
+          <td class="model-id">deepseek-r2, deepseek-v3, deepseek-coder</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-code">Code</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">xAI</td>
+          <td><code>xai</code> / <code>grok</code></td>
+          <td class="model-id">grok-3, grok-3-mini</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-vision">Vision</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Perplexity</td>
+          <td><code>perplexity</code></td>
+          <td class="model-id">sonar-pro, sonar-reasoning-pro</td>
+          <td><span class="cap-tag cap-text">Text</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Hugging Face</td>
+          <td><code>huggingface</code> / <code>hf</code></td>
+          <td class="model-id">Any HF Inference endpoint</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-vision">Vision</span><span class="cap-tag cap-embed">Embed</span><span class="cap-tag cap-audio">Audio</span></td>
+        </tr>
+        <tr>
+          <td class="provider-name">Custom / Local</td>
+          <td><code>local</code> / any registered name</td>
+          <td class="model-id">Any OpenAI-compatible endpoint</td>
+          <td><span class="cap-tag cap-text">Text</span><span class="cap-tag cap-code">Code</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Registering a Custom Provider</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">custom-provider.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Register any OpenAI-compatible endpoint</span>
+<span class="kw">Register provider</span> <span class="var">my_llm</span>
+    <span class="kw">at</span> <span class="str">"https://my-internal-api.company.com/v1"</span>
+    <span class="kw">with model</span> <span class="str">"my-fine-tuned-model-v2"</span>
+    <span class="kw">and protocol</span> openai_compatible.
+
+<span class="cmt">-- Now use it exactly like any built-in provider</span>
+<span class="kw">Ask</span> <span class="var">my_llm</span> <span class="kw">to</span> <span class="str">"classify this support ticket"</span>
+    <span class="kw">using text</span> <span class="var">ticket_body</span>
+    <span class="kw">and call the result</span> <span class="var">category</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── CONTROL FLOW ── -->
+  <section id="control">
+    <span class="section-label">05 — Control Flow</span>
+    <h2>Control & Logic</h2>
+
+    <h3>Conditionals</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">conditions.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Simple conditional</span>
+<span class="kw">If</span> <span class="var">sentiment</span> <span class="op">is</span> <span class="str">"negative"</span>,
+    <span class="kw">then</span> <span class="kw">ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"draft an empathetic apology response"</span> <span class="kw">and call the result</span> <span class="var">reply</span>.
+<span class="kw">Otherwise</span>, <span class="kw">let</span> <span class="var">reply</span> <span class="kw">be</span> <span class="str">"Thank you for your feedback!"</span>.
+
+<span class="cmt">-- Multi-branch (when / otherwise when / finally)</span>
+<span class="kw">When</span> <span class="var">risk_score</span> <span class="op">is greater than</span> <span class="num">0.9</span>, <span class="kw">then</span> output <span class="str">"Critical risk — halt process."</span>.
+<span class="kw">Otherwise when</span> <span class="var">risk_score</span> <span class="op">is greater than</span> <span class="num">0.6</span>, <span class="kw">then</span> output <span class="str">"Elevated risk — flag for review."</span>.
+<span class="kw">Otherwise when</span> <span class="var">risk_score</span> <span class="op">is greater than</span> <span class="num">0.3</span>, <span class="kw">then</span> output <span class="str">"Low risk — proceed with caution."</span>.
+<span class="kw">Finally</span>, output <span class="str">"Risk within acceptable bounds."</span>.</pre>
+    </div>
+
+    <h3>Iteration</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">iteration.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- For-each loop</span>
+<span class="kw">For each</span> <span class="var">article</span> <span class="kw">in</span> <span class="var">articles</span>:
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"summarize this article in one sentence"</span>
+        <span class="kw">using text</span> <span class="var">article</span><span class="op">.</span>body
+        <span class="kw">and call the result</span> <span class="var">article</span><span class="op">.</span>summary.
+<span class="kw">End loop</span>.
+
+<span class="cmt">-- Parallel iteration (concurrent model calls)</span>
+<span class="kw">In parallel</span>, <span class="kw">for each</span> <span class="var">document</span> <span class="kw">in</span> <span class="var">document_batch</span>:
+    <span class="ann">@model(temperature: 0)</span>
+    <span class="kw">Ask</span> <span class="mod">gemini</span> <span class="kw">to</span> <span class="str">"extract key facts as a JSON list"</span>
+        <span class="kw">using text</span> <span class="var">document</span>
+        <span class="kw">and call the result</span> <span class="var">document</span><span class="op">.</span>facts.
+<span class="kw">End parallel loop</span>.
+
+<span class="cmt">-- While loop</span>
+<span class="kw">While</span> <span class="var">attempts</span> <span class="op">is less than</span> <span class="num">3</span> <span class="kw">and</span> <span class="var">result</span> <span class="op">is</span> empty:
+    <span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"generate a valid JSON response for the schema"</span>
+        <span class="kw">using schema</span> <span class="var">expected_schema</span>
+        <span class="kw">and call the result</span> <span class="var">result</span>.
+    <span class="kw">Set</span> <span class="var">attempts</span> <span class="kw">to</span> <span class="var">attempts</span> <span class="op">plus</span> <span class="num">1</span>.
+<span class="kw">End while</span>.</pre>
+    </div>
+
+    <h3>Error Handling</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">errors.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Try / fallback</span>
+<span class="kw">Try to</span> <span class="kw">ask</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">gpt-4o</span> <span class="kw">to</span> <span class="str">"process this request"</span>
+    <span class="kw">using text</span> <span class="var">user_input</span>
+    <span class="kw">and call the result</span> <span class="var">response</span>.
+<span class="kw">If that fails</span>, <span class="kw">try</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-sonnet-4-6</span> <span class="kw">with the same instruction</span>.
+<span class="kw">If that also fails</span>, <span class="kw">set</span> <span class="var">response</span> <span class="kw">to</span> <span class="str">"Service temporarily unavailable."</span>.
+
+<span class="cmt">-- Retry with backoff</span>
+<span class="ann">@retry(times: 3, backoff: exponential)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"translate the document to French"</span>
+    <span class="kw">using document</span> <span class="var">english_doc</span>
+    <span class="kw">and call the result</span> <span class="var">french_doc</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── PIPELINES ── -->
+  <section id="pipelines">
+    <span class="section-label">06 — Multi-Model Pipelines</span>
+    <h2>AI Pipelines</h2>
+    <p>Fluent's most powerful construct is the <strong>multi-model pipeline</strong> — a linear or branching chain of AI calls where the output of each step feeds the next. This is idiomatic Fluent, not a feature bolted on.</p>
+
+    <div class="pipeline">
+      <div class="pipe-step"><div class="step-label">Input</div><div class="step-name">raw_text</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><div class="step-label">Step 1</div><div class="step-name">Extract (claude)</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><div class="step-label">Step 2</div><div class="step-name">Translate (gemini)</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><div class="step-label">Step 3</div><div class="step-name">Polish (gpt)</div></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><div class="step-label">Output</div><div class="step-name">final_text</div></div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">pipeline.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Multi-model document processing pipeline</span>
+
+<span class="kw">Let</span> <span class="var">raw_document</span> <span class="kw">be</span> <span class="fn">read file</span> <span class="str">"contract.pdf"</span>.
+
+<span class="cmt">-- Step 1: Extract key clauses (specialized model)</span>
+<span class="ann">@model(temperature: 0, format: json)</span>
+<span class="kw">Ask</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-opus-4</span> <span class="kw">to</span> <span class="str">"extract all obligation clauses as a structured list"</span>
+    <span class="kw">using document</span> <span class="var">raw_document</span>
+    <span class="kw">and call the result</span> <span class="var">clauses</span>.
+
+<span class="cmt">-- Step 2: Risk-score each clause (fast, cheap model)</span>
+<span class="kw">In parallel</span>, <span class="kw">for each</span> <span class="var">clause</span> <span class="kw">in</span> <span class="var">clauses</span>:
+    <span class="ann">@model(temperature: 0.1)</span>
+    <span class="kw">Ask</span> <span class="prov">groq</span><span class="op">/</span><span class="mod">llama-4-scout-instant</span> <span class="kw">to</span> <span class="str">"assign a legal risk score from 0 to 1 for this clause"</span>
+        <span class="kw">using text</span> <span class="var">clause</span>
+        <span class="kw">and call the result</span> <span class="var">clause</span><span class="op">.</span>risk.
+<span class="kw">End parallel loop</span>.
+
+<span class="cmt">-- Step 3: Filter high-risk clauses</span>
+<span class="kw">Let</span> <span class="var">high_risk_clauses</span> <span class="kw">be</span> all items from <span class="var">clauses</span> <span class="kw">where</span> risk <span class="op">is greater than</span> <span class="num">0.7</span>.
+
+<span class="cmt">-- Step 4: Write executive summary (premium model)</span>
+<span class="ann">@model(temperature: 0.3, max_tokens: 800)</span>
+<span class="kw">Ask</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">gpt-4o</span> <span class="kw">to</span> <span class="str">"write an executive summary of legal risks for a non-lawyer audience"</span>
+    <span class="kw">using data</span> <span class="var">high_risk_clauses</span>
+    <span class="kw">and call the result</span> <span class="var">summary</span>.
+
+<span class="kw">Output</span> <span class="var">summary</span>.</pre>
+    </div>
+
+    <h3>Mixture of Experts Pattern</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">mixture.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Ask three models; synthesize with a fourth</span>
+
+<span class="kw">Let</span> <span class="var">question</span> <span class="kw">be</span> <span class="str">"What will be the impact of AGI on global employment?"</span>.
+
+<span class="kw">In parallel</span>:
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"give your perspective on"</span> <span class="var">question</span> <span class="kw">and call the result</span> <span class="var">opinion_a</span>.
+    <span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"give your perspective on"</span> <span class="var">question</span> <span class="kw">and call the result</span> <span class="var">opinion_b</span>.
+    <span class="kw">Ask</span> <span class="mod">gemini</span> <span class="kw">to</span> <span class="str">"give your perspective on"</span> <span class="var">question</span> <span class="kw">and call the result</span> <span class="var">opinion_c</span>.
+<span class="kw">End parallel</span>.
+
+<span class="ann">@model(temperature: 0.2)</span>
+<span class="kw">Ask</span> <span class="prov">mistral</span><span class="op">/</span><span class="mod">mistral-large-3</span> <span class="kw">to</span> <span class="str">"synthesize these three expert opinions into one balanced consensus view"</span>
+    <span class="kw">using data</span> a record with A <span class="var">opinion_a</span>, B <span class="var">opinion_b</span>, C <span class="var">opinion_c</span>
+    <span class="kw">and call the result</span> <span class="var">consensus</span>.
+
+<span class="kw">Output</span> <span class="var">consensus</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── STDLIB ── -->
+  <section id="stdlib">
+    <span class="section-label">07 — Standard Library</span>
+    <h2>Built-in Capabilities</h2>
+    <p>Fluent's standard library is expressed — naturally — in natural language verbs. All I/O, embeddings, retrieval, memory, and tool use follow the same sentence pattern.</p>
+
+    <h3>Memory & Retrieval</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">memory.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Semantic memory store (vector db abstraction)</span>
+<span class="kw">Remember</span> <span class="var">user_preference</span> <span class="kw">as</span> <span class="str">"user prefers concise bullet-point answers"</span>.
+<span class="kw">Remember</span> <span class="var">past_session</span> <span class="kw">under key</span> <span class="str">"session_2026_05"</span>.
+
+<span class="cmt">-- Semantic recall</span>
+<span class="kw">Recall memories similar to</span> <span class="str">"user tone preferences"</span> <span class="kw">and call the result</span> <span class="var">tone_prefs</span>.
+
+<span class="cmt">-- Retrieval-augmented generation</span>
+<span class="kw">Search knowledge base</span> <span class="var">product_docs</span> <span class="kw">for</span> <span class="str">"refund policy"</span> <span class="kw">and call the result</span> <span class="var">relevant_docs</span>.
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"answer the customer's question accurately"</span>
+    <span class="kw">using context</span> <span class="var">relevant_docs</span>, <span class="kw">question</span> <span class="var">customer_query</span>
+    <span class="kw">and call the result</span> <span class="var">support_reply</span>.</pre>
+    </div>
+
+    <h3>Tool Use & Actions</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">tools.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Grant a model access to tools</span>
+<span class="ann">@tools(web_search, calculator, code_runner)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"research the current top 5 AI companies by valuation and plot a bar chart"</span>
+    <span class="kw">and call the result</span> <span class="var">market_chart</span>.
+
+<span class="cmt">-- Custom tool definition</span>
+<span class="kw">Define tool</span> <span class="var">send_email</span>
+    <span class="kw">that accepts</span> recipient: text, subject: text, body: text
+    <span class="kw">and calls</span> <span class="str">"https://api.mailservice.com/send"</span>.
+
+<span class="ann">@tools(send_email)</span>
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"send a professional follow-up email to the client about the proposal"</span>
+    <span class="kw">using data</span> <span class="var">client_context</span>
+    <span class="kw">and call the result</span> <span class="var">email_status</span>.</pre>
+    </div>
+
+    <h3>Embedding & Similarity</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">embeddings.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Generate embeddings with any provider</span>
+<span class="kw">Embed</span> <span class="var">query_text</span> <span class="kw">using</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">text-embedding-3-large</span> <span class="kw">and call the result</span> <span class="var">query_vec</span>.
+<span class="kw">Embed</span> <span class="var">document_text</span> <span class="kw">using</span> <span class="prov">cohere</span><span class="op">/</span><span class="mod">embed-v3</span> <span class="kw">and call the result</span> <span class="var">doc_vec</span>.
+
+<span class="cmt">-- Similarity comparison</span>
+<span class="kw">Let</span> <span class="var">similarity</span> <span class="kw">be</span> the cosine similarity between <span class="var">query_vec</span> and <span class="var">doc_vec</span>.
+<span class="kw">If</span> <span class="var">similarity</span> <span class="op">is greater than</span> <span class="num">0.85</span>,
+    <span class="kw">then</span> output <span class="str">"Documents are semantically equivalent."</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── EXAMPLES ── -->
+  <section id="examples">
+    <span class="section-label">08 — Full Programs</span>
+    <h2>Complete Examples</h2>
+
+    <h3>Example 1 — AI Customer Support Agent</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">support-agent.fl</span>
+        <span class="lang-tag">Fluent · ~30 lines</span>
+      </div>
+      <pre><span class="cmt">-- Intelligent multi-model customer support triage system</span>
+
+<span class="kw">Define model</span> <span class="var">triage_bot</span> <span class="kw">as</span> <span class="prov">groq</span><span class="op">/</span><span class="mod">llama-4-scout-instant</span>
+    <span class="kw">with</span> temperature <span class="num">0</span>,
+    <span class="kw">system</span> <span class="str">"Classify tickets only. Respond with one word: billing, technical, general, or escalate."</span>.
+
+<span class="kw">Define model</span> <span class="var">responder</span> <span class="kw">as</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-sonnet-4-6</span>
+    <span class="kw">with</span> temperature <span class="num">0.4</span>,
+    <span class="kw">system</span> <span class="str">"You are a helpful, empathetic support agent for Saviee app. Be concise."</span>.
+
+<span class="kw">To handle a support ticket</span> (<span class="var">ticket</span>):
+    <span class="cmt">-- Step 1: Fast, cheap classification</span>
+    <span class="kw">Ask</span> <span class="var">triage_bot</span> <span class="kw">to</span> <span class="str">"classify this ticket"</span>
+        <span class="kw">using text</span> <span class="var">ticket</span><span class="op">.</span>message
+        <span class="kw">and call the result</span> <span class="var">category</span>.
+
+    <span class="cmt">-- Step 2: Route based on category</span>
+    <span class="kw">When</span> <span class="var">category</span> <span class="op">is</span> <span class="str">"escalate"</span>,
+        <span class="kw">then</span> <span class="fn">notify human agent</span> <span class="kw">with</span> <span class="var">ticket</span> <span class="kw">and</span> <span class="kw">output</span> <span class="str">"Escalated to human agent."</span>.
+
+    <span class="cmt">-- Step 3: Search knowledge base for relevant info</span>
+    <span class="kw">Search knowledge base</span> <span class="var">support_docs</span>
+        <span class="kw">for</span> <span class="var">ticket</span><span class="op">.</span>message
+        <span class="kw">and call the result</span> <span class="var">relevant_articles</span>.
+
+    <span class="cmt">-- Step 4: Generate grounded response</span>
+    <span class="ann">@model(max_tokens: 300)</span>
+    <span class="kw">Ask</span> <span class="var">responder</span> <span class="kw">to</span> <span class="str">"write a helpful reply to the customer's"</span> <span class="var">category</span> <span class="str">"issue"</span>
+        <span class="kw">using context</span> <span class="var">relevant_articles</span>, <span class="kw">ticket</span> <span class="var">ticket</span><span class="op">.</span>message
+        <span class="kw">and call the result</span> <span class="var">reply</span>.
+
+    <span class="kw">Output</span> <span class="var">reply</span>.
+<span class="kw">End of</span> handle a support ticket.</pre>
+    </div>
+
+    <h3>Example 2 — Autonomous Research Synthesizer</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">research.fl</span>
+        <span class="lang-tag">Fluent · ~25 lines</span>
+      </div>
+      <pre><span class="cmt">-- Given a research topic, produce a cited synthesis report</span>
+
+<span class="kw">Let</span> <span class="var">topic</span> <span class="kw">be</span> <span class="str">"the long-term effects of microplastics on human cognition"</span>.
+
+<span class="cmt">-- 1. Web research (tool-equipped model)</span>
+<span class="ann">@tools(web_search)</span>
+<span class="kw">Ask</span> <span class="prov">perplexity</span><span class="op">/</span><span class="mod">sonar-pro</span> <span class="kw">to</span> <span class="str">"find the five most recent peer-reviewed studies on"</span> <span class="var">topic</span>
+    <span class="kw">and call the result</span> <span class="var">studies</span>.
+
+<span class="cmt">-- 2. Extract claims in parallel</span>
+<span class="kw">In parallel</span>, <span class="kw">for each</span> <span class="var">study</span> <span class="kw">in</span> <span class="var">studies</span>:
+    <span class="ann">@model(temperature: 0, format: json)</span>
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"extract the main claim, methodology, and conclusion as structured data"</span>
+        <span class="kw">using text</span> <span class="var">study</span>
+        <span class="kw">and call the result</span> <span class="var">study</span><span class="op">.</span>structured.
+<span class="kw">End parallel loop</span>.
+
+<span class="cmt">-- 3. Check for contradictions</span>
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"identify any contradictions or disagreements between these studies"</span>
+    <span class="kw">using data</span> <span class="var">studies</span>
+    <span class="kw">and call the result</span> <span class="var">contradictions</span>.
+
+<span class="cmt">-- 4. Write final synthesis</span>
+<span class="ann">@model(temperature: 0.4, max_tokens: 1500)</span>
+<span class="kw">Ask</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-opus-4</span>
+    <span class="kw">to</span> <span class="str">"write a comprehensive, well-cited research synthesis for a scientific audience"</span>
+    <span class="kw">using studies</span> <span class="var">studies</span>, <span class="kw">contradictions</span> <span class="var">contradictions</span>, <span class="kw">topic</span> <span class="var">topic</span>
+    <span class="kw">and call the result</span> <span class="var">report</span>.
+
+<span class="kw">Output</span> <span class="var">report</span>.</pre>
+    </div>
+
+    <div class="callout tip">
+      <strong>Key Insight:</strong> In both examples, switching any model to a different provider requires changing exactly one word. The business logic — routing, parallel extraction, synthesis — remains untouched.
+    </div>
+  </section>
+
+
+  <!-- ── FUNCTIONS & MODULES ── -->
+  <section id="functions">
+    <span class="section-label">09 — Functions & Modules</span>
+    <h2>Functions & Modules</h2>
+    <p>Fluent programs are composed of <strong>named procedures</strong> — defined in natural language, invoked in natural language. Modules are plain <code>.fl</code> files; importing them reads exactly like English.</p>
+
+    <h3>Defining Functions</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">functions.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Define a reusable procedure</span>
+<span class="kw">To</span> summarize an article (<span class="var">article_text</span>) <span class="kw">in</span> (<span class="var">language</span>):
+    <span class="ann">@model(temperature: 0.3, max_tokens: 200)</span>
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"summarize this article in three sentences"</span>
+        <span class="kw">using text</span> <span class="var">article_text</span>
+        <span class="kw">and call the result</span> <span class="var">raw_summary</span>.
+
+    <span class="kw">If</span> <span class="var">language</span> <span class="op">is not</span> <span class="str">"English"</span>,
+        <span class="kw">then ask</span> <span class="mod">gemini</span> <span class="kw">to</span> <span class="str">"translate this to"</span> <span class="var">language</span>
+            <span class="kw">using text</span> <span class="var">raw_summary</span>
+            <span class="kw">and call the result</span> <span class="var">raw_summary</span>.
+
+    <span class="kw">Return</span> <span class="var">raw_summary</span>.
+<span class="kw">End of</span> summarize an article.
+
+<span class="cmt">-- Call it</span>
+<span class="kw">Let</span> <span class="var">brief</span> <span class="kw">be the result of</span> summarize an article <span class="var">news_article</span> <span class="kw">in</span> <span class="str">"Hindi"</span>.
+<span class="kw">Output</span> <span class="var">brief</span>.</pre>
+    </div>
+
+    <h3>Recursive Functions</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">recursion.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Recursive document decomposition</span>
+<span class="kw">To</span> split and process (<span class="var">document</span>) <span class="kw">until</span> each chunk <span class="kw">is under</span> <span class="num">500</span> words:
+    <span class="kw">If</span> the word count of <span class="var">document</span> <span class="op">is at most</span> <span class="num">500</span>,
+        <span class="kw">then</span> <span class="kw">ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"extract key facts from this chunk"</span>
+            <span class="kw">using text</span> <span class="var">document</span>
+            <span class="kw">and return the result</span>.
+    <span class="kw">Otherwise</span>:
+        <span class="kw">Let</span> <span class="var">first_half</span> <span class="kw">be</span> the first half of <span class="var">document</span>.
+        <span class="kw">Let</span> <span class="var">second_half</span> <span class="kw">be</span> the second half of <span class="var">document</span>.
+        <span class="kw">Let</span> <span class="var">facts_a</span> <span class="kw">be the result of</span> split and process <span class="var">first_half</span>.
+        <span class="kw">Let</span> <span class="var">facts_b</span> <span class="kw">be the result of</span> split and process <span class="var">second_half</span>.
+        <span class="kw">Return</span> <span class="var">facts_a</span> combined with <span class="var">facts_b</span>.
+<span class="kw">End of</span> split and process.</pre>
+    </div>
+
+    <h3>Modules & Imports</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">imports.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Import from a local module</span>
+<span class="kw">Use</span> the procedures <span class="kw">from</span> <span class="str">"./summarizer.fl"</span>.
+<span class="kw">Use</span> the procedures <span class="kw">from</span> <span class="str">"./sentiment.fl"</span>.
+
+<span class="cmt">-- Import from the Fluent package registry</span>
+<span class="kw">Use</span> the package <span class="str">"fluent-rag"</span> <span class="kw">version</span> <span class="str">"2.1"</span>.
+<span class="kw">Use</span> the package <span class="str">"fluent-ocr"</span>.
+
+<span class="cmt">-- Alias a long package name</span>
+<span class="kw">Use</span> the package <span class="str">"fluent-document-intelligence"</span> <span class="kw">and call it</span> <span class="var">docai</span>.
+
+<span class="cmt">-- Now call imported procedures naturally</span>
+<span class="kw">Let</span> <span class="var">summary</span> <span class="kw">be the result of</span> summarize an article <span class="var">body_text</span> <span class="kw">in</span> <span class="str">"English"</span>.
+<span class="kw">Let</span> <span class="var">text_from_scan</span> <span class="kw">be the result of</span> <span class="var">docai</span><span class="op">.</span>extract text <span class="kw">from image</span> <span class="var">scanned_page</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── AGENTS ── -->
+  <section id="agents">
+    <span class="section-label">10 — Agentic Loops</span>
+    <h2>Autonomous Agents</h2>
+    <p>Fluent has first-class support for <strong>agentic loops</strong> — programs where a model reasons about what action to take next, executes it, observes the result, and decides whether the goal has been achieved. This is expressed, naturally, in plain sentences.</p>
+
+    <h3>The Agent Loop</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">agent.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- A goal-directed agent with tools</span>
+<span class="ann">@tools(web_search, read_file, write_file, run_python, send_email)</span>
+<span class="ann">@agent(max_steps: 20, model: anthropic/claude-opus-4)</span>
+<span class="kw">Let</span> <span class="var">goal</span> <span class="kw">be</span> <span class="str">"Analyze the sales data in sales_2026.csv, find the top 3 underperforming regions,
+            research industry benchmarks online, and email a concise strategy report to team@company.com"</span>.
+
+<span class="kw">Run agent with goal</span> <span class="var">goal</span> <span class="kw">and call the outcome</span> <span class="var">agent_result</span>.
+
+<span class="kw">If</span> <span class="var">agent_result</span><span class="op">.</span>success <span class="op">is</span> true,
+    <span class="kw">then</span> output <span class="str">"Agent completed the goal in"</span> <span class="var">agent_result</span><span class="op">.</span>steps_taken <span class="str">"steps."</span>.
+<span class="kw">Otherwise</span>,
+    output <span class="str">"Agent stopped:"</span> <span class="var">agent_result</span><span class="op">.</span>reason.</pre>
+    </div>
+
+    <h3>Human-in-the-Loop</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">hitl.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Pause and require human approval before irreversible actions</span>
+<span class="ann">@tools(web_search, send_email)</span>
+<span class="ann">@agent(model: anthropic/claude-sonnet-4-6)</span>
+<span class="ann">@require_approval_before(send_email)</span>   <span class="cmt">-- human confirms before any email is sent</span>
+
+<span class="kw">Run agent with goal</span> <span class="str">"Draft and send outreach emails to the 5 highest-value leads in leads.csv"</span>
+    <span class="kw">and call the outcome</span> <span class="var">result</span>.
+
+<span class="cmt">-- Multi-agent: one agent orchestrates others</span>
+<span class="ann">@agent(model: openai/gpt-4o, role: orchestrator)</span>
+<span class="kw">Define agent</span> <span class="var">planner</span> <span class="kw">with goal</span> <span class="str">"Break the project into tasks and delegate to specialist agents"</span>.
+
+<span class="ann">@agent(model: deepseek/deepseek-coder, role: specialist)</span>
+<span class="kw">Define agent</span> <span class="var">coder</span> <span class="kw">with goal</span> <span class="str">"Implement the code tasks delegated by the planner"</span>.
+
+<span class="ann">@agent(model: anthropic/claude-opus-4, role: specialist)</span>
+<span class="kw">Define agent</span> <span class="var">writer</span> <span class="kw">with goal</span> <span class="str">"Write all documentation tasks delegated by the planner"</span>.
+
+<span class="kw">Run multi-agent team</span> <span class="var">planner</span>, <span class="var">coder</span>, <span class="var">writer</span>
+    <span class="kw">on project</span> <span class="str">"Build a REST API for the Saviee app with full documentation"</span>
+    <span class="kw">and call the outcome</span> <span class="var">project_result</span>.</pre>
+    </div>
+
+    <h3>Reflection & Self-Correction</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">reflection.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Generate, critique, and refine — classic self-reflection loop</span>
+<span class="kw">Let</span> <span class="var">draft</span> <span class="kw">be</span> empty.
+<span class="kw">Let</span> <span class="var">quality_score</span> <span class="kw">be</span> <span class="num">0</span>.
+<span class="kw">Let</span> <span class="var">iterations</span> <span class="kw">be</span> <span class="num">0</span>.
+
+<span class="kw">While</span> <span class="var">quality_score</span> <span class="op">is less than</span> <span class="num">0.85</span> <span class="kw">and</span> <span class="var">iterations</span> <span class="op">is less than</span> <span class="num">5</span>:
+    <span class="cmt">-- Generate (or improve the previous draft)</span>
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"write a persuasive product description for Saviee app"</span>
+        <span class="kw">using previous draft</span> <span class="var">draft</span>
+        <span class="kw">and call the result</span> <span class="var">draft</span>.
+
+    <span class="cmt">-- Critique with a different model</span>
+    <span class="ann">@model(temperature: 0, format: json)</span>
+    <span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"score this product description on clarity, persuasion, and accuracy from 0 to 1"</span>
+        <span class="kw">using text</span> <span class="var">draft</span>
+        <span class="kw">and call the result</span> <span class="var">critique</span>.
+
+    <span class="kw">Set</span> <span class="var">quality_score</span> <span class="kw">to</span> <span class="var">critique</span><span class="op">.</span>average_score.
+    <span class="kw">Set</span> <span class="var">iterations</span> <span class="kw">to</span> <span class="var">iterations</span> <span class="op">plus</span> <span class="num">1</span>.
+<span class="kw">End while</span>.
+
+<span class="kw">Output</span> <span class="var">draft</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── MULTIMODAL ── -->
+  <section id="multimodal">
+    <span class="section-label">11 — Multimodal I/O</span>
+    <h2>Multimodal Capabilities</h2>
+    <p>Fluent treats text, images, audio, video, and documents as interchangeable <strong>typed values</strong>. Any model that supports a given modality can receive it via the <code>using</code> clause — no special APIs, no format negotiation.</p>
+
+    <h3>Vision</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">vision.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Describe an image</span>
+<span class="kw">Let</span> <span class="var">photo</span> <span class="kw">be</span> <span class="fn">load image</span> <span class="str">"storefront.jpg"</span>.
+<span class="kw">Ask</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">gpt-4o</span> <span class="kw">to</span> <span class="str">"describe all visible text and brand logos in this image"</span>
+    <span class="kw">using image</span> <span class="var">photo</span>
+    <span class="kw">and call the result</span> <span class="var">visual_description</span>.
+
+<span class="cmt">-- Multi-image comparison</span>
+<span class="kw">Let</span> <span class="var">before</span> <span class="kw">be</span> <span class="fn">load image</span> <span class="str">"before.png"</span>.
+<span class="kw">Let</span> <span class="var">after</span> <span class="kw">be</span> <span class="fn">load image</span> <span class="str">"after.png"</span>.
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"identify exactly what changed between these two UI screenshots"</span>
+    <span class="kw">using images</span> <span class="var">before</span>, <span class="var">after</span>
+    <span class="kw">and call the result</span> <span class="var">diff_report</span>.
+
+<span class="cmt">-- Video frame analysis</span>
+<span class="kw">Let</span> <span class="var">clip</span> <span class="kw">be</span> <span class="fn">load video</span> <span class="str">"demo.mp4"</span> <span class="kw">sampled at</span> <span class="num">2</span> frames per second.
+<span class="kw">Ask</span> <span class="prov">google</span><span class="op">/</span><span class="mod">gemini-2.5-pro</span> <span class="kw">to</span> <span class="str">"write a step-by-step tutorial based on this screen recording"</span>
+    <span class="kw">using video</span> <span class="var">clip</span>
+    <span class="kw">and call the result</span> <span class="var">tutorial</span>.</pre>
+    </div>
+
+    <h3>Audio</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">audio.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Transcription</span>
+<span class="kw">Let</span> <span class="var">recording</span> <span class="kw">be</span> <span class="fn">load audio</span> <span class="str">"meeting.mp3"</span>.
+<span class="kw">Ask</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">whisper-large-v3</span> <span class="kw">to</span> <span class="str">"transcribe this audio with speaker labels"</span>
+    <span class="kw">using audio</span> <span class="var">recording</span>
+    <span class="kw">and call the result</span> <span class="var">transcript</span>.
+
+<span class="cmt">-- Transcribe then summarize — chained</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"extract all action items and decisions from this meeting"</span>
+    <span class="kw">using text</span> <span class="var">transcript</span>
+    <span class="kw">and call the result</span> <span class="var">action_items</span>.
+
+<span class="cmt">-- Text to speech</span>
+<span class="kw">Let</span> <span class="var">audio_reply</span> <span class="kw">be the result of</span>
+    <span class="fn">speak</span> <span class="var">action_items</span> <span class="kw">using voice</span> <span class="str">"alloy"</span> <span class="kw">via</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">tts-1-hd</span>.
+<span class="kw">Save</span> <span class="var">audio_reply</span> <span class="kw">to</span> <span class="str">"action_items_audio.mp3"</span>.</pre>
+    </div>
+
+    <h3>Image Generation</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">imagegen.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Generate an image</span>
+<span class="ann">@image(size: "1792x1024", quality: hd, style: natural)</span>
+<span class="kw">Generate an image of</span> <span class="str">"a minimalist fintech mobile app splash screen, green brand color,
+    clean sans-serif typography, white background, no text"</span>
+    <span class="kw">using</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">dall-e-4</span>
+    <span class="kw">and call the result</span> <span class="var">splash_image</span>.
+
+<span class="cmt">-- Conditional generation based on AI analysis</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"write a detailed image generation prompt for the hero section of our landing page"</span>
+    <span class="kw">using data</span> <span class="var">brand_guidelines</span>
+    <span class="kw">and call the result</span> <span class="var">image_prompt</span>.
+
+<span class="kw">Generate an image of</span> <span class="var">image_prompt</span>
+    <span class="kw">using</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">dall-e-4</span>
+    <span class="kw">and call the result</span> <span class="var">hero_image</span>.
+<span class="kw">Save</span> <span class="var">hero_image</span> <span class="kw">to</span> <span class="str">"hero.png"</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── TESTING ── -->
+  <section id="testing">
+    <span class="section-label">12 — Testing</span>
+    <h2>Testing Fluent Programs</h2>
+    <p>AI programs are probabilistic — the same input can yield slightly different outputs. Fluent's test system is designed for this reality: tests can be <strong>exact</strong>, <strong>semantic</strong>, or <strong>model-judged</strong>.</p>
+
+    <h3>Writing Tests</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">tests.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Test file: test_summarizer.fl</span>
+<span class="kw">Use</span> the procedures <span class="kw">from</span> <span class="str">"./summarizer.fl"</span>.
+
+<span class="cmt">-- Exact match test</span>
+<span class="kw">Test</span> <span class="str">"summarize returns non-empty text"</span>:
+    <span class="kw">Let</span> <span class="var">result</span> <span class="kw">be the result of</span> summarize an article <span class="str">"The sun is a star."</span> <span class="kw">in</span> <span class="str">"English"</span>.
+    <span class="kw">Expect</span> <span class="var">result</span> <span class="kw">to</span> <span class="fn">not be empty</span>.
+    <span class="kw">Expect</span> <span class="var">result</span> <span class="kw">to</span> <span class="fn">have fewer than</span> <span class="num">100</span> words.
+<span class="kw">End test</span>.
+
+<span class="cmt">-- Semantic test (model-judged)</span>
+<span class="kw">Test</span> <span class="str">"sentiment is negative for angry review"</span>:
+    <span class="kw">Let</span> <span class="var">result</span> <span class="kw">be the result of</span> classify sentiment <span class="str">"This product is absolutely terrible."</span>.
+    <span class="ann">@judge(model: gpt, criteria: "Does the result indicate negative sentiment?")</span>
+    <span class="kw">Expect</span> <span class="var">result</span><span class="op">.</span>sentiment <span class="kw">to</span> <span class="fn">semantically match</span> <span class="str">"negative or unfavorable"</span>.
+<span class="kw">End test</span>.
+
+<span class="cmt">-- Regression test with golden output</span>
+<span class="kw">Test</span> <span class="str">"entity extraction matches golden set"</span>:
+    <span class="kw">Let</span> <span class="var">result</span> <span class="kw">be the result of</span> extract entities <span class="str">"Apple was founded by Steve Jobs in 1976."</span>.
+    <span class="kw">Expect</span> <span class="var">result</span> <span class="kw">to contain</span> <span class="str">"Apple"</span>, <span class="str">"Steve Jobs"</span>, <span class="str">"1976"</span>.
+<span class="kw">End test</span>.
+
+<span class="cmt">-- Run with: fluent test tests/</span></pre>
+    </div>
+
+    <h3>Mocking Model Calls</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">mock.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Mock a model for deterministic, free testing</span>
+<span class="kw">When testing</span>, <span class="kw">mock</span> <span class="mod">claude</span> <span class="kw">with</span> the response <span class="str">"Mocked summary: This article discusses AI."</span>
+    <span class="kw">whenever the instruction contains</span> <span class="str">"summarize"</span>.
+
+<span class="cmt">-- Replay from a fixture file</span>
+<span class="kw">When testing</span>, <span class="kw">replay</span> <span class="mod">claude</span> <span class="kw">responses from</span> <span class="str">"./fixtures/claude_responses.json"</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── INTEROP ── -->
+  <section id="interop">
+    <span class="section-label">13 — Interoperability</span>
+    <h2>Interop with Other Languages</h2>
+    <p>Fluent is not designed to replace Python, TypeScript, or Rust — it is designed to <em>orchestrate</em> them. Calling code in other languages is as natural as any other instruction.</p>
+
+    <h3>Calling External Code</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">interop.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Run a Python script and use its output</span>
+<span class="kw">Run Python script</span> <span class="str">"./scripts/clean_data.py"</span>
+    <span class="kw">with argument</span> <span class="var">raw_csv_path</span>
+    <span class="kw">and call the output</span> <span class="var">cleaned_data</span>.
+
+<span class="cmt">-- Call a TypeScript/Node function</span>
+<span class="kw">Run Node function</span> <span class="str">"./lib/parser.js"</span> <span class="kw">named</span> <span class="str">"parseInvoice"</span>
+    <span class="kw">with input</span> <span class="var">raw_invoice</span>
+    <span class="kw">and call the result</span> <span class="var">parsed_invoice</span>.
+
+<span class="cmt">-- Call a REST API endpoint</span>
+<span class="kw">Call</span> <span class="str">"https://api.stripe.com/v1/charges"</span>
+    <span class="kw">with method</span> POST, <span class="kw">headers</span> <span class="var">stripe_headers</span>, <span class="kw">body</span> <span class="var">charge_payload</span>
+    <span class="kw">and call the response</span> <span class="var">charge_result</span>.
+
+<span class="cmt">-- Use Fluent FROM Python (embedding)</span>
+<span class="cmt">-- pip install fluent-runtime</span>
+<span class="cmt">-- In Python:</span>
+<span class="cmt">--   from fluent import run</span>
+<span class="cmt">--   result = run("Ask claude to 'summarize this' using text body")</span></pre>
+    </div>
+
+    <h3>Exporting Fluent Procedures</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">export.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Export as an HTTP microservice</span>
+<span class="ann">@expose(as: http, path: "/summarize", method: POST)</span>
+<span class="kw">To</span> summarize an article (<span class="var">article_text</span>) <span class="kw">in</span> (<span class="var">language</span>):
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"summarize in three sentences"</span>
+        <span class="kw">using text</span> <span class="var">article_text</span>
+        <span class="kw">and return the result</span>.
+<span class="kw">End of</span> summarize an article.
+
+<span class="cmt">-- Deploy: fluent serve summarizer.fl --port 8080</span>
+<span class="cmt">-- POST /summarize {"article_text": "...", "language": "English"}</span></pre>
+    </div>
+  </section>
+
+  <!-- ── RUNTIME ── -->
+  <section id="runtime">
+    <span class="section-label">14 — Runtime & Execution Model</span>
+    <h2>The Fluent Runtime</h2>
+    <p>The Fluent runtime is a <strong>three-layer system</strong>: a natural language parser that produces an Abstract Semantic Graph (ASG), a planner that resolves model bindings and schedules parallel execution, and an executor that manages async I/O, retries, and result coercion.</p>
+
+    <div class="grammar-grid">
+      <div class="grammar-card blue">
+        <div class="label">Layer 1 — Parser</div>
+        <p>Converts <code>.fl</code> source into an <strong>Abstract Semantic Graph</strong>. Uses a grammar model trained on English patterns + Fluent syntax. Reports ambiguous sentences as parse errors.</p>
+      </div>
+      <div class="grammar-card green">
+        <div class="label">Layer 2 — Planner</div>
+        <p>Resolves model aliases, detects <strong>independent branches</strong> for parallel execution, validates tool availability, and compiles the ASG into an execution plan.</p>
+      </div>
+      <div class="grammar-card gold">
+        <div class="label">Layer 3 — Executor</div>
+        <p>Runs the plan. Manages async API calls, exponential retry, credential injection, result type coercion, streaming, and cost tracking.</p>
+      </div>
+      <div class="grammar-card">
+        <div class="label">Observability</div>
+        <p>Every execution emits <strong>structured traces</strong>: model called, tokens used, latency, cost, and result hash — to stdout, file, or any OpenTelemetry endpoint.</p>
+      </div>
+    </div>
+
+    <h3>CLI Reference</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">terminal</span>
+        <span class="lang-tag">Shell</span>
+      </div>
+      <pre><span class="cmt"># Install</span>
+npm install -g fluent-lang          <span class="cmt"># Node runtime</span>
+pip install fluent-runtime          <span class="cmt"># Python binding</span>
+
+<span class="cmt"># Run a program</span>
+fluent run my_program.fl
+
+<span class="cmt"># Run with environment</span>
+fluent run my_program.fl --env production
+
+<span class="cmt"># Run tests</span>
+fluent test ./tests/
+
+<span class="cmt"># Serve as HTTP API</span>
+fluent serve summarizer.fl --port 8080
+
+<span class="cmt"># Check cost estimate before running</span>
+fluent estimate my_program.fl
+
+<span class="cmt"># Compile to a portable bundle</span>
+fluent build my_program.fl --out dist/
+
+<span class="cmt"># Interactive REPL</span>
+fluent repl</pre>
+    </div>
+
+    <h3>Cost & Token Management</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">cost.fl</span>
+        <span class="lang-tag">Fluent</span>
+      </div>
+      <pre><span class="cmt">-- Set a spending limit for a run</span>
+<span class="ann">@budget(max_usd: 1.00, on_exceed: warn)</span>
+
+<span class="cmt">-- Per-call cost routing: use a cheap model first, escalate if needed</span>
+<span class="ann">@cost_policy(prefer_cheap: true, escalate_on_failure: true)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"classify this document"</span>
+    <span class="kw">using text</span> <span class="var">document</span>
+    <span class="kw">and call the result</span> <span class="var">classification</span>.
+<span class="cmt">-- Runtime will try claude-haiku-4-5 first (cheapest),</span>
+<span class="cmt">-- escalate to claude-sonnet, then claude-opus if needed.</span>
+
+<span class="cmt">-- Observe usage after run</span>
+<span class="kw">Output</span> <span class="fn">total cost of this run</span>.
+<span class="kw">Output</span> <span class="fn">total tokens used</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── MORE EXAMPLES ── -->
+  <section id="more-examples">
+    <span class="section-label">15 — More Full Programs</span>
+    <h2>More Examples</h2>
+
+    <h3>Example 3 — Real-Time Code Review Agent</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">code-review.fl</span>
+        <span class="lang-tag">Fluent · ~35 lines</span>
+      </div>
+      <pre><span class="cmt">-- Automated PR code review with three specialist models</span>
+
+<span class="kw">Define model</span> <span class="var">security_reviewer</span> <span class="kw">as</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">gpt-4o</span>
+    <span class="kw">with</span> temperature <span class="num">0</span>,
+    <span class="kw">system</span> <span class="str">"You are a security expert. Find vulnerabilities only. Be specific, cite line numbers."</span>.
+
+<span class="kw">Define model</span> <span class="var">perf_reviewer</span> <span class="kw">as</span> <span class="prov">deepseek</span><span class="op">/</span><span class="mod">deepseek-coder</span>
+    <span class="kw">with</span> temperature <span class="num">0</span>,
+    <span class="kw">system</span> <span class="str">"You are a performance expert. Identify bottlenecks, complexity issues, memory leaks."</span>.
+
+<span class="kw">Define model</span> <span class="var">style_reviewer</span> <span class="kw">as</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-sonnet-4-6</span>
+    <span class="kw">with</span> temperature <span class="num">0.1</span>,
+    <span class="kw">system</span> <span class="str">"You are a senior engineer. Review for readability, naming, and best practices."</span>.
+
+<span class="kw">Let</span> <span class="var">pr_diff</span> <span class="kw">be</span> <span class="fn">read file</span> <span class="str">"pr_diff.patch"</span>.
+
+<span class="cmt">-- Run all three reviews concurrently</span>
+<span class="kw">In parallel</span>:
+    <span class="kw">Ask</span> <span class="var">security_reviewer</span> <span class="kw">to</span> <span class="str">"review this code diff for security vulnerabilities"</span>
+        <span class="kw">using text</span> <span class="var">pr_diff</span> <span class="kw">and call the result</span> <span class="var">security_findings</span>.
+    <span class="kw">Ask</span> <span class="var">perf_reviewer</span> <span class="kw">to</span> <span class="str">"review this code diff for performance issues"</span>
+        <span class="kw">using text</span> <span class="var">pr_diff</span> <span class="kw">and call the result</span> <span class="var">perf_findings</span>.
+    <span class="kw">Ask</span> <span class="var">style_reviewer</span> <span class="kw">to</span> <span class="str">"review this code diff for style and readability"</span>
+        <span class="kw">using text</span> <span class="var">pr_diff</span> <span class="kw">and call the result</span> <span class="var">style_findings</span>.
+<span class="kw">End parallel</span>.
+
+<span class="cmt">-- Synthesize into a single structured review report</span>
+<span class="ann">@model(temperature: 0.2)</span>
+<span class="kw">Ask</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-opus-4</span>
+    <span class="kw">to</span> <span class="str">"merge these three reviews into one prioritized action list, grouped by severity"</span>
+    <span class="kw">using data</span> a record with
+        security <span class="var">security_findings</span>,
+        performance <span class="var">perf_findings</span>,
+        style <span class="var">style_findings</span>
+    <span class="kw">and call the result</span> <span class="var">final_review</span>.
+
+<span class="kw">Output</span> <span class="var">final_review</span>.</pre>
+    </div>
+
+    <h3>Example 4 — Multilingual Content Localization Pipeline</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">localization.fl</span>
+        <span class="lang-tag">Fluent · ~30 lines</span>
+      </div>
+      <pre><span class="cmt">-- Translate, culturally adapt, and QA-check content for 5 markets</span>
+
+<span class="kw">Let</span> <span class="var">source_copy</span> <span class="kw">be</span> <span class="fn">read file</span> <span class="str">"marketing_copy_en.txt"</span>.
+<span class="kw">Let</span> <span class="var">target_markets</span> <span class="kw">be</span> a list containing
+    a record with language <span class="str">"Hindi"</span>, region <span class="str">"India"</span>, model <span class="str">"gemini"</span>,
+    a record with language <span class="str">"Mandarin"</span>, region <span class="str">"China"</span>, model <span class="str">"gpt"</span>,
+    a record with language <span class="str">"Spanish"</span>, region <span class="str">"LATAM"</span>, model <span class="str">"claude"</span>,
+    a record with language <span class="str">"Arabic"</span>, region <span class="str">"MENA"</span>, model <span class="str">"mistral"</span>,
+    a record with language <span class="str">"Japanese"</span>, region <span class="str">"Japan"</span>, model <span class="str">"gpt"</span>.
+
+<span class="kw">In parallel</span>, <span class="kw">for each</span> <span class="var">market</span> <span class="kw">in</span> <span class="var">target_markets</span>:
+    <span class="cmt">-- Step 1: Translate</span>
+    <span class="kw">Ask</span> <span class="var">market</span><span class="op">.</span>model <span class="kw">to</span>
+        <span class="str">"translate this marketing copy to"</span> <span class="var">market</span><span class="op">.</span>language <span class="str">"for the"</span> <span class="var">market</span><span class="op">.</span>region <span class="str">"market"</span>
+        <span class="kw">using text</span> <span class="var">source_copy</span>
+        <span class="kw">and call the result</span> <span class="var">market</span><span class="op">.</span>translated.
+
+    <span class="cmt">-- Step 2: Cultural adaptation check</span>
+    <span class="ann">@model(temperature: 0)</span>
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span>
+        <span class="str">"flag any cultural insensitivities or mistranslations in this"</span> <span class="var">market</span><span class="op">.</span>language <span class="str">"text"</span>
+        <span class="kw">using text</span> <span class="var">market</span><span class="op">.</span>translated
+        <span class="kw">and call the result</span> <span class="var">market</span><span class="op">.</span>issues.
+
+    <span class="cmt">-- Step 3: Fix if issues found</span>
+    <span class="kw">If</span> <span class="var">market</span><span class="op">.</span>issues <span class="op">is not</span> empty,
+        <span class="kw">then ask</span> <span class="var">market</span><span class="op">.</span>model <span class="kw">to</span> <span class="str">"revise the translation to address these cultural issues"</span>
+            <span class="kw">using text</span> <span class="var">market</span><span class="op">.</span>translated, <span class="kw">issues</span> <span class="var">market</span><span class="op">.</span>issues
+            <span class="kw">and call the result</span> <span class="var">market</span><span class="op">.</span>translated.
+
+    <span class="kw">Save</span> <span class="var">market</span><span class="op">.</span>translated <span class="kw">to</span> <span class="str">"./output/"</span> <span class="var">market</span><span class="op">.</span>language <span class="str">".txt"</span>.
+<span class="kw">End parallel loop</span>.
+
+<span class="kw">Output</span> <span class="str">"Localization complete for"</span> the count of <span class="var">target_markets</span> <span class="str">"markets."</span>.</pre>
+    </div>
+
+    <h3>Example 5 — Personal Finance AI (Saviee-style)</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="filename">saviee-advisor.fl</span>
+        <span class="lang-tag">Fluent · ~40 lines</span>
+      </div>
+      <pre><span class="cmt">-- AI-powered personal finance advisor with memory and personalization</span>
+
+<span class="kw">Define model</span> <span class="var">finance_advisor</span> <span class="kw">as</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-sonnet-4-6</span>
+    <span class="kw">with</span> temperature <span class="num">0.3</span>,
+    <span class="kw">system</span> <span class="str">"You are Saviee, a friendly personal finance assistant for Indian users.
+           Speak in simple terms. Use INR. Always suggest actionable next steps."</span>.
+
+<span class="kw">To advise user</span> (<span class="var">user_id</span>) <span class="kw">on their finances</span>:
+    <span class="cmt">-- Load user data</span>
+    <span class="kw">Let</span> <span class="var">transactions</span> <span class="kw">be the result of</span> <span class="fn">fetch user transactions</span> <span class="kw">for</span> <span class="var">user_id</span> <span class="kw">in last</span> <span class="num">30</span> days.
+    <span class="kw">Recall memories similar to</span> <span class="str">"financial goals and preferences for user"</span> <span class="var">user_id</span>
+        <span class="kw">and call the result</span> <span class="var">user_memory</span>.
+
+    <span class="cmt">-- Step 1: Categorize spending</span>
+    <span class="ann">@model(temperature: 0, format: json)</span>
+    <span class="kw">Ask</span> <span class="prov">groq</span><span class="op">/</span><span class="mod">llama-4-scout-instant</span>
+        <span class="kw">to</span> <span class="str">"categorize each transaction into: food, transport, entertainment, bills, savings, other"</span>
+        <span class="kw">using data</span> <span class="var">transactions</span>
+        <span class="kw">and call the result</span> <span class="var">categorized</span>.
+
+    <span class="cmt">-- Step 2: Detect anomalies</span>
+    <span class="kw">Ask</span> <span class="mod">claude</span>
+        <span class="kw">to</span> <span class="str">"identify unusual spending patterns or potential savings opportunities"</span>
+        <span class="kw">using data</span> <span class="var">categorized</span>
+        <span class="kw">and call the result</span> <span class="var">insights</span>.
+
+    <span class="cmt">-- Step 3: Compare to goals</span>
+    <span class="kw">Ask</span> <span class="var">finance_advisor</span>
+        <span class="kw">to</span> <span class="str">"give personalized advice on how to better meet their financial goals this month"</span>
+        <span class="kw">using data</span> a record with
+            spending <span class="var">categorized</span>,
+            insights <span class="var">insights</span>,
+            goals <span class="var">user_memory</span>
+        <span class="kw">and call the result</span> <span class="var">advice</span>.
+
+    <span class="cmt">-- Remember what was advised</span>
+    <span class="kw">Remember</span> a record with user <span class="var">user_id</span>, advice <span class="var">advice</span>, date the current date
+        <span class="kw">as</span> <span class="str">"monthly advice session for user"</span> <span class="var">user_id</span>.
+
+    <span class="kw">Return</span> <span class="var">advice</span>.
+<span class="kw">End of</span> advise user on their finances.</pre>
+    </div>
+
+    <div class="callout tip">
+      <strong>Notice:</strong> Example 5 uses three different models for three different jobs — Groq for fast/cheap categorization, Claude for nuanced pattern detection, and the custom <code>finance_advisor</code> alias for personalized advice. All within the same natural-language flow.
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div><strong>FLUENT</strong> Natural Language AI Programming Language · Specification v1.0 · 2026</div>
+  <div>Designed for the age of universal AI. Built to be read by humans. Executed by machines.</div>
+</footer>
+
+</body>
+</html>
