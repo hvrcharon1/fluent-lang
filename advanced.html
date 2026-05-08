@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLUENT — Advanced Technical Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0e;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --accent: #c8410a;
+    --accent2: #1a5c38;
+    --muted: #6b6560;
+    --rule: #d0c9bc;
+    --code-bg: #1a1916;
+    --code-text: #e8e0d0;
+    --highlight: #f0e6c8;
+    --tag-blue: #2563a8;
+    --tag-green: #1a5c38;
+    --tag-red: #c8410a;
+    --tag-gold: #8a6a00;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 80px 60px 60px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 4px solid var(--accent2);
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 420px; height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,92,56,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .masthead::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: 30%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,65,10,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .lang-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .masthead h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 8vw, 100px);
+    letter-spacing: 0.04em;
+    line-height: 0.9;
+    color: var(--paper);
+    margin-bottom: 24px;
+  }
+  .masthead h1 span { color: var(--accent2); }
+  .tagline {
+    font-family: 'EB Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: rgba(245,240,232,0.7);
+    max-width: 580px;
+    margin-bottom: 40px;
+    line-height: 1.5;
+  }
+  .version-strip {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    padding: 5px 12px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .badge-version { background: var(--accent2); color: white; }
+  .badge-status  { background: var(--accent); color: white; }
+  .badge-type    { border: 1px solid rgba(245,240,232,0.3); color: rgba(245,240,232,0.6); }
+  .back-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.45);
+    text-decoration: none;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: inline-block;
+  }
+  .back-link:hover { color: var(--accent2); }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 0 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+  }
+  nav a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 16px 16px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  nav a:hover { color: var(--ink); border-bottom-color: var(--accent2); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 60px; }
+
+  section {
+    padding: 72px 0 48px;
+    border-bottom: 1px solid var(--rule);
+  }
+  section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 12px;
+    display: block;
+  }
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  h3 {
+    font-family: 'EB Garamond', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 40px 0 14px;
+    padding-left: 16px;
+    border-left: 3px solid var(--accent2);
+  }
+  h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 28px 0 10px;
+  }
+  p { margin-bottom: 16px; color: #1e1c1a; }
+  strong { color: var(--ink); font-weight: 600; }
+  em { font-style: italic; color: var(--accent2); }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 6px;
+    margin: 20px 0;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 18px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .code-header .filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: rgba(232,224,208,0.5);
+    letter-spacing: 0.06em;
+  }
+  .code-header .lang-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: rgba(26,92,56,0.18);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+  pre {
+    padding: 22px 24px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--code-text);
+  }
+  .kw   { color: #e07b54; font-weight: 500; }
+  .mod  { color: #8ab4f8; }
+  .str  { color: #a3d9a5; }
+  .var  { color: #f8d87c; }
+  .op   { color: #c586c0; }
+  .cmt  { color: #6b7280; font-style: italic; }
+  .prov { color: #60cdcd; font-weight: 500; }
+  .num  { color: #b5cea8; }
+  .fn   { color: #dcdcaa; }
+  .ann  { color: #9ca3af; }
+  .type { color: #c586c0; font-weight: 500; }
+  .err  { color: #f47067; }
+  .ok   { color: #a3d9a5; }
+  .ebnf { color: #f8d87c; }
+
+  /* ── CARDS ── */
+  .grammar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .grammar-card {
+    background: var(--cream);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 20px 22px;
+    border-left: 3px solid var(--accent);
+  }
+  .grammar-card.green { border-left-color: var(--accent2); }
+  .grammar-card.gold  { border-left-color: #8a6a00; }
+  .grammar-card.blue  { border-left-color: #2563a8; }
+  .grammar-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .grammar-card p { font-size: 15px; margin: 0; color: var(--ink); line-height: 1.5; }
+  .grammar-card code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: rgba(0,0,0,0.06);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent2);
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--highlight);
+    padding: 16px 20px;
+    border-radius: 0 6px 6px 0;
+    margin: 20px 0;
+    font-style: italic;
+    color: #3a3530;
+  }
+  .callout.info    { border-left-color: var(--tag-blue); background: #e8f0fc; }
+  .callout.tip     { border-left-color: var(--accent2); background: #e6f4ed; }
+  .callout.warning { border-left-color: #b45309; background: #fef3c7; }
+  .callout.danger  { border-left-color: var(--tag-red); background: #fde8e8; }
+
+  /* ── PILLARS ── */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 28px 0;
+  }
+  .pillar {
+    padding: 24px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pillar::before {
+    content: attr(data-n);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    color: rgba(245,240,232,0.06);
+    position: absolute;
+    bottom: -8px; right: 8px;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .pillar h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin: 0 0 10px;
+  }
+  .pillar p { font-size: 15px; color: rgba(245,240,232,0.75); margin: 0; line-height: 1.6; }
+
+  /* ── TYPE TABLE ── */
+  .type-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 15px;
+  }
+  .type-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .type-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .type-table tr:hover td { background: var(--highlight); }
+  .type-table .tname {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .type-table .tnl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+  }
+
+  /* ── EBNF BLOCK ── */
+  .ebnf-block {
+    background: #0e1117;
+    border: 1px solid #2a2f3a;
+    border-radius: 6px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+  .ebnf-block pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 2;
+    color: #cdd9e5;
+    padding: 0;
+    box-shadow: none;
+  }
+  .ebnf-block pre .nt  { color: #79b8ff; }      /* non-terminal */
+  .ebnf-block pre .t   { color: #a3d9a5; }       /* terminal string */
+  .ebnf-block pre .sym { color: #e07b54; }        /* ::= | | * + ? */
+  .ebnf-block pre .cmt { color: #6b7280; font-style: italic; }
+
+  /* ── ROADMAP ── */
+  .roadmap {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 0;
+    margin: 28px 0;
+    position: relative;
+  }
+  .roadmap::before {
+    content: '';
+    position: absolute;
+    left: 59px;
+    top: 20px; bottom: 20px;
+    width: 2px;
+    background: var(--rule);
+  }
+  .rm-phase {
+    display: contents;
+  }
+  .rm-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 3px;
+    text-align: center;
+    align-self: start;
+    margin-top: 6px;
+    position: relative;
+    z-index: 1;
+  }
+  .rm-label.alpha   { background: var(--accent); }
+  .rm-label.beta    { background: #2563a8; }
+  .rm-label.v1      { background: var(--accent2); }
+  .rm-label.v2      { background: #6d28d9; }
+  .rm-content {
+    padding: 0 0 32px 28px;
+  }
+  .rm-content h4 {
+    font-family: 'EB Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0 0 8px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .rm-content ul {
+    list-style: none;
+    padding: 0;
+  }
+  .rm-content li {
+    font-size: 15px;
+    color: #3a3530;
+    padding: 3px 0 3px 16px;
+    position: relative;
+  }
+  .rm-content li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent2);
+    font-size: 12px;
+  }
+
+  /* ── PIPELINE ── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 28px 0;
+    overflow-x: auto;
+    padding: 4px;
+  }
+  .pipe-step {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 120px;
+  }
+  .pipe-step .step-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(232,224,208,0.4);
+    margin-bottom: 6px;
+  }
+  .pipe-step .step-name { color: #e07b54; font-weight: 500; }
+  .pipe-arrow { font-size: 20px; color: var(--accent2); padding: 0 4px; font-weight: bold; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(245,240,232,0.5);
+    padding: 40px 60px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  footer strong { color: var(--accent2); }
+  footer a { color: rgba(245,240,232,0.4); text-decoration: none; }
+  footer a:hover { color: var(--accent2); }
+
+  @media(max-width: 680px) {
+    .masthead { padding: 48px 24px 40px; }
+    .container { padding: 0 24px; }
+    nav { padding: 0 8px; }
+    .grammar-grid { grid-template-columns: 1fr; }
+    .pillars { grid-template-columns: 1fr; }
+    h2 { font-size: 38px; }
+    .roadmap { grid-template-columns: 80px 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── MASTHEAD ── -->
+<div class="masthead">
+  <a href="index.html" class="back-link">← Back to Language Specification</a>
+  <span class="lang-label">Advanced Technical Specification · Part II · v1.0 · 2026</span>
+  <h1>FLUENT<br><span>Advanced</span></h1>
+  <p class="tagline">Deep technical reference — type system, streaming, security, formal grammar, event-driven patterns, debugging, and the complete roadmap.</p>
+  <div class="version-strip">
+    <span class="badge badge-version">v1.0 Alpha</span>
+    <span class="badge badge-status">Part II</span>
+    <span class="badge badge-type">11 Sections · Advanced</span>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="#types">Type System</a>
+  <a href="#streaming">Streaming</a>
+  <a href="#guardrails">Guardrails</a>
+  <a href="#prompting">Prompt Patterns</a>
+  <a href="#database">Database</a>
+  <a href="#events">Event-Driven</a>
+  <a href="#debugging">Debugging</a>
+  <a href="#security">Security</a>
+  <a href="#packages">Packages</a>
+  <a href="#grammar">Formal Grammar</a>
+  <a href="#roadmap">Roadmap</a>
+</nav>
+
+<div class="container">
+
+  <!-- ── TYPE SYSTEM ── -->
+  <section id="types">
+    <span class="section-label">16 — Type System</span>
+    <h2>Type System Deep Dive</h2>
+    <p>Fluent uses <strong>structural, inferred, natural-language types</strong>. You never write a type annotation unless you want to be explicit. The runtime infers types from declaration context and model annotations. Types are expressed as English phrases — <em>"a list of text"</em>, <em>"a record with name and age"</em>, <em>"an optional number"</em> — not symbolic notation.</p>
+
+    <h3>Primitive Types</h3>
+    <table class="type-table">
+      <thead>
+        <tr>
+          <th>Internal Type</th>
+          <th>Natural Language Declaration</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tname">Text</td>
+          <td class="tnl">a text / some text / a string</td>
+          <td>Unicode, unlimited length. Default string type.</td>
+        </tr>
+        <tr>
+          <td class="tname">Number</td>
+          <td class="tnl">a number / an integer / a decimal</td>
+          <td>64-bit float. Integers are a subtype.</td>
+        </tr>
+        <tr>
+          <td class="tname">Boolean</td>
+          <td class="tnl">true / false / a yes-or-no value</td>
+          <td>Literals: <code>true</code>, <code>false</code>, <code>yes</code>, <code>no</code>.</td>
+        </tr>
+        <tr>
+          <td class="tname">Date</td>
+          <td class="tnl">a date / a datetime / a timestamp</td>
+          <td>ISO 8601 internally. Human phrases auto-parsed.</td>
+        </tr>
+        <tr>
+          <td class="tname">Image</td>
+          <td class="tnl">an image / a photo / a picture</td>
+          <td>JPEG, PNG, WEBP, GIF. Carries EXIF metadata.</td>
+        </tr>
+        <tr>
+          <td class="tname">Audio</td>
+          <td class="tnl">an audio file / a recording / audio</td>
+          <td>MP3, WAV, FLAC, OGG. Carries duration + sample rate.</td>
+        </tr>
+        <tr>
+          <td class="tname">Video</td>
+          <td class="tnl">a video / a clip / a screen recording</td>
+          <td>MP4, MOV, WEBM. Can be sampled into image frames.</td>
+        </tr>
+        <tr>
+          <td class="tname">Document</td>
+          <td class="tnl">a document / a PDF / a file</td>
+          <td>PDF, DOCX, TXT. Carries page count + text extraction.</td>
+        </tr>
+        <tr>
+          <td class="tname">Vector</td>
+          <td class="tnl">a vector of N numbers / an embedding</td>
+          <td>Dense float array. Used for semantic similarity operations.</td>
+        </tr>
+        <tr>
+          <td class="tname">ModelResponse</td>
+          <td class="tnl">a model response / a response</td>
+          <td>Wraps raw text + metadata (tokens, model, latency, cost).</td>
+        </tr>
+        <tr>
+          <td class="tname">Nothing</td>
+          <td class="tnl">nothing / empty / no value</td>
+          <td>Explicit null. Different from an empty text.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Composite Types</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">composite-types.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- List: homogeneous ordered collection</span>
+<span class="kw">Let</span> <span class="var">names</span> <span class="kw">be</span> a list of text containing <span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Carol"</span>.
+<span class="kw">Let</span> <span class="var">scores</span> <span class="kw">be</span> a list of numbers containing <span class="num">88</span>, <span class="num">91</span>, <span class="num">74</span>.
+<span class="kw">Let</span> <span class="var">images</span> <span class="kw">be</span> a list of images.
+
+<span class="cmt">-- Record: named fields (like a struct / object)</span>
+<span class="kw">Let</span> <span class="var">patient</span> <span class="kw">be</span> a record with
+    name <span class="str">"Priya Sharma"</span>,
+    age <span class="num">34</span>,
+    diagnosis <span class="str">"Type 2 Diabetes"</span>,
+    admitted_on the current date.
+
+<span class="cmt">-- Optional: value that may or may not exist</span>
+<span class="kw">Let</span> <span class="var">middle_name</span> <span class="kw">be</span> an optional text.      <span class="cmt">-- defaults to nothing</span>
+<span class="kw">Let</span> <span class="var">nickname</span> <span class="kw">be</span> an optional text set to <span class="str">"Pri"</span>.
+
+<span class="cmt">-- Union: one of several possible types</span>
+<span class="kw">Let</span> <span class="var">identifier</span> <span class="kw">be</span> either a text or a number.
+
+<span class="cmt">-- Typed list of records</span>
+<span class="kw">Let</span> <span class="var">employees</span> <span class="kw">be</span> a list of records each with
+    name: text, department: text, salary: number.</pre>
+    </div>
+
+    <h3>Type Inference Rules</h3>
+    <div class="grammar-grid">
+      <div class="grammar-card green">
+        <div class="label">Literal Inference</div>
+        <p>String literals → <code>Text</code>. Numerals → <code>Number</code>. <code>true</code>/<code>false</code> → <code>Boolean</code>. Date phrases → <code>Date</code>.</p>
+      </div>
+      <div class="grammar-card blue">
+        <div class="label">Ask Inference</div>
+        <p>The result of an <code>Ask</code> without <code>@returns</code> annotation is typed as <code>ModelResponse</code>. With <code>@returns</code>, it adopts the declared type.</p>
+      </div>
+      <div class="grammar-card gold">
+        <div class="label">Collection Inference</div>
+        <p>A list's element type is inferred from the first element. If a <code>for each</code> loop assigns a field on each item, that field type is inferred from the assignment.</p>
+      </div>
+      <div class="grammar-card">
+        <div class="label">Optional Propagation</div>
+        <p>Accessing a field on an optional value yields another optional. You must unwrap with <code>if [x] exists, then...</code> before using it directly.</p>
+      </div>
+    </div>
+
+    <h3>Unwrapping Optionals</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">optionals.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Safe unwrap with existence check</span>
+<span class="kw">If</span> <span class="var">middle_name</span> <span class="kw">exists</span>,
+    <span class="kw">then</span> output <span class="str">"Full name:"</span> <span class="var">first_name</span> <span class="var">middle_name</span> <span class="var">last_name</span>.
+<span class="kw">Otherwise</span>, output <span class="str">"Full name:"</span> <span class="var">first_name</span> <span class="var">last_name</span>.
+
+<span class="cmt">-- Fallback with "or else"</span>
+<span class="kw">Let</span> <span class="var">display_name</span> <span class="kw">be</span> <span class="var">nickname</span> <span class="kw">or else</span> <span class="var">first_name</span>.
+
+<span class="cmt">-- Pipeline short-circuit: stop if nothing</span>
+<span class="kw">Let</span> <span class="var">user</span> <span class="kw">be the result of</span> find user by id <span class="var">user_id</span>.
+<span class="kw">If</span> <span class="var">user</span> <span class="kw">does not exist</span>, <span class="kw">then stop with error</span> <span class="str">"User not found."</span>.</pre>
+    </div>
+
+    <h3>Custom Type Definitions</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">custom-types.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Define a reusable named type</span>
+<span class="kw">Define type</span> <span class="type">Patient</span> <span class="kw">as</span> a record with
+    id: text,
+    name: text,
+    age: number,
+    diagnosis: optional text,
+    admitted_on: date,
+    risk_score: optional number.
+
+<span class="cmt">-- Use it like a built-in type</span>
+<span class="kw">Let</span> <span class="var">p</span> <span class="kw">be</span> a <span class="type">Patient</span> <span class="kw">with</span>
+    id <span class="str">"P-00142"</span>, name <span class="str">"Ravi Kulkarni"</span>, age <span class="num">58</span>, admitted_on <span class="str">"2026-05-01"</span>.
+
+<span class="cmt">-- Type-constrained function signature</span>
+<span class="kw">To</span> assess risk <span class="kw">for</span> (<span class="var">patient</span>: <span class="type">Patient</span>) <span class="kw">and return a</span> <span class="type">Patient</span>:
+    <span class="ann">@model(temperature: 0, format: json)</span>
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"compute a clinical risk score from 0 to 1 for this patient"</span>
+        <span class="kw">using data</span> <span class="var">patient</span>
+        <span class="kw">and call the result</span> <span class="var">score_result</span>.
+    <span class="kw">Set</span> <span class="var">patient</span><span class="op">.</span>risk_score <span class="kw">to</span> <span class="var">score_result</span><span class="op">.</span>score.
+    <span class="kw">Return</span> <span class="var">patient</span>.
+<span class="kw">End of</span> assess risk.</pre>
+    </div>
+  </section>
+
+  <!-- ── STREAMING ── -->
+  <section id="streaming">
+    <span class="section-label">17 — Streaming</span>
+    <h2>Streaming & Real-Time Output</h2>
+    <p>Fluent supports <strong>streaming model responses</strong> natively — tokens arrive and are processed as they are generated, without waiting for the full completion. This is critical for latency-sensitive applications like chat interfaces, live summarization, and real-time dashboards.</p>
+
+    <h3>Basic Streaming</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">streaming.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Stream tokens to stdout as they arrive</span>
+<span class="ann">@stream</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"write a detailed analysis of the healthcare data trends"</span>
+    <span class="kw">using data</span> <span class="var">report_data</span>
+    <span class="kw">and stream the result to</span> stdout.
+
+<span class="cmt">-- Stream into a variable (accumulates until complete)</span>
+<span class="ann">@stream</span>
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"generate the full product roadmap document"</span>
+    <span class="kw">and stream the result into</span> <span class="var">roadmap_text</span>.
+
+<span class="cmt">-- Stream with a handler — called for every chunk</span>
+<span class="ann">@stream(on_chunk: display_chunk)</span>
+<span class="kw">Ask</span> <span class="mod">gemini</span> <span class="kw">to</span> <span class="str">"narrate the story chapter"</span>
+    <span class="kw">using text</span> <span class="var">chapter_outline</span>
+    <span class="kw">and stream the result calling</span> <span class="var">display_chunk</span> <span class="kw">for each token</span>.
+
+<span class="cmt">-- Define the chunk handler</span>
+<span class="kw">To</span> display chunk (<span class="var">token</span>):
+    <span class="fn">write to websocket</span> <span class="var">client_socket</span> <span class="kw">the value</span> <span class="var">token</span>.
+<span class="kw">End of</span> display chunk.</pre>
+    </div>
+
+    <h3>Streaming Pipelines</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">stream-pipeline.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Generate → stream → detect completion condition mid-stream</span>
+<span class="kw">Let</span> <span class="var">buffer</span> <span class="kw">be</span> empty text.
+<span class="kw">Let</span> <span class="var">found_answer</span> <span class="kw">be</span> false.
+
+<span class="ann">@stream</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"answer the question and end your response with DONE when finished"</span>
+    <span class="kw">using text</span> <span class="var">question</span>
+    <span class="kw">and stream each chunk</span>:
+        <span class="kw">Append</span> <span class="var">chunk</span> <span class="kw">to</span> <span class="var">buffer</span>.
+        <span class="fn">write to pipe</span> <span class="var">output_pipe</span> <span class="kw">the value</span> <span class="var">chunk</span>.
+        <span class="kw">If</span> <span class="var">buffer</span> <span class="kw">contains</span> <span class="str">"DONE"</span>, <span class="kw">then set</span> <span class="var">found_answer</span> <span class="kw">to</span> true <span class="kw">and stop streaming</span>.
+<span class="kw">End stream</span>.
+
+<span class="cmt">-- Server-Sent Events (SSE) export</span>
+<span class="ann">@expose(as: sse, path: "/stream-chat")</span>
+<span class="ann">@stream</span>
+<span class="kw">To</span> stream chat response (<span class="var">user_message</span>):
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"respond to the user helpfully"</span>
+        <span class="kw">using text</span> <span class="var">user_message</span>
+        <span class="kw">and stream each chunk to</span> the current SSE connection.
+<span class="kw">End of</span> stream chat response.</pre>
+    </div>
+
+    <div class="callout info">
+      <strong>Streaming + Parallelism:</strong> When using <code>In parallel</code>, each branch streams independently. The runtime multiplexes all streams and delivers chunks with a source label: <code>chunk.source</code> identifies which parallel branch produced each token.
+    </div>
+  </section>
+
+  <!-- ── GUARDRAILS ── -->
+  <section id="guardrails">
+    <span class="section-label">18 — Schema Validation & Guardrails</span>
+    <h2>Guardrails & Output Validation</h2>
+    <p>AI model outputs are probabilistic. In production systems, you need <strong>structural guarantees</strong> — the output must conform to a schema, contain required fields, or satisfy content rules. Fluent's guardrail system intercepts model outputs before they reach your program logic.</p>
+
+    <h3>Schema Enforcement</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">schema.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Declare expected output structure; runtime validates and retries if invalid</span>
+<span class="ann">@returns(record with:
+    sentiment: text where value in ["positive","negative","neutral"],
+    confidence: number where value between 0 and 1,
+    keywords: list of text where length at most 5,
+    summary: text where length at most 200 characters
+)</span>
+<span class="ann">@on_schema_fail(retry: 3, then: raise_error)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"analyze the sentiment of this customer review"</span>
+    <span class="kw">using text</span> <span class="var">review_text</span>
+    <span class="kw">and call the result</span> <span class="var">analysis</span>.
+
+<span class="cmt">-- Access fields with full type safety</span>
+<span class="kw">If</span> <span class="var">analysis</span><span class="op">.</span>confidence <span class="op">is greater than</span> <span class="num">0.9</span>
+    <span class="kw">and</span> <span class="var">analysis</span><span class="op">.</span>sentiment <span class="op">is</span> <span class="str">"negative"</span>,
+    <span class="kw">then</span> <span class="fn">escalate to human review queue</span> <span class="kw">with</span> <span class="var">review_text</span>.</pre>
+    </div>
+
+    <h3>Content Guardrails</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">content-guards.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Block outputs that contain disallowed content</span>
+<span class="ann">@guardrail(block_if: "response contains PII such as email, phone, or SSN")</span>
+<span class="ann">@guardrail(block_if: "response contains medical advice or drug dosage")</span>
+<span class="ann">@guardrail(on_block: replace_with_default)</span>
+<span class="kw">Let</span> <span class="var">default_response</span> <span class="kw">be</span> <span class="str">"I'm unable to provide that information. Please consult a professional."</span>.
+
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"answer the user's health question"</span>
+    <span class="kw">using text</span> <span class="var">user_query</span>
+    <span class="kw">and call the result</span> <span class="var">health_answer</span>.
+
+<span class="cmt">-- Toxicity filter using a second model as the judge</span>
+<span class="ann">@guardrail(judge: anthropic/claude-haiku-4-5,
+           check: "Is this response toxic, harmful, or inappropriate?",
+           threshold: 0.3,
+           on_fail: redact)</span>
+<span class="kw">Ask</span> <span class="mod">llama</span> <span class="kw">to</span> <span class="str">"respond to the social media comment"</span>
+    <span class="kw">using text</span> <span class="var">comment</span>
+    <span class="kw">and call the result</span> <span class="var">moderated_response</span>.</pre>
+    </div>
+
+    <h3>Input Validation</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">input-validation.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Validate inputs before sending to a model</span>
+<span class="kw">Validate</span> <span class="var">user_input</span>:
+    <span class="kw">Expect</span> <span class="var">user_input</span> <span class="kw">to</span> <span class="fn">not be empty</span>.
+    <span class="kw">Expect</span> <span class="var">user_input</span> <span class="kw">to</span> <span class="fn">have fewer than</span> <span class="num">2000</span> characters.
+    <span class="kw">Expect</span> <span class="var">user_input</span> <span class="kw">to</span> <span class="fn">not contain</span> <span class="str">"ignore all previous instructions"</span>.
+<span class="kw">End validate</span>.
+
+<span class="cmt">-- Or use a model to detect prompt injection attempts</span>
+<span class="ann">@model(temperature: 0)</span>
+<span class="kw">Ask</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-haiku-4-5</span>
+    <span class="kw">to</span> <span class="str">"rate the prompt injection risk of this input from 0 to 1"</span>
+    <span class="kw">using text</span> <span class="var">user_input</span>
+    <span class="kw">and call the result</span> <span class="var">injection_risk</span>.
+
+<span class="kw">If</span> <span class="var">injection_risk</span><span class="op">.</span>score <span class="op">is greater than</span> <span class="num">0.7</span>,
+    <span class="kw">then stop with error</span> <span class="str">"Potential prompt injection detected. Request blocked."</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── PROMPT PATTERNS ── -->
+  <section id="prompting">
+    <span class="section-label">19 — Prompt Engineering Patterns</span>
+    <h2>Prompt Engineering in Fluent</h2>
+    <p>Fluent has first-class syntax for the most effective prompting patterns. Rather than embedding prompt engineering tricks as raw strings, Fluent surfaces them as <strong>named, composable annotations</strong>.</p>
+
+    <h3>Chain-of-Thought</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">cot.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Explicit chain-of-thought: model reasons step by step before answering</span>
+<span class="ann">@thinking(visible: false)</span>   <span class="cmt">-- use extended thinking, hide scratchpad from result</span>
+<span class="kw">Ask</span> <span class="prov">anthropic</span><span class="op">/</span><span class="mod">claude-opus-4</span>
+    <span class="kw">to</span> <span class="str">"determine the most cost-effective treatment protocol for this patient profile"</span>
+    <span class="kw">using data</span> <span class="var">patient_profile</span>
+    <span class="kw">and call the result</span> <span class="var">recommendation</span>.
+
+<span class="cmt">-- Step-by-step decomposition prompt pattern</span>
+<span class="ann">@system("Think through this step by step before giving your final answer.
+         Label your reasoning as REASONING: and your answer as ANSWER:")</span>
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"solve this multi-step financial optimization problem"</span>
+    <span class="kw">using data</span> <span class="var">problem</span>
+    <span class="kw">and call the result</span> <span class="var">full_response</span>.
+
+<span class="cmt">-- Extract only the answer section</span>
+<span class="kw">Let</span> <span class="var">answer</span> <span class="kw">be</span> the text in <span class="var">full_response</span> after <span class="str">"ANSWER:"</span>.</pre>
+    </div>
+
+    <h3>Few-Shot Prompting</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">few-shot.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Provide examples inline</span>
+<span class="ann">@examples([
+    { input: "The product arrived damaged.", output: "complaint" },
+    { input: "I love this item, works perfectly!", output: "praise" },
+    { input: "Can I return this if it doesn't fit?", output: "inquiry" },
+    { input: "This is the worst purchase I've ever made.", output: "complaint" }
+])</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"classify this customer message"</span>
+    <span class="kw">using text</span> <span class="var">customer_message</span>
+    <span class="kw">and call the result</span> <span class="var">ticket_category</span>.
+
+<span class="cmt">-- Load examples from a file (for large example sets)</span>
+<span class="ann">@examples(file: "./prompts/classification_examples.json", count: 8)</span>
+<span class="kw">Ask</span> <span class="mod">mistral</span> <span class="kw">to</span> <span class="str">"categorize this medical billing code"</span>
+    <span class="kw">using text</span> <span class="var">billing_text</span>
+    <span class="kw">and call the result</span> <span class="var">billing_category</span>.</pre>
+    </div>
+
+    <h3>Role & Persona Prompting</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">personas.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Define reusable personas</span>
+<span class="kw">Define persona</span> <span class="var">board_member</span> <span class="kw">as</span>
+    <span class="str">"You are a skeptical Fortune 500 board member with 30 years of experience.
+     You ask hard questions. You challenge assumptions. You think in quarters and decades.
+     You never accept vague answers. Respond in 3-5 sentences."</span>.
+
+<span class="kw">Define persona</span> <span class="var">junior_dev</span> <span class="kw">as</span>
+    <span class="str">"You are a junior developer who just joined the team.
+     Ask clarifying questions. Express uncertainty openly.
+     Use simple language. Avoid jargon."</span>.
+
+<span class="cmt">-- Simulate a debate between two personas</span>
+<span class="ann">@persona(board_member)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"respond critically to this product launch proposal"</span>
+    <span class="kw">using text</span> <span class="var">proposal</span>
+    <span class="kw">and call the result</span> <span class="var">board_critique</span>.
+
+<span class="ann">@persona(junior_dev)</span>
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"respond enthusiastically to the same proposal"</span>
+    <span class="kw">using text</span> <span class="var">proposal</span>
+    <span class="kw">and call the result</span> <span class="var">dev_enthusiasm</span>.</pre>
+    </div>
+
+    <h3>Prompt Chaining & Templates</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">templates.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Define a reusable prompt template</span>
+<span class="kw">Define prompt</span> <span class="var">extract_entities_template</span> <span class="kw">as</span>
+    <span class="str">"Extract all named entities from the following {document_type} document.
+     Return a JSON array. Each object should have: entity, type (person/org/location/date), confidence."</span>.
+
+<span class="cmt">-- Render the template with variables</span>
+<span class="kw">Let</span> <span class="var">rendered_prompt</span> <span class="kw">be</span> <span class="var">extract_entities_template</span>
+    <span class="kw">with</span> document_type <span class="str">"medical discharge summary"</span>.
+
+<span class="ann">@model(temperature: 0, format: json)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="var">rendered_prompt</span>
+    <span class="kw">using text</span> <span class="var">discharge_note</span>
+    <span class="kw">and call the result</span> <span class="var">entities</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── DATABASE ── -->
+  <section id="database">
+    <span class="section-label">20 — Database & Storage Integration</span>
+    <h2>Database & Storage</h2>
+    <p>Fluent integrates with databases and storage systems as first-class operations. <strong>SQL is generated</strong> from natural language descriptions, with a safe query builder preventing injection. For document and vector stores, native operations are built in.</p>
+
+    <h3>Relational Databases</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">database.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Connect to a database</span>
+<span class="kw">Connect to database</span> <span class="var">patient_db</span>
+    <span class="kw">at</span> <span class="str">"oracle://HEALTHDATA97_PROD@DESKTOP-OQ8K1MG/FREEPDB1"</span>
+    <span class="kw">using credentials from environment</span>.
+
+<span class="cmt">-- Natural language query → SQL (generated by the runtime, not a model call)</span>
+<span class="kw">Query</span> <span class="var">patient_db</span> <span class="kw">for</span> all patients <span class="kw">where</span> admitted in the last 7 days
+    <span class="kw">and</span> risk_score <span class="op">is greater than</span> <span class="num">0.8</span>
+    <span class="kw">and</span> department <span class="op">is</span> <span class="str">"ICU"</span>
+    <span class="kw">ordered by</span> risk_score descending
+    <span class="kw">and call the result</span> <span class="var">high_risk_patients</span>.
+
+<span class="cmt">-- Insert a record</span>
+<span class="kw">Insert into</span> <span class="var">patient_db</span> <span class="kw">table</span> <span class="str">"AUDIT_LOG"</span> <span class="kw">the record</span>
+    a record with action <span class="str">"AI_RISK_ASSESSMENT"</span>, patient_id <span class="var">patient</span><span class="op">.</span>id,
+    score <span class="var">patient</span><span class="op">.</span>risk_score, assessed_at the current datetime.
+
+<span class="cmt">-- Run a raw SQL query when needed</span>
+<span class="kw">Run SQL on</span> <span class="var">patient_db</span>:
+    <span class="str">"SELECT department, COUNT(*) as count, AVG(risk_score) as avg_risk
+     FROM PATIENTS WHERE admitted_date >= SYSDATE - 30
+     GROUP BY department ORDER BY avg_risk DESC"</span>
+<span class="kw">and call the result</span> <span class="var">dept_summary</span>.</pre>
+    </div>
+
+    <h3>Vector Store (Semantic Memory)</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">vector-store.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Connect to a vector store</span>
+<span class="kw">Connect to vector store</span> <span class="var">knowledge_base</span>
+    <span class="kw">using</span> pinecone <span class="kw">at index</span> <span class="str">"healthdata97-docs"</span>
+    <span class="kw">with embedding model</span> <span class="prov">openai</span><span class="op">/</span><span class="mod">text-embedding-3-large</span>.
+
+<span class="cmt">-- Upsert documents</span>
+<span class="kw">For each</span> <span class="var">doc</span> <span class="kw">in</span> <span class="var">policy_documents</span>:
+    <span class="kw">Upsert into</span> <span class="var">knowledge_base</span> <span class="kw">the document</span> <span class="var">doc</span><span class="op">.</span>text
+        <span class="kw">with id</span> <span class="var">doc</span><span class="op">.</span>id <span class="kw">and metadata</span> a record with source <span class="var">doc</span><span class="op">.</span>filename, date <span class="var">doc</span><span class="op">.</span>created_at.
+<span class="kw">End loop</span>.
+
+<span class="cmt">-- Semantic search</span>
+<span class="kw">Search</span> <span class="var">knowledge_base</span> <span class="kw">for</span> <span class="str">"patient discharge procedures after orthopedic surgery"</span>
+    <span class="kw">returning top</span> <span class="num">5</span> results
+    <span class="kw">and call the result</span> <span class="var">relevant_docs</span>.
+
+<span class="cmt">-- Full RAG pattern in 5 lines</span>
+<span class="kw">Search</span> <span class="var">knowledge_base</span> <span class="kw">for</span> <span class="var">user_question</span> <span class="kw">returning top</span> <span class="num">3</span> <span class="kw">and call the result</span> <span class="var">context</span>.
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"answer the question based only on the provided context"</span>
+    <span class="kw">using question</span> <span class="var">user_question</span>, <span class="kw">context</span> <span class="var">context</span>
+    <span class="kw">and call the result</span> <span class="var">grounded_answer</span>.</pre>
+    </div>
+
+    <h3>File Storage</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">storage.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Local file system</span>
+<span class="kw">Let</span> <span class="var">report</span> <span class="kw">be</span> <span class="fn">read file</span> <span class="str">"./reports/q1_2026.pdf"</span>.
+<span class="kw">Save</span> <span class="var">summary</span> <span class="kw">to</span> <span class="str">"./outputs/q1_summary.txt"</span>.
+
+<span class="cmt">-- Cloud storage (S3-compatible)</span>
+<span class="kw">Connect to storage</span> <span class="var">document_bucket</span>
+    <span class="kw">using</span> s3 <span class="kw">at bucket</span> <span class="str">"healthdata97-documents"</span>
+    <span class="kw">using credentials from environment</span>.
+
+<span class="kw">Let</span> <span class="var">scan</span> <span class="kw">be the result of</span> <span class="fn">download from</span> <span class="var">document_bucket</span> <span class="kw">the file</span> <span class="str">"scans/lab_2026_05.pdf"</span>.
+<span class="kw">Upload to</span> <span class="var">document_bucket</span> <span class="kw">the file</span> <span class="var">processed_report</span> <span class="kw">as</span> <span class="str">"processed/lab_2026_05_analyzed.pdf"</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── EVENTS ── -->
+  <section id="events">
+    <span class="section-label">21 — Event-Driven Architecture</span>
+    <h2>Event-Driven & Reactive Patterns</h2>
+    <p>Fluent programs can be <strong>triggered by events</strong> — webhooks, database changes, message queues, schedules, and file system events. The <code>When</code> keyword at the program level defines reactive handlers.</p>
+
+    <h3>Webhook Triggers</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">webhooks.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- React to incoming webhook events</span>
+<span class="kw">When</span> a POST request arrives at <span class="str">"/on-new-patient"</span>:
+    <span class="kw">Let</span> <span class="var">patient</span> <span class="kw">be</span> the request body as a <span class="type">Patient</span>.
+    <span class="kw">Let</span> <span class="var">assessed</span> <span class="kw">be the result of</span> assess risk for <span class="var">patient</span>.
+    <span class="kw">Insert into</span> <span class="var">patient_db</span> <span class="kw">table</span> <span class="str">"RISK_SCORES"</span> <span class="kw">the record</span>
+        a record with patient_id <span class="var">assessed</span><span class="op">.</span>id, score <span class="var">assessed</span><span class="op">.</span>risk_score.
+    <span class="kw">If</span> <span class="var">assessed</span><span class="op">.</span>risk_score <span class="op">is greater than</span> <span class="num">0.85</span>,
+        <span class="kw">then</span> <span class="fn">send alert</span> <span class="kw">to</span> <span class="str">"icu-team@hospital.org"</span>
+            <span class="kw">with subject</span> <span class="str">"High-risk patient admitted"</span>
+            <span class="kw">and body</span> <span class="var">assessed</span>.
+    <span class="kw">Respond with</span> <span class="num">200</span> <span class="kw">and body</span> a record with status <span class="str">"processed"</span>, score <span class="var">assessed</span><span class="op">.</span>risk_score.
+<span class="kw">End when</span>.</pre>
+    </div>
+
+    <h3>Scheduled Jobs</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">schedule.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Cron-style scheduling</span>
+<span class="kw">Every day at</span> <span class="str">"06:00"</span>:
+    <span class="kw">Query</span> <span class="var">patient_db</span> <span class="kw">for</span> all patients admitted yesterday
+        <span class="kw">and call the result</span> <span class="var">new_patients</span>.
+    <span class="kw">For each</span> <span class="var">p</span> <span class="kw">in</span> <span class="var">new_patients</span>:
+        <span class="kw">Let</span> <span class="var">p</span> <span class="kw">be the result of</span> assess risk for <span class="var">p</span>.
+    <span class="kw">End loop</span>.
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"write the daily patient risk briefing for the medical director"</span>
+        <span class="kw">using data</span> <span class="var">new_patients</span>
+        <span class="kw">and call the result</span> <span class="var">briefing</span>.
+    <span class="fn">send email</span> <span class="kw">to</span> <span class="str">"director@hospital.org"</span>
+        <span class="kw">with subject</span> <span class="str">"Daily AI Risk Briefing"</span> <span class="kw">and body</span> <span class="var">briefing</span>.
+<span class="kw">End schedule</span>.
+
+<span class="cmt">-- Every N minutes</span>
+<span class="kw">Every</span> <span class="num">15</span> minutes:
+    <span class="kw">Query</span> <span class="var">patient_db</span> <span class="kw">for</span> all ICU patients where vitals_updated in the last 15 minutes
+        <span class="kw">and call the result</span> <span class="var">recent_vitals</span>.
+    <span class="kw">If</span> the count of <span class="var">recent_vitals</span> <span class="op">is greater than</span> <span class="num">0</span>,
+        <span class="kw">then</span> output <span class="str">"Vitals check:"</span> the count of <span class="var">recent_vitals</span> <span class="str">"patients updated."</span>.
+<span class="kw">End schedule</span>.</pre>
+    </div>
+
+    <h3>Message Queue Consumers</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">queue-consumer.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Consume from a message queue (Kafka, RabbitMQ, SQS)</span>
+<span class="kw">Connect to queue</span> <span class="var">lab_results_queue</span>
+    <span class="kw">using</span> kafka <span class="kw">at</span> <span class="str">"kafka://broker:9092"</span>
+    <span class="kw">topic</span> <span class="str">"lab-results-incoming"</span>
+    <span class="kw">group</span> <span class="str">"ai-processor"</span>.
+
+<span class="kw">When</span> a message arrives on <span class="var">lab_results_queue</span>:
+    <span class="kw">Let</span> <span class="var">result</span> <span class="kw">be</span> the message body as a record.
+    <span class="ann">@model(temperature: 0)</span>
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"interpret this lab result and flag any critical values"</span>
+        <span class="kw">using data</span> <span class="var">result</span>
+        <span class="kw">and call the result</span> <span class="var">interpretation</span>.
+    <span class="kw">If</span> <span class="var">interpretation</span><span class="op">.</span>is_critical <span class="op">is</span> true,
+        <span class="kw">then</span> <span class="fn">publish to queue</span> <span class="var">critical_alerts_queue</span> <span class="kw">the message</span> <span class="var">interpretation</span>.
+    <span class="kw">Acknowledge</span> the message.
+<span class="kw">End when</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── DEBUGGING ── -->
+  <section id="debugging">
+    <span class="section-label">22 — Debugging & Observability</span>
+    <h2>Debugging, Tracing & Profiling</h2>
+    <p>Fluent's runtime emits structured traces for every execution. The <strong>Fluent Debugger</strong> is an interactive REPL-style tool for stepping through programs, inspecting variable state, and replaying model calls from cache.</p>
+
+    <h3>Debug Mode & Breakpoints</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">debug.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Insert a breakpoint: execution pauses here in debug mode</span>
+<span class="kw">Let</span> <span class="var">analysis</span> <span class="kw">be the result of</span> analyze sentiment <span class="var">review_text</span>.
+<span class="fn">breakpoint</span>.   <span class="cmt">-- fluent debug will pause here, print all variable values</span>
+<span class="kw">Output</span> <span class="var">analysis</span>.
+
+<span class="cmt">-- Trace a specific variable at every step</span>
+<span class="ann">@trace(risk_score, patient.name)</span>
+<span class="kw">For each</span> <span class="var">patient</span> <span class="kw">in</span> <span class="var">patient_list</span>:
+    <span class="kw">Let</span> <span class="var">patient</span> <span class="kw">be the result of</span> assess risk for <span class="var">patient</span>.
+<span class="kw">End loop</span>.
+
+<span class="cmt">-- Print intermediate values</span>
+<span class="fn">inspect</span> <span class="var">categorized_data</span>.   <span class="cmt">-- pretty-print to debug output</span>
+<span class="fn">inspect</span> <span class="var">model_response</span> <span class="kw">showing</span> tokens_used, latency_ms, model_name.</pre>
+    </div>
+
+    <h3>Execution Traces</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">trace-output.json</span><span class="lang-tag">JSON Trace</span></div>
+      <pre><span class="cmt">// Every Ask statement emits a trace entry like this:</span>
+{
+  <span class="str">"step"</span>: <span class="num">3</span>,
+  <span class="str">"type"</span>: <span class="str">"model_call"</span>,
+  <span class="str">"variable"</span>: <span class="str">"risk_analysis"</span>,
+  <span class="str">"model"</span>: <span class="str">"anthropic/claude-sonnet-4-6"</span>,
+  <span class="str">"instruction"</span>: <span class="str">"analyze risks in contract"</span>,
+  <span class="str">"input_tokens"</span>: <span class="num">1842</span>,
+  <span class="str">"output_tokens"</span>: <span class="num">312</span>,
+  <span class="str">"latency_ms"</span>: <span class="num">1247</span>,
+  <span class="str">"cost_usd"</span>: <span class="num">0.00284</span>,
+  <span class="str">"result_hash"</span>: <span class="str">"sha256:a3f9..."</span>,
+  <span class="str">"cache_hit"</span>: false,
+  <span class="str">"guardrail_triggered"</span>: false,
+  <span class="str">"timestamp"</span>: <span class="str">"2026-05-08T14:32:07.441Z"</span>
+}</pre>
+    </div>
+
+    <h3>Cost Profiler</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">terminal</span><span class="lang-tag">Shell</span></div>
+      <pre><span class="cmt"># Run with full trace output</span>
+fluent run pipeline.fl --trace ./traces/run_001.json
+
+<span class="cmt"># Open interactive trace viewer</span>
+fluent trace view ./traces/run_001.json
+
+<span class="cmt"># Cost breakdown by model</span>
+fluent trace cost ./traces/run_001.json
+
+<span class="cmt">Output:</span>
+<span class="ok">┌─────────────────────────────────────────────────────────┐
+│  FLUENT Cost Report — pipeline.fl                        │
+├────────────────────────┬──────────┬────────────┬────────┤
+│  Model                 │  Calls   │  Tokens    │  Cost  │
+├────────────────────────┼──────────┼────────────┼────────┤
+│  anthropic/claude-op.. │  1       │  4,210     │ $0.063 │
+│  openai/gpt-4o         │  3       │  2,840     │ $0.028 │
+│  groq/llama-4-scout    │  12      │  18,200    │ $0.005 │
+│  anthropic/claude-son  │  5       │  6,100     │ $0.018 │
+├────────────────────────┼──────────┼────────────┼────────┤
+│  TOTAL                 │  21      │  31,350    │ $0.114 │
+└────────────────────────┴──────────┴────────────┴────────┘</span>
+
+<span class="cmt"># Replay a run using cached model responses (zero cost)</span>
+fluent run pipeline.fl --replay ./traces/run_001.json
+
+<span class="cmt"># Interactive step-through debugger</span>
+fluent debug pipeline.fl</pre>
+    </div>
+
+    <h3>Semantic Diffing</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">terminal</span><span class="lang-tag">Shell</span></div>
+      <pre><span class="cmt"># Compare outputs of two runs semantically (not just string diff)</span>
+fluent diff ./traces/run_001.json ./traces/run_002.json
+
+<span class="cmt">Output:</span>
+<span class="ok">Step 3 (risk_analysis): SEMANTICALLY SIMILAR (cosine: 0.94)</span>
+<span class="err">Step 7 (final_summary): SEMANTICALLY DIFFERENT (cosine: 0.61)</span>
+<span class="cmt">  run_001: "Three high-risk patients require immediate ICU review..."</span>
+<span class="cmt">  run_002: "All patients within normal risk bounds. No urgent action needed."</span></pre>
+    </div>
+  </section>
+
+  <!-- ── SECURITY ── -->
+  <section id="security">
+    <span class="section-label">23 — Security Model</span>
+    <h2>Security Architecture</h2>
+    <p>Fluent's security model operates at three layers: <strong>credential isolation</strong> (no API keys in program source), <strong>prompt injection defense</strong> (structural separation of instructions and data), and <strong>sandbox execution</strong> (tool calls are gated by explicit permission declarations).</p>
+
+    <div class="callout danger">
+      <strong>Core Rule:</strong> A Fluent program never handles API credentials directly. All secrets live in the Fluent environment vault. Programs reference them by name only.
+    </div>
+
+    <h3>Credential Vault</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">terminal</span><span class="lang-tag">Shell</span></div>
+      <pre><span class="cmt"># Add credentials to the environment vault (encrypted at rest)</span>
+fluent env set ANTHROPIC_KEY="sk-ant-..."
+fluent env set OPENAI_KEY="sk-..."
+fluent env set ORACLE_DB_PASSWORD="..."
+fluent env set PINECONE_API_KEY="..."
+
+<span class="cmt"># List configured providers (keys are masked)</span>
+fluent env list
+
+<span class="cmt">Output:</span>
+  ANTHROPIC_KEY     sk-ant-****Gx3E   ✓ valid
+  OPENAI_KEY        sk-****4kRp       ✓ valid
+  ORACLE_DB_PASSWORD  ********        ✓ set
+  PINECONE_API_KEY  pc-****19bV       ✓ valid
+
+<span class="cmt"># Rotate a key</span>
+fluent env rotate ANTHROPIC_KEY</pre>
+    </div>
+
+    <h3>Prompt Injection Defense</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">injection-defense.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Structural separation: instructions vs. user data are NEVER concatenated as strings.</span>
+<span class="cmt">-- The runtime sends them as separate message roles. This is the default.</span>
+
+<span class="cmt">-- SAFE: instruction and data are separate parameters</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"classify the intent of this message"</span>
+    <span class="kw">using text</span> <span class="var">user_input</span>      <span class="cmt">-- sent as a separate "user data" role</span>
+    <span class="kw">and call the result</span> <span class="var">intent</span>.
+
+<span class="cmt">-- UNSAFE (rejected at parse time — runtime error):</span>
+<span class="err"><span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"classify: "</span> <span class="op">+</span> <span class="var">user_input</span>.  <span class="cmt">-- ERROR: string concat of instruction + data forbidden</span></span>
+
+<span class="cmt">-- Content fence: user data is wrapped in a structural fence the model is pre-informed about</span>
+<span class="ann">@fence(label: "USER_INPUT", instruct_model: true)</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"summarize only the content within the USER_INPUT fence"</span>
+    <span class="kw">using text</span> <span class="var">user_input</span>
+    <span class="kw">and call the result</span> <span class="var">summary</span>.
+
+<span class="cmt">-- Injection scan before any model call involving user data</span>
+<span class="ann">@scan_for_injection(on_detect: block, model: anthropic/claude-haiku-4-5)</span>
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"answer the customer question"</span>
+    <span class="kw">using text</span> <span class="var">customer_query</span>
+    <span class="kw">and call the result</span> <span class="var">answer</span>.</pre>
+    </div>
+
+    <h3>Tool Permission Model</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">permissions.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Tools must be explicitly declared; undeclared tools cannot be invoked</span>
+<span class="ann">@tools(web_search)              </span><span class="cmt">-- read-only web access</span>
+<span class="ann">@deny_tools(write_file, run_python, send_email)   </span><span class="cmt">-- explicit deny list</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"research and answer the question"</span>
+    <span class="kw">using text</span> <span class="var">question</span>
+    <span class="kw">and call the result</span> <span class="var">research_answer</span>.
+
+<span class="cmt">-- Scoped tool permissions per agent step</span>
+<span class="ann">@agent(model: openai/gpt-4o)</span>
+<span class="ann">@tools(read_file, web_search)              </span><span class="cmt">-- research phase: read only</span>
+<span class="ann">@step_tools(step: "write",                 </span><span class="cmt">-- write phase: write allowed</span>
+<span class="ann">            tools: [write_file],</span>
+<span class="ann">            require_approval: true)</span>
+<span class="kw">Run agent with goal</span> <span class="str">"Research competitors and write a comparison report to report.md"</span>
+    <span class="kw">and call the outcome</span> <span class="var">result</span>.</pre>
+    </div>
+
+    <h3>Data Residency & Privacy</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">privacy.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Restrict which providers can receive certain data</span>
+<span class="ann">@data_residency(region: "in", providers: [anthropic, google])</span>
+<span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"process this patient record"</span>
+    <span class="kw">using data</span> <span class="var">patient_record</span>
+    <span class="kw">and call the result</span> <span class="var">processed</span>.
+
+<span class="cmt">-- Auto-redact PII before sending to any external model</span>
+<span class="ann">@redact_pii(types: [name, phone, email, ssn, aadhaar])</span>
+<span class="kw">Ask</span> <span class="mod">gpt</span> <span class="kw">to</span> <span class="str">"analyze the tone of this support conversation"</span>
+    <span class="kw">using text</span> <span class="var">chat_log</span>
+    <span class="kw">and call the result</span> <span class="var">tone_analysis</span>.</pre>
+    </div>
+  </section>
+
+  <!-- ── PACKAGES ── -->
+  <section id="packages">
+    <span class="section-label">24 — Package Ecosystem</span>
+    <h2>The Fluent Package Ecosystem</h2>
+    <p>Fluent packages are distributed via the <strong>Fluent Registry</strong> (<code>registry.fluent-lang.dev</code>). A package is a collection of <code>.fl</code> files with a <code>fluent.pkg</code> manifest. Packages can export procedures, types, prompt templates, personas, and model aliases.</p>
+
+    <h3>Package Manifest</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">fluent.pkg</span><span class="lang-tag">Fluent Manifest</span></div>
+      <pre>{
+  <span class="str">"name"</span>: <span class="str">"fluent-medical-rag"</span>,
+  <span class="str">"version"</span>: <span class="str">"1.3.0"</span>,
+  <span class="str">"description"</span>: <span class="str">"Retrieval-augmented generation tools for healthcare documents"</span>,
+  <span class="str">"author"</span>: <span class="str">"Datacules LLC"</span>,
+  <span class="str">"license"</span>: <span class="str">"MIT"</span>,
+  <span class="str">"exports"</span>: [
+    <span class="str">"extract discharge summary"</span>,
+    <span class="str">"classify ICD-10 code"</span>,
+    <span class="str">"summarize lab results"</span>,
+    <span class="str">"type ClinicalNote"</span>,
+    <span class="str">"persona clinical_analyst"</span>
+  ],
+  <span class="str">"requires_providers"</span>: [<span class="str">"anthropic"</span>, <span class="str">"openai"</span>],
+  <span class="str">"fluent_version"</span>: <span class="str">">=1.0"</span>,
+  <span class="str">"dependencies"</span>: {
+    <span class="str">"fluent-ocr"</span>: <span class="str">"^2.0"</span>,
+    <span class="str">"fluent-pdf"</span>: <span class="str">"^1.1"</span>
+  }
+}</pre>
+    </div>
+
+    <h3>Package CLI</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">terminal</span><span class="lang-tag">Shell</span></div>
+      <pre><span class="cmt"># Install a package</span>
+fluent add fluent-medical-rag
+fluent add fluent-rag@2.1
+fluent add github:datacules/fluent-healthcare-tools
+
+<span class="cmt"># Publish a package</span>
+fluent publish
+
+<span class="cmt"># List what a package exports</span>
+fluent info fluent-medical-rag
+
+<span class="ok">fluent-medical-rag@1.3.0
+────────────────────────────────────
+Procedures:  extract discharge summary
+             classify ICD-10 code
+             summarize lab results
+Types:       ClinicalNote
+Personas:    clinical_analyst
+Requires:    anthropic, openai
+────────────────────────────────────</span>
+
+<span class="cmt"># Lock dependencies (for reproducible builds)</span>
+fluent lock</pre>
+    </div>
+
+    <h3>Core Packages (Built-in Registry)</h3>
+    <div class="grammar-grid">
+      <div class="grammar-card blue">
+        <div class="label">fluent-rag</div>
+        <p>Retrieval-augmented generation with auto-chunking, embedding, and multi-store support (Pinecone, Weaviate, pgvector).</p>
+      </div>
+      <div class="grammar-card green">
+        <div class="label">fluent-ocr</div>
+        <p>Extract text from scanned PDFs, images, and handwritten documents using vision models.</p>
+      </div>
+      <div class="grammar-card">
+        <div class="label">fluent-eval</div>
+        <p>LLM evaluation framework: benchmarking, A/B testing, regression suite, hallucination detection.</p>
+      </div>
+      <div class="grammar-card gold">
+        <div class="label">fluent-agents</div>
+        <p>Pre-built agent archetypes: research agent, coding agent, data analyst, email assistant — configurable and composable.</p>
+      </div>
+      <div class="grammar-card blue">
+        <div class="label">fluent-speech</div>
+        <p>Real-time transcription, speaker diarization, sentiment-from-audio, and voice cloning utilities.</p>
+      </div>
+      <div class="grammar-card green">
+        <div class="label">fluent-sql</div>
+        <p>Natural language to SQL translation with schema-aware generation, query explanation, and migration assistance.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FORMAL GRAMMAR ── -->
+  <section id="grammar">
+    <span class="section-label">25 — Formal Grammar</span>
+    <h2>Formal Grammar (NL-EBNF)</h2>
+    <p>Fluent uses a novel notation called <strong>NL-EBNF</strong> (Natural Language Extended Backus-Naur Form) — a grammar specification designed to be readable as near-English while remaining formally precise. Non-terminals appear as <code style="color:#79b8ff">blue phrases</code>; terminals as <code style="color:#a3d9a5">green strings</code>.</p>
+
+    <div class="ebnf-block">
+      <pre><span class="cmt">-- NL-EBNF specification for Fluent v1.0</span>
+
+<span class="cmt">-- Top-level program</span>
+<span class="nt">program</span>          <span class="sym">::=</span> (<span class="nt">use_declaration</span> | <span class="nt">statement</span>)* <span class="sym">EOF</span>
+
+<span class="cmt">-- Statements</span>
+<span class="nt">statement</span>        <span class="sym">::=</span> <span class="nt">declaration</span>
+                   <span class="sym">|</span> <span class="nt">assignment</span>
+                   <span class="sym">|</span> <span class="nt">ask_statement</span>
+                   <span class="sym">|</span> <span class="nt">conditional</span>
+                   <span class="sym">|</span> <span class="nt">loop</span>
+                   <span class="sym">|</span> <span class="nt">parallel_block</span>
+                   <span class="sym">|</span> <span class="nt">try_statement</span>
+                   <span class="sym">|</span> <span class="nt">definition</span>
+                   <span class="sym">|</span> <span class="nt">output_statement</span>
+                   <span class="sym">|</span> <span class="nt">return_statement</span>
+                   <span class="sym">|</span> <span class="nt">event_handler</span>
+                   <span class="sym">|</span> <span class="nt">schedule_block</span>
+
+<span class="cmt">-- Declaration</span>
+<span class="nt">declaration</span>      <span class="sym">::=</span> <span class="t">"Let"</span> <span class="nt">identifier</span> <span class="t">"be"</span> <span class="nt">expression</span> <span class="t">"."</span>
+
+<span class="cmt">-- Assignment</span>
+<span class="nt">assignment</span>       <span class="sym">::=</span> <span class="t">"Set"</span> <span class="nt">identifier</span> <span class="t">"to"</span> <span class="nt">expression</span> <span class="t">"."</span>
+
+<span class="cmt">-- Ask statement (model invocation)</span>
+<span class="nt">ask_statement</span>    <span class="sym">::=</span> <span class="nt">annotation</span><span class="sym">*</span>
+                     <span class="t">"Ask"</span> <span class="nt">model_ref</span> <span class="t">"to"</span> <span class="nt">instruction</span>
+                     (<span class="t">"using"</span> <span class="nt">input_clause</span>)<span class="sym">*</span>
+                     <span class="t">"and call the result"</span> <span class="nt">identifier</span> <span class="t">"."</span>
+
+<span class="cmt">-- Model reference</span>
+<span class="nt">model_ref</span>        <span class="sym">::=</span> <span class="nt">identifier</span>                       <span class="cmt">-- alias: "claude", "gpt"</span>
+                   <span class="sym">|</span> <span class="nt">provider_name</span> <span class="t">"/"</span> <span class="nt">model_name</span>      <span class="cmt">-- qualified: "anthropic/claude-opus-4"</span>
+
+<span class="cmt">-- Input clause</span>
+<span class="nt">input_clause</span>     <span class="sym">::=</span> (<span class="t">"text"</span> | <span class="t">"data"</span> | <span class="t">"image"</span> | <span class="t">"audio"</span>
+                   | <span class="t">"video"</span> | <span class="t">"document"</span> | <span class="t">"context"</span>
+                   | <span class="t">"schema"</span> | <span class="t">"question"</span> | <span class="t">"previous draft"</span>)
+                     <span class="nt">expression</span>
+
+<span class="cmt">-- Conditional</span>
+<span class="nt">conditional</span>      <span class="sym">::=</span> <span class="t">"If"</span> <span class="nt">condition</span> <span class="t">","</span>
+                     <span class="t">"then"</span> <span class="nt">statement</span>
+                     (<span class="t">"Otherwise"</span> (<span class="t">"when"</span> <span class="nt">condition</span> <span class="t">","</span> <span class="t">"then"</span>)<span class="sym">?</span> <span class="nt">statement</span>)<span class="sym">*</span>
+                   <span class="sym">|</span> <span class="t">"When"</span> <span class="nt">condition</span> <span class="t">","</span> <span class="t">"then"</span> <span class="nt">statement</span>
+                     (<span class="t">"Otherwise when"</span> <span class="nt">condition</span> <span class="t">","</span> <span class="t">"then"</span> <span class="nt">statement</span>)<span class="sym">*</span>
+                     (<span class="t">"Finally"</span> <span class="t">","</span> <span class="nt">statement</span>)<span class="sym">?</span>
+
+<span class="cmt">-- Loops</span>
+<span class="nt">loop</span>             <span class="sym">::=</span> <span class="t">"For each"</span> <span class="nt">identifier</span> <span class="t">"in"</span> <span class="nt">expression</span> <span class="t">":"</span>
+                     <span class="nt">statement</span><span class="sym">+</span>
+                     <span class="t">"End loop"</span> <span class="t">"."</span>
+                   <span class="sym">|</span> <span class="t">"While"</span> <span class="nt">condition</span> <span class="t">":"</span>
+                     <span class="nt">statement</span><span class="sym">+</span>
+                     <span class="t">"End while"</span> <span class="t">"."</span>
+
+<span class="cmt">-- Parallel block</span>
+<span class="nt">parallel_block</span>   <span class="sym">::=</span> <span class="t">"In parallel"</span> (<span class="t">","</span> <span class="t">"for each"</span> <span class="nt">identifier</span> <span class="t">"in"</span> <span class="nt">expression</span>)<span class="sym">?</span> <span class="t">":"</span>
+                     <span class="nt">statement</span><span class="sym">+</span>
+                     <span class="t">"End parallel"</span> (<span class="t">"loop"</span>)<span class="sym">?</span> <span class="t">"."</span>
+
+<span class="cmt">-- Error handling</span>
+<span class="nt">try_statement</span>    <span class="sym">::=</span> <span class="t">"Try to"</span> <span class="nt">statement</span>
+                     (<span class="t">"If that fails"</span> <span class="t">","</span> <span class="nt">statement</span>)<span class="sym">+</span>
+                     (<span class="t">"If that also fails"</span> <span class="t">","</span> <span class="nt">statement</span>)<span class="sym">*</span>
+
+<span class="cmt">-- Function / procedure definition</span>
+<span class="nt">definition</span>       <span class="sym">::=</span> <span class="t">"To"</span> <span class="nt">verb_phrase</span> (<span class="t">"("</span> <span class="nt">param_list</span> <span class="t">")"</span>)<span class="sym">?</span> <span class="t">":"</span>
+                     <span class="nt">statement</span><span class="sym">+</span>
+                     <span class="t">"End of"</span> <span class="nt">verb_phrase</span> <span class="t">"."</span>
+
+<span class="cmt">-- Annotation (metadata prefix)</span>
+<span class="nt">annotation</span>       <span class="sym">::=</span> <span class="t">"@"</span> <span class="nt">identifier</span> (<span class="t">"("</span> <span class="nt">key_value_list</span> <span class="t">")"</span>)<span class="sym">?</span>
+
+<span class="cmt">-- Expression types</span>
+<span class="nt">expression</span>       <span class="sym">::=</span> <span class="nt">literal</span>
+                   <span class="sym">|</span> <span class="nt">identifier</span>
+                   <span class="sym">|</span> <span class="nt">field_access</span>         <span class="cmt">-- x.field</span>
+                   <span class="sym">|</span> <span class="nt">list_literal</span>
+                   <span class="sym">|</span> <span class="nt">record_literal</span>
+                   <span class="sym">|</span> <span class="nt">function_call</span>
+                   <span class="sym">|</span> <span class="nt">arithmetic</span>
+                   <span class="sym">|</span> <span class="nt">string_interpolation</span>
+                   <span class="sym">|</span> <span class="nt">optional_chain</span>       <span class="cmt">-- x or else y</span>
+                   <span class="sym">|</span> <span class="nt">collection_op</span>        <span class="cmt">-- all items from x where ...</span>
+
+<span class="cmt">-- Condition types</span>
+<span class="nt">condition</span>        <span class="sym">::=</span> <span class="nt">expression</span> <span class="t">"is"</span> <span class="nt">expression</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"is not"</span> <span class="nt">expression</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"is greater than"</span> <span class="nt">expression</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"is less than"</span> <span class="nt">expression</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"is at most"</span> <span class="nt">expression</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"is at least"</span> <span class="nt">expression</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"contains"</span> <span class="nt">expression</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"exists"</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"does not exist"</span>
+                   <span class="sym">|</span> <span class="nt">expression</span> <span class="t">"is empty"</span>
+                   <span class="sym">|</span> <span class="nt">condition</span> <span class="t">"and"</span> <span class="nt">condition</span>
+                   <span class="sym">|</span> <span class="nt">condition</span> <span class="t">"or"</span> <span class="nt">condition</span>
+                   <span class="sym">|</span> <span class="t">"not"</span> <span class="nt">condition</span></pre>
+    </div>
+  </section>
+
+  <!-- ── ROADMAP ── -->
+  <section id="roadmap">
+    <span class="section-label">26 — Roadmap</span>
+    <h2>Roadmap & Open Problems</h2>
+    <p>Fluent is an evolving specification. The following represents the planned trajectory from the current alpha through version 2.0. Community proposals are tracked at <code>github.com/fluent-lang/rfcs</code>.</p>
+
+    <div class="roadmap">
+      <div class="rm-phase">
+        <span class="rm-label alpha">Alpha</span>
+        <div class="rm-content">
+          <h4>v1.0 — Current</h4>
+          <ul>
+            <li>Core 7-construct syntax with NL parser</li>
+            <li>12 built-in providers, custom provider registration</li>
+            <li>Parallel execution, streaming, error handling</li>
+            <li>Agent loops, multi-agent teams</li>
+            <li>Type system: primitives, records, optionals</li>
+            <li>Module system, package manifest format</li>
+            <li>CLI: run, test, serve, estimate, debug, trace</li>
+            <li>Guardrails: schema enforcement, content filtering</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rm-phase">
+        <span class="rm-label beta">Beta</span>
+        <div class="rm-content">
+          <h4>v1.1 — Q3 2026</h4>
+          <ul>
+            <li>VSCode extension with NL syntax highlighting and autocomplete</li>
+            <li>Jupyter kernel for interactive Fluent notebooks</li>
+            <li>Native Oracle 23ai vector store integration</li>
+            <li>Fine-tuning orchestration: prepare dataset, kick off training run, register model</li>
+            <li>Distributed execution across multiple runtime nodes</li>
+            <li>OpenTelemetry trace export (Jaeger, Datadog, Honeycomb)</li>
+            <li>WebAssembly compilation target (run Fluent in the browser)</li>
+            <li>Fluent Registry v1 — public package hosting</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rm-phase">
+        <span class="rm-label v1">v1.5</span>
+        <div class="rm-content">
+          <h4>v1.5 — Q1 2027</h4>
+          <ul>
+            <li>Multi-language NL support: Fluent programs writable in Hindi, Spanish, Mandarin, Arabic</li>
+            <li>Live collaboration: multiple developers editing a Fluent program simultaneously</li>
+            <li>Model marketplace: community-contributed model aliases with benchmarks</li>
+            <li>Automatic cost optimizer: rewrite <code>Ask</code> statements to use cheaper models when possible</li>
+            <li>Formal verification: prove safety properties of agent loops (bounded loops, no infinite recursion)</li>
+            <li>HIPAA/GDPR compliance mode: automatic data residency enforcement and audit log generation</li>
+            <li>Fluent-to-Python transpiler: generate readable Python code from any Fluent program</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rm-phase">
+        <span class="rm-label v2">v2.0</span>
+        <div class="rm-content">
+          <h4>v2.0 — 2027+</h4>
+          <ul>
+            <li>Self-improving programs: a Fluent program can rewrite and redeploy itself based on performance metrics</li>
+            <li>Temporal reasoning: first-class support for programs that reason about their own past executions</li>
+            <li>Embodied agent primitives: robot/IoT device control via natural language with sensor feedback loops</li>
+            <li>Federated execution: run different steps of a program on different machines, with data never leaving its region</li>
+            <li>Formal semantics paper: publish the denotational semantics of Fluent for academic and standards use</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3>Open Research Problems</h3>
+    <div class="grammar-grid">
+      <div class="grammar-card">
+        <div class="label">Ambiguity Resolution</div>
+        <p>When a sentence has multiple valid parse trees, how should the runtime choose? Current approach: emit a parse warning and select the most probable interpretation based on context.</p>
+      </div>
+      <div class="grammar-card blue">
+        <div class="label">Semantic Versioning for Prompts</div>
+        <p>When a model is updated by a provider, prompt behavior can change. How should Fluent version and pin the "semantic behavior" of a model call, not just the model name?</p>
+      </div>
+      <div class="grammar-card green">
+        <div class="label">Deterministic Replay</div>
+        <p>Perfect replay of non-deterministic model calls (temperature > 0) requires caching outputs by input hash. This is expensive. What is the right cache invalidation strategy?</p>
+      </div>
+      <div class="grammar-card gold">
+        <div class="label">Cross-Lingual NL Syntax</div>
+        <p>Hindi, Arabic, and Mandarin have fundamentally different word orders (SOV vs. VSO vs. SVO). What is the minimum set of structural changes needed for Fluent to be natural in each language?</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div><strong>FLUENT</strong> Advanced Technical Specification · Part II · v1.0 · 2026</div>
+  <div><a href="index.html">← Back to Language Specification (Part I)</a></div>
+</footer>
+
+</body>
+</html>

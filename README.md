@@ -134,3 +134,23 @@ This specification is released as an open proposal. Contributions, feedback, and
 ---
 
 *Designed to be read by humans. Executed by machines.*
+
+---
+
+## Advanced Specification (Part II)
+
+[`advanced.html`](./advanced.html) contains 11 deep technical sections:
+
+| # | Section |
+|---|---------|
+| 16 | Type System — primitives, composites, optionals, custom type definitions |
+| 17 | Streaming — token-level streaming, SSE export, mid-stream handlers |
+| 18 | Schema Validation & Guardrails — output enforcement, content filtering, PII redaction |
+| 19 | Prompt Engineering Patterns — CoT, few-shot, personas, prompt templates |
+| 20 | Database & Storage — Oracle, Postgres, vector stores (Pinecone), S3-compatible storage |
+| 21 | Event-Driven Architecture — webhooks, cron schedules, Kafka/SQS consumers |
+| 22 | Debugging & Observability — breakpoints, structured traces, cost profiler, semantic diff |
+| 23 | Security Model — credential vault, prompt injection defense, tool permissions, data residency |
+| 24 | Package Ecosystem — manifest format, registry CLI, 6 core packages |
+| 25 | Formal Grammar (NL-EBNF) — complete language grammar in natural-language EBNF notation |
+| 26 | Roadmap — Alpha → v2.0 milestones, 4 open research problems |
