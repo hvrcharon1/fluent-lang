@@ -10,10 +10,11 @@
 
 > *Write AI programs in plain English. Every model, every provider, one sentence away.*
 
-[![npm version](https://img.shields.io/badge/npm-1.0.0-orange)](https://www.npmjs.com/package/fluent-lang)
-[![tests](https://img.shields.io/badge/tests-36%20passed-brightgreen)]()
-[![license](https://img.shields.io/badge/license-MIT-blue)]()
-[![node](https://img.shields.io/badge/node-%3E%3D18-green)]()
+[![npm version](https://img.shields.io/badge/npm-1.0.1-orange)](https://www.npmjs.com/package/fluent-lang)
+[![tests](https://img.shields.io/badge/tests-44%20passed-brightgreen)](https://github.com/hvrcharon1/fluent-lang/actions)
+[![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/hvrcharon1/fluent-lang/blob/main/LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D18-green)](https://nodejs.org)
+[![CI](https://github.com/hvrcharon1/fluent-lang/actions/workflows/test.yml/badge.svg)](https://github.com/hvrcharon1/fluent-lang/actions/workflows/test.yml)
 
 ---
 
@@ -331,24 +332,123 @@ console.log(trace.total_cost_usd);
 
 ```
 fluent-lang/
-├── bin/fluent.js          CLI entry point
+├── bin/
+│   └── fluent.js                  CLI entry point
 ├── src/
-│   ├── parser/index.js    NL parser → AST
-│   ├── executor/index.js  AST executor
-│   ├── providers/index.js 12 AI provider integrations
+│   ├── parser/index.js            NL → AST parser
+│   ├── executor/index.js          AST executor (async, scoped)
+│   ├── providers/index.js         12 AI provider integrations (multimodal)
 │   ├── runtime/
-│   │   ├── env.js         Credential vault
-│   │   └── tracer.js      Execution tracer
-│   └── cli/               run · test · serve · estimate · repl
-├── examples/              .fl example programs
-├── tests/                 .fl test suite (36 tests)
-├── index.html             Language spec Part I
-├── advanced.html          Language spec Part II
-└── .fluentrc              Runtime defaults
+│   │   ├── env.js                 Encrypted credential vault
+│   │   ├── tracer.js              Execution tracer + cost tracking
+│   │   └── files.js               File loader (image/audio/video/document)
+│   ├── cli/
+│   │   ├── run.js                 fluent run
+│   │   ├── test.js                fluent test
+│   │   ├── serve.js               fluent serve (+ multer file upload)
+│   │   ├── estimate.js            fluent estimate
+│   │   └── repl.js                fluent repl
+│   └── index.js                   Public Node.js embedding API
+├── examples/
+│   ├── hello.fl                   Hello World + arithmetic + functions
+│   ├── sentiment.fl               Sentiment analysis loop
+│   ├── pipeline.fl                Multi-model parallel pipeline
+│   ├── api.fl                     HTTP API with @expose
+│   ├── vision.fl                  Image analysis (Claude + GPT-4o + Gemini)
+│   ├── document-qa.fl             PDF/DOCX Q&A pipeline
+│   ├── audio-transcribe.fl        Whisper transcription + meeting intelligence
+│   ├── multimodal-api.fl          HTTP API accepting file uploads
+│   └── assets/                    Sample files for testing
+├── tests/
+│   ├── test_hello.fl              Core language tests (14)
+│   ├── test_pipeline.fl           Pipeline + control flow tests (10)
+│   ├── test_types.fl              Type system tests (12)
+│   └── test_files.fl              File loading tests (8)  — 44 total ✓
+├── assets/                        Logo and brand assets (5 SVG files)
+├── .github/
+│   ├── ISSUE_TEMPLATE/            Bug / feature / provider templates
+│   ├── workflows/test.yml         CI matrix (Node 18 / 20 / 22)
+│   └── workflows/publish.yml      npm publish on GitHub release
+├── index.html                     Language spec Part I
+├── advanced.html                  Language spec Part II
+├── LICENSE                        MIT License
+├── README.md                      This file
+├── CONTRIBUTING.md                Contributor guide
+├── CODE_OF_CONDUCT.md             Contributor Covenant v2.1
+├── SECURITY.md                    Vulnerability reporting + safety guide
+├── CHANGELOG.md                   Release notes
+└── .fluentrc                      Runtime defaults
 ```
+
+---
+
+## Contributing
+
+Contributions are very welcome — new providers, language features, examples,
+bug fixes, and documentation improvements all matter.
+
+1. Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full guide
+2. Check open [Issues](https://github.com/hvrcharon1/fluent-lang/issues) or open a new one
+3. Fork → branch → PR against `main`
+
+All contributors must follow the [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+---
+
+## Community & Support
+
+| Resource | Link |
+|----------|------|
+| 📖 Language Spec (Part I) | [`index.html`](./index.html) |
+| 📖 Advanced Spec (Part II) | [`advanced.html`](./advanced.html) |
+| 🐛 Bug Reports | [Issue Tracker](https://github.com/hvrcharon1/fluent-lang/issues) |
+| 💡 Feature Requests | [Open an Issue](https://github.com/hvrcharon1/fluent-lang/issues/new?template=feature_request.md) |
+| 🔌 Provider Requests | [Provider Issue Template](https://github.com/hvrcharon1/fluent-lang/issues/new?template=provider_request.md) |
+| 🔒 Security Vulnerabilities | [`SECURITY.md`](./SECURITY.md) · [Private Advisory](https://github.com/hvrcharon1/fluent-lang/security/advisories/new) |
+| 📜 Changelog | [`CHANGELOG.md`](./CHANGELOG.md) |
+
+---
+
+## Open Source
+
+FLUENT is open source and built in the open. All contributions, issues, and
+discussions are public on GitHub.
+
+| File | Purpose |
+|------|---------|
+| [`LICENSE`](./LICENSE) | MIT License — free to use, modify, distribute |
+| [`CONTRIBUTING.md`](./CONTRIBUTING.md) | How to add providers, features, tests |
+| [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) | Contributor Covenant v2.1 |
+| [`SECURITY.md`](./SECURITY.md) | Responsible disclosure + safety guidance |
+| [`.github/workflows/test.yml`](./.github/workflows/test.yml) | CI matrix — Node 18 / 20 / 22 |
+| [`.github/workflows/publish.yml`](./.github/workflows/publish.yml) | Auto-publish to npm on release |
 
 ---
 
 ## License
 
-MIT — Datacules LLC, 2026
+```
+MIT License
+
+Copyright (c) 2026 Datacules LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+See [`LICENSE`](./LICENSE) for the full text.
