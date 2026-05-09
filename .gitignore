@@ -1,0 +1,11 @@
+node_modules/
+dist/
+traces/
+*.log
+.DS_Store
+.env
+.env.*
+~/.fluent/
+*.ast.json
+coverage/
+.nyc_output/

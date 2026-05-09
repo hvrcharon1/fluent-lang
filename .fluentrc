@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "defaults": {
+    "model": "claude",
+    "temperature": 0.7,
+    "max_tokens": 1024,
+    "timeout_ms": 30000
+  },
+  "providers": {
+    "anthropic": { "key_env": "ANTHROPIC_API_KEY" },
+    "openai":    { "key_env": "OPENAI_API_KEY" },
+    "google":    { "key_env": "GOOGLE_API_KEY" },
+    "mistral":   { "key_env": "MISTRAL_API_KEY" },
+    "groq":      { "key_env": "GROQ_API_KEY" },
+    "deepseek":  { "key_env": "DEEPSEEK_API_KEY" },
+    "xai":       { "key_env": "XAI_API_KEY" }
+  },
+  "trace": {
+    "enabled": false,
+    "dir": "./traces"
+  },
+  "test": {
+    "dir": "./tests",
+    "reporter": "pretty"
+  }
+}

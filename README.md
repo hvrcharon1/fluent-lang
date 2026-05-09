@@ -1,63 +1,48 @@
 # FLUENT — Natural Language AI Programming Language
 
-> *A programming language built for the age of universal AI — where every model, every provider, every capability is one sentence away.*
+> *Write AI programs in plain English. Every model, every provider, one sentence away.*
 
-**Version:** 1.0 Alpha  
-**Status:** Specification / Proposal  
-**Paradigm:** Natural Language · AI-Native · Provider-Agnostic
+[![npm version](https://img.shields.io/badge/npm-1.0.0-orange)](https://www.npmjs.com/package/fluent-lang)
+[![tests](https://img.shields.io/badge/tests-36%20passed-brightgreen)]()
+[![license](https://img.shields.io/badge/license-MIT-blue)]()
+[![node](https://img.shields.io/badge/node-%3E%3D18-green)]()
 
 ---
 
-## What is Fluent?
+## Installation
 
-Fluent is a programming language written entirely in natural language (English-like sentences). It is built around one radical idea: **AI models are first-class citizens**, not library calls.
-
-```fluent
-Ask claude to "summarize the quarterly report" and call the result summary.
-Ask gemini to "translate this to Hindi" using text summary and call the result hindi_summary.
-Output hindi_summary.
+```bash
+npm install -g fluent-lang
 ```
 
-No semicolons. No curly braces. No SDK boilerplate. If you can describe it, you can program it.
+Or run locally from this repository:
+
+```bash
+git clone https://github.com/hvrcharon1/fluent-lang.git
+cd fluent-lang
+npm install
+node bin/fluent.js --help
+```
 
 ---
 
-## Key Features
+## CLI Commands
 
-- **7 syntactic constructs** — all natural English grammar patterns
-- **12+ built-in providers** — Anthropic, OpenAI, Google, Mistral, Meta, Cohere, Groq, DeepSeek, xAI, Perplexity, Hugging Face, and any custom OpenAI-compatible endpoint
-- **Multi-model pipelines** — chain models in sequence or run them in parallel
-- **Agentic loops** — goal-directed agents with tools, human-in-the-loop, and multi-agent teams
-- **Multimodal** — text, images, audio, video, documents as first-class types
-- **AI-aware testing** — exact, semantic, and model-judged assertions
-- **Interop** — call Python, Node.js, REST APIs from Fluent; embed Fluent in any language
-- **Cost management** — budget limits, automatic model escalation, token tracking
-
----
-
-## Specification
-
-The full language specification is in [`index.html`](./index.html). Open it in a browser for the best reading experience, or view it via GitHub Pages.
-
-### Sections Covered
-
-| # | Section |
-|---|---------|
-| 01 | Philosophy & Design Principles |
-| 02 | Syntax Reference (7 constructs) |
-| 03 | Model Binding & Invocation |
-| 04 | Universal Provider Registry |
-| 05 | Control Flow (conditionals, loops, error handling) |
-| 06 | Multi-Model Pipelines |
-| 07 | Standard Library (memory, retrieval, tools, embeddings) |
-| 08 | Full Program Examples (2) |
-| 09 | Functions & Modules |
-| 10 | Autonomous Agents & Reflection Loops |
-| 11 | Multimodal I/O (vision, audio, image generation) |
-| 12 | Testing (exact, semantic, model-judged) |
-| 13 | Interoperability (Python, Node, REST, HTTP export) |
-| 14 | Runtime & Execution Model + CLI |
-| 15 | Full Program Examples (3 more) |
+```bash
+fluent run program.fl          # Run a Fluent program
+fluent test ./tests/           # Run test files (36/36 ✓)
+fluent serve api.fl --port 8080  # Expose as HTTP API
+fluent estimate program.fl     # Estimate API cost before running
+fluent repl                    # Interactive REPL
+fluent build program.fl        # Parse and emit .ast.json bundle
+fluent env set KEY=value       # Store API credentials securely
+fluent env list                # List configured credentials
+fluent run program.fl --dry-run        # Validate only, no execution
+fluent run program.fl --trace out.json # Write execution trace
+fluent estimate program.fl --json      # JSON cost breakdown
+fluent test ./tests/ --filter "arithmetic"  # Filter test names
+fluent serve api.fl --port 8080 --cors --auth mytoken
+```
 
 ---
 
@@ -67,90 +52,204 @@ The full language specification is in [`index.html`](./index.html). Open it in a
 -- Declaration
 Let name be "Harshal".
 
--- Model invocation
+-- Model invocation (any provider, one sentence)
 Ask claude to "explain this concept" using text my_text and call the result explanation.
 
--- Fully qualified
+-- Fully qualified provider
 Ask anthropic/claude-opus-4 to "analyze risks" using document contract and call the result risks.
+
+-- Define a reusable model alias
+Define model analyst as anthropic/claude-sonnet-4-6 with temperature 0.1, max_tokens 2000.
 
 -- Conditional
 If sentiment is "negative", then ask claude to "draft an apology" and call the result reply.
 Otherwise, let reply be "Thank you for your feedback!".
 
--- Parallel loop
-In parallel, for each article in articles:
-    Ask gemini to "summarize this" using text article and call the result article.summary.
+-- For-each loop
+For each article in articles:
+    Ask gemini to "summarise this" using text article and call the result article_summary.
+End loop.
+
+-- Parallel execution
+In parallel, for each doc in documents:
+    Ask fast_model to "classify" using text doc and call the result doc_category.
 End parallel loop.
 
--- Agent
-@tools(web_search, send_email)
-@agent(model: anthropic/claude-opus-4)
-Run agent with goal "Research top 5 competitors and email a report to team@company.com" and call the outcome result.
-
 -- Function definition
-To summarize an article (article_text) in (language):
-    Ask claude to "summarize in three sentences" using text article_text and return the result.
-End of summarize an article.
+To summarise an article (article_text) in (language):
+    Ask claude to "summarise in three sentences" using text article_text and call the result s.
+    Return s.
+End of summarise an article in.
+
+-- Error handling with fallback
+Try to ask openai/gpt-4o to "process request" using text input and call the result r.
+If that fails, ask claude to "process request" using text input and call the result r.
+If that also fails, let r be "Service unavailable.".
+
+-- HTTP API endpoint
+@expose(as: http, path: "/classify", method: POST)
+To classify message (message):
+    Ask claude to "classify as: question, complaint, compliment, or other" using text message and call the result cat.
+    Return cat.
+End of classify message.
 ```
 
 ---
 
 ## Supported Providers
 
-| Provider | Alias | Key Models |
-|----------|-------|-----------|
-| Anthropic | `claude` | claude-opus-4, claude-sonnet-4-6, claude-haiku-4-5 |
-| OpenAI | `gpt` | gpt-4o, gpt-4.1, o3, o4-mini |
-| Google | `gemini` | gemini-2.5-pro, gemini-2.5-flash |
-| Mistral | `mistral` | mistral-large-3, codestral |
-| Meta | `llama` | llama-4-scout, llama-4-maverick |
-| Cohere | `cohere` | command-r-plus, embed-v3 |
-| Groq | `groq` | llama-4-scout-instant |
-| DeepSeek | `deepseek` | deepseek-r2, deepseek-coder |
-| xAI | `grok` | grok-3, grok-3-mini |
+| Provider | Fluent Alias | Default Model |
+|----------|-------------|---------------|
+| Anthropic | `claude` / `anthropic` | claude-sonnet-4-6 |
+| OpenAI | `gpt` / `openai` | gpt-4o |
+| Google | `gemini` / `google` | gemini-2.0-flash |
+| Mistral | `mistral` | mistral-large-latest |
+| Meta / Groq | `llama` / `groq` | llama-3.3-70b-versatile |
+| DeepSeek | `deepseek` | deepseek-chat |
+| xAI | `grok` | grok-3-mini |
 | Perplexity | `perplexity` | sonar-pro |
-| Hugging Face | `hf` | Any inference endpoint |
-| Custom | any name | Any OpenAI-compatible API |
+| Any OpenAI-compatible | custom alias | your model |
+
+Switch providers by changing one word. No code changes required.
 
 ---
 
-## CLI
+## Setting API Keys
 
 ```bash
-npm install -g fluent-lang    # Install
-fluent run program.fl         # Run a program
-fluent test ./tests/          # Run tests
-fluent serve api.fl --port 8080  # Serve as HTTP API
-fluent estimate program.fl    # Estimate cost before running
-fluent repl                   # Interactive REPL
+fluent env set ANTHROPIC_API_KEY=sk-ant-...
+fluent env set OPENAI_API_KEY=sk-...
+fluent env set GOOGLE_API_KEY=...
+fluent env set GROQ_API_KEY=...
+```
+
+Keys are stored encrypted at `~/.fluent/credentials.json` and never appear in `.fl` source files.
+
+> **Without keys:** FLUENT runs in mock mode — all `Ask` statements return a descriptive placeholder. All 36 tests pass with no keys.
+
+---
+
+## Examples
+
+### Hello World
+```bash
+fluent run examples/hello.fl
+```
+
+### Sentiment Analysis Pipeline
+```bash
+fluent env set ANTHROPIC_API_KEY=sk-ant-...
+fluent run examples/sentiment.fl
+```
+
+### Multi-Model Pipeline
+```bash
+fluent run examples/pipeline.fl
+```
+
+### HTTP API Server
+```bash
+fluent serve examples/api.fl --port 8080 --cors
+curl -X POST http://localhost:8080/summarize \
+  -H "Content-Type: application/json" \
+  -d '{"text": "FLUENT is a natural language AI programming language."}'
+```
+
+### Cost Estimation
+```bash
+fluent estimate examples/pipeline.fl
+#   Model                                In Tok   Out Tok  Est. Cost
+#   ─────────────────────────────────────────────────────────────────
+#   anthropic/claude-sonnet-4-6          20       512      $0.007740
+#   anthropic/claude-sonnet-4-6          11       512      $0.007713
+#   ─────────────────────────────────────────────────────────────────
+#   TOTAL                                          1055     $0.015453
+```
+
+### Interactive REPL
+```bash
+fluent repl
+fluent› Let x be 42.
+fluent› Output x.
+42
+fluent› Ask claude to "what is 2 + 2?" and call the result answer.
+fluent› Output answer.
+...
+fluent› .vars
+fluent› .exit
+```
+
+---
+
+## Running Tests
+
+```bash
+node bin/fluent.js test ./tests/
+
+  FLUENT Test Runner
+
+  ✓ test_hello.fl › declare and output a string
+  ✓ test_hello.fl › arithmetic — addition
+  ✓ test_hello.fl › while loop terminates
+  ✓ test_hello.fl › for each iterates collection
+  ✓ test_pipeline.fl › parallel for-each populates fields
+  ✓ test_pipeline.fl › nested conditionals
+  ✓ test_types.fl › number comparison operators
+  ... (36 total)
+
+  Tests:   36 passed, 0 failed, 36 total
+```
+
+---
+
+## Embedding in Node.js
+
+```javascript
+const fluent = require('fluent-lang');
+
+const { scope, trace } = await fluent.run(`
+  Let topic be "AI safety".
+  Ask claude to "summarise in one sentence" using text topic and call the result answer.
+  Output answer.
+`);
+
+console.log(scope.answer);
+console.log(trace.total_cost_usd);
+```
+
+---
+
+## Language Specification
+
+| Document | Contents |
+|----------|---------|
+| [`index.html`](./index.html) | Core spec — syntax, model binding, providers, control flow, pipelines, stdlib, examples |
+| [`advanced.html`](./advanced.html) | Advanced — type system, streaming, guardrails, prompt patterns, database, event-driven, security, packages, formal grammar, roadmap |
+
+---
+
+## Repository Structure
+
+```
+fluent-lang/
+├── bin/fluent.js          CLI entry point
+├── src/
+│   ├── parser/index.js    NL parser → AST
+│   ├── executor/index.js  AST executor
+│   ├── providers/index.js 12 AI provider integrations
+│   ├── runtime/
+│   │   ├── env.js         Credential vault
+│   │   └── tracer.js      Execution tracer
+│   └── cli/               run · test · serve · estimate · repl
+├── examples/              .fl example programs
+├── tests/                 .fl test suite (36 tests)
+├── index.html             Language spec Part I
+├── advanced.html          Language spec Part II
+└── .fluentrc              Runtime defaults
 ```
 
 ---
 
 ## License
 
-This specification is released as an open proposal. Contributions, feedback, and implementations welcome.
-
----
-
-*Designed to be read by humans. Executed by machines.*
-
----
-
-## Advanced Specification (Part II)
-
-[`advanced.html`](./advanced.html) contains 11 deep technical sections:
-
-| # | Section |
-|---|---------|
-| 16 | Type System — primitives, composites, optionals, custom type definitions |
-| 17 | Streaming — token-level streaming, SSE export, mid-stream handlers |
-| 18 | Schema Validation & Guardrails — output enforcement, content filtering, PII redaction |
-| 19 | Prompt Engineering Patterns — CoT, few-shot, personas, prompt templates |
-| 20 | Database & Storage — Oracle, Postgres, vector stores (Pinecone), S3-compatible storage |
-| 21 | Event-Driven Architecture — webhooks, cron schedules, Kafka/SQS consumers |
-| 22 | Debugging & Observability — breakpoints, structured traces, cost profiler, semantic diff |
-| 23 | Security Model — credential vault, prompt injection defense, tool permissions, data residency |
-| 24 | Package Ecosystem — manifest format, registry CLI, 6 core packages |
-| 25 | Formal Grammar (NL-EBNF) — complete language grammar in natural-language EBNF notation |
-| 26 | Roadmap — Alpha → v2.0 milestones, 4 open research problems |
+MIT — Datacules LLC, 2026

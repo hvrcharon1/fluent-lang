@@ -1,0 +1,22 @@
+-- hello.fl — A simple introduction to Fluent
+
+Let name be "World".
+Let greeting be "Hello".
+
+Output "=== FLUENT Hello World ===".
+Output greeting.
+Output name.
+
+-- Basic arithmetic
+Let x be 10.
+Let y be 32.
+Let sum be x plus y.
+Output sum.
+
+-- A simple function
+To greet a person (person_name):
+    Output "Hello from Fluent,".
+    Output person_name.
+End of greet a person.
+
+Let result be the result of greet a person "Harshal".

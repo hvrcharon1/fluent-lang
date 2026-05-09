@@ -1,0 +1,26 @@
+{
+  "name": "fluent-lang",
+  "version": "1.0.0",
+  "description": "FLUENT — Natural Language AI Programming Language. Write AI programs in plain English.",
+  "bin": {
+    "fluent": "./bin/fluent.js"
+  },
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "node bin/fluent.js test ./tests/"
+  },
+  "keywords": ["ai", "natural-language", "llm", "programming-language", "claude", "openai", "gemini"],
+  "author": "Datacules LLC",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0",
+    "ora": "^5.4.1",
+    "readline": "^1.3.0"
+  }
+}

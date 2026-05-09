@@ -1,0 +1,23 @@
+-- api.fl — Fluent HTTP API example
+-- Deploy with: fluent serve api.fl --port 8080
+-- POST /summarize  { "text": "...", "language": "English" }
+-- POST /classify   { "message": "..." }
+
+@expose(as: http, path: "/summarize", method: POST)
+To summarize text (text) in (language):
+    @model(temperature: 0.3, max_tokens: 200)
+    Ask claude to "Summarize this text in 2-3 sentences" using text text and call the result summary.
+    If language is not "English":
+        @model(temperature: 0.2)
+        Ask gemini to "Translate this to" using text summary and call the result summary.
+    Output summary.
+    Return summary.
+End of summarize text in.
+
+@expose(as: http, path: "/classify", method: POST)
+To classify message (message):
+    @model(temperature: 0, max_tokens: 10)
+    Ask claude to "Classify this message as: question, complaint, compliment, or other. One word only." using text message and call the result category.
+    Output category.
+    Return category.
+End of classify message.

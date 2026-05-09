@@ -1,0 +1,34 @@
+-- pipeline.fl — Multi-model orchestration pipeline demo
+-- Demonstrates: model aliases, parallel execution, conditionals, functions
+
+-- Define specialist model aliases
+Define model fast_model as groq/llama-3.3-70b-versatile with temperature 0, max_tokens 100.
+Define model smart_model as claude with temperature 0.3, max_tokens 500.
+
+-- Sample data
+Let articles be a list containing
+    "Artificial intelligence has made significant progress in healthcare diagnostics.",
+    "New research shows climate change accelerating faster than previous models predicted.",
+    "Tech stocks fell sharply as investors worried about interest rate increases.".
+
+Output "=== Multi-Model Pipeline Demo ===".
+Output "".
+Output "Step 1: Fast classification (Groq Llama)".
+
+-- Step 1: Classify all articles in parallel using a fast cheap model
+In parallel, for each article in articles:
+    @model(temperature: 0, max_tokens: 5)
+    Ask fast_model to "Classify into one word: tech, health, climate, finance, or other." using text article and call the result article_topic.
+End parallel loop.
+
+Output "Step 2: Summarise each article (Claude)".
+
+-- Step 2: Summarise each article
+For each article in articles:
+    @model(temperature: 0.3, max_tokens: 80)
+    Ask smart_model to "Summarise in one sentence." using text article and call the result article_summary.
+    Output article_summary.
+End loop.
+
+Output "".
+Output "Pipeline complete.".

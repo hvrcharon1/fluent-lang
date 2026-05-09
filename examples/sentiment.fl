@@ -1,0 +1,19 @@
+-- sentiment.fl — AI-powered sentiment analysis
+-- Requires: ANTHROPIC_API_KEY environment variable
+
+Let reviews be a list containing
+    "This product is absolutely amazing! Best purchase I've ever made.",
+    "Terrible quality, broke after one day. Complete waste of money.",
+    "It's okay, nothing special but gets the job done.",
+    "Exceeded all my expectations. Five stars!".
+
+Output "=== Sentiment Analysis Pipeline ===".
+Output "Analyzing reviews...".
+
+For each review in reviews:
+    @model(temperature: 0, max_tokens: 60)
+    Ask claude to "Classify this review as positive, negative, or neutral. Respond with exactly one word." using text review and call the result review_sentiment.
+    Output review_sentiment.
+End loop.
+
+Output "Done.".

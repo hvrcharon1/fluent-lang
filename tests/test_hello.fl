@@ -1,0 +1,94 @@
+-- test_hello.fl — Core language feature tests
+-- These tests run without any API keys.
+
+Test "declare and output a string":
+    Let greeting be "Hello, Fluent!".
+    Expect greeting to not be empty.
+End test.
+
+Test "arithmetic — addition":
+    Let a be 10.
+    Let b be 32.
+    Let total be a plus b.
+    Expect total to be greater than 41.
+End test.
+
+Test "arithmetic — subtraction":
+    Let x be 100.
+    Let y be 37.
+    Let diff be x minus y.
+    Expect diff to be greater than 60.
+End test.
+
+Test "record field access":
+    Let person be a record with name "Harshal", age 30, city "Mumbai".
+    Expect person to not be empty.
+End test.
+
+Test "boolean — true":
+    Let is_active be true.
+    Expect is_active to not be empty.
+End test.
+
+Test "conditional — then branch":
+    Let score be 90.
+    Let grade be "unknown".
+    If score is greater than 80, then set grade to "A".
+    Expect grade to not be empty.
+End test.
+
+Test "conditional — otherwise branch":
+    Let score be 50.
+    Let grade be "pass".
+    If score is greater than 80, then set grade to "A". Otherwise, set grade to "F".
+    Expect grade to not be empty.
+End test.
+
+Test "list contains elements":
+    Let colours be a list containing "red", "green", "blue".
+    Expect colours to not be empty.
+End test.
+
+Test "optional fallback with or else":
+    Let nickname be nothing.
+    Let display be nickname or else "Anonymous".
+    Expect display to not be empty.
+End test.
+
+Test "function definition and call":
+    To add numbers (x) and (y):
+        Return x plus y.
+    End of add numbers and.
+    Expect true to not be empty.
+End test.
+
+Test "while loop terminates":
+    Let counter be 0.
+    Let limit be 5.
+    While counter is less than limit:
+        Set counter to counter plus 1.
+    End while.
+    Expect counter to be greater than 4.
+End test.
+
+Test "for each iterates collection":
+    Let items be a list containing "a", "b", "c".
+    Let count be 0.
+    For each item in items:
+        Set count to count plus 1.
+    End loop.
+    Expect count to be greater than 2.
+End test.
+
+Test "try-fallback handles error":
+    Let result be "initial".
+    Try to set result to "primary".
+    If that fails, set result to "fallback".
+    Expect result to not be empty.
+End test.
+
+Test "remember and recall from memory":
+    Remember "user prefers dark mode" as "ui-preference".
+    Recall memories similar to "ui-preference" and call the result pref.
+    Expect pref to not be empty.
+End test.

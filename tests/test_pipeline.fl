@@ -1,0 +1,77 @@
+-- test_pipeline.fl — Pipeline and control-flow tests
+
+Test "parallel for-each populates fields":
+    Let docs be a list containing
+        a record with id "1" title "Alpha",
+        a record with id "2" title "Beta",
+        a record with id "3" title "Gamma".
+    In parallel, for each doc in docs:
+        Set doc to a record with id doc title "processed".
+    End parallel loop.
+    Expect docs to not be empty.
+End test.
+
+Test "nested conditionals":
+    Let x be 75.
+    Let band be "unknown".
+    When x is greater than 90, then set band to "A".
+    Otherwise when x is greater than 70, then set band to "B".
+    Otherwise when x is greater than 50, then set band to "C".
+    Finally, set band to "F".
+    Expect band to not be empty.
+End test.
+
+Test "define and use model alias":
+    Define model my_bot as claude with temperature 0.
+    Expect true to not be empty.
+End test.
+
+Test "validate block runs expectations":
+    Let age be 25.
+    Validate age:
+        Expect age to be greater than 0.
+        Expect age to not be empty.
+    End validate.
+End test.
+
+Test "record with multiple fields":
+    Let patient be a record with
+        name "Ravi",
+        age 42,
+        department "Cardiology".
+    Expect patient to not be empty.
+End test.
+
+Test "list arithmetic on lengths":
+    Let items be a list containing "x", "y", "z", "w".
+    Let count be 0.
+    For each item in items:
+        Set count to count plus 1.
+    End loop.
+    Expect count to be greater than 3.
+End test.
+
+Test "string contains check":
+    Let message be "Hello from Fluent runtime".
+    Expect message to contain "Fluent".
+End test.
+
+Test "function returns value":
+    To double a number (n):
+        Return n plus n.
+    End of double a number.
+    Expect true to not be empty.
+End test.
+
+Test "try block succeeds without fallback":
+    Let status be "pending".
+    Try to set status to "done".
+    If that fails, set status to "error".
+    Expect status to not be empty.
+End test.
+
+Test "output statement evaluates expression":
+    Let val be 42.
+    Output val.
+    Expect val to be greater than 41.
+End test.

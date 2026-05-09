@@ -1,0 +1,74 @@
+-- test_types.fl — Type system, expressions, and edge-case tests
+
+Test "null literal is nothing":
+    Let empty_val be nothing.
+    Expect empty_val to not be greater than 0.
+End test.
+
+Test "boolean literals":
+    Let t be true.
+    Let f be false.
+    Expect t to not be empty.
+End test.
+
+Test "current date is not empty":
+    Let today be the current date.
+    Expect today to not be empty.
+End test.
+
+Test "string with special chars":
+    Let msg be "Hello, World! (2026) — FLUENT v1.0".
+    Expect msg to contain "FLUENT".
+End test.
+
+Test "deeply nested record":
+    Let config be a record with
+        database "oracle",
+        port 1521,
+        ssl true.
+    Expect config to not be empty.
+End test.
+
+Test "number comparison operators":
+    Let score be 0.85.
+    Expect score to be greater than 0.5.
+    Expect score to not be greater than 1.0.
+End test.
+
+Test "list with one element":
+    Let single be a list containing "only".
+    Expect single to not be empty.
+End test.
+
+Test "empty list created":
+    Let empty_list be a list of text.
+    Expect true to not be empty.
+End test.
+
+Test "chained field access simulation":
+    Let user be a record with name "Megatron" role "Developer".
+    Expect user to not be empty.
+End test.
+
+Test "set overwrites declaration":
+    Let x be 10.
+    Set x to 99.
+    Expect x to be greater than 50.
+End test.
+
+Test "multiple assignments in sequence":
+    Let a be 1.
+    Let b be 2.
+    Let c be 3.
+    Set a to a plus b.
+    Set a to a plus c.
+    Expect a to be greater than 5.
+End test.
+
+Test "while with counter ceiling":
+    Let i be 0.
+    While i is less than 10:
+        Set i to i plus 1.
+    End while.
+    Expect i to be greater than 9.
+End test.
