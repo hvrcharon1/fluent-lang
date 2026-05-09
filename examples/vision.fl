@@ -1,0 +1,43 @@
+-- vision.fl — Multimodal image analysis
+-- Demonstrates: load image, multi-provider vision, comparison
+-- Usage: fluent run examples/vision.fl
+-- Requires: ANTHROPIC_API_KEY and/or OPENAI_API_KEY
+
+-- ── Load a local image ──────────────────────────────────────────────────────
+-- Replace this path with any image file on your system.
+-- Supported formats: JPG, PNG, WEBP, GIF, BMP
+Let photo be load image "examples/assets/sample.jpg".
+
+Output "=== Vision Analysis Pipeline ===".
+Output "".
+
+-- ── Describe the image (Claude) ─────────────────────────────────────────────
+@model(temperature: 0.3, max_tokens: 300)
+Ask claude to "Describe what you see in this image in detail. Note objects, people, text, colours, and any notable elements." using image photo and call the result claude_description.
+
+Output "Claude sees:".
+Output claude_description.
+Output "".
+
+-- ── Extract any visible text (OpenAI GPT-4o Vision) ─────────────────────────
+@model(temperature: 0, max_tokens: 200)
+Ask openai/gpt-4o to "Extract every piece of visible text from this image. If there is no text, say 'No text found'." using image photo and call the result visible_text.
+
+Output "Visible text (GPT-4o):".
+Output visible_text.
+Output "".
+
+-- ── Classify mood/tone (Gemini) ──────────────────────────────────────────────
+@model(temperature: 0.2, max_tokens: 100)
+Ask gemini to "In one sentence, describe the mood or atmosphere of this image." using image photo and call the result mood.
+
+Output "Mood (Gemini):".
+Output mood.
+Output "".
+
+-- ── Cross-model synthesis ────────────────────────────────────────────────────
+@model(temperature: 0.3, max_tokens: 200)
+Ask claude to "Given these three analyses of the same image, write a single unified summary." using data a record with description claude_description text visible_text atmosphere mood and call the result final_summary.
+
+Output "=== Final Synthesis ===".
+Output final_summary.

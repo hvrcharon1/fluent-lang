@@ -1,0 +1,46 @@
+-- document-qa.fl — Document Q&A pipeline
+-- Demonstrates: read file, chunked analysis, structured extraction
+-- Supports: PDF, DOCX, TXT, MD, CSV, JSON
+-- Usage: fluent run examples/document-qa.fl
+-- Requires: ANTHROPIC_API_KEY
+
+-- ── Load the document ────────────────────────────────────────────────────────
+-- Change this path to any local document you want to analyse.
+Let report be read file "examples/assets/sample.pdf".
+
+Output "=== Document Q&A Pipeline ===".
+Output "".
+Output "Document loaded:".
+Output report.
+
+-- ── Extract key facts ────────────────────────────────────────────────────────
+@model(temperature: 0, max_tokens: 600, format: json)
+Ask claude to "Extract the following fields from this document as JSON: title, author, date, summary (max 3 sentences), key_points (list of up to 5 strings), topics (list of strings)." using document report and call the result metadata.
+
+Output "".
+Output "Extracted metadata:".
+Output metadata.
+
+-- ── Generate FAQ ─────────────────────────────────────────────────────────────
+@model(temperature: 0.3, max_tokens: 500)
+Ask claude to "Generate 5 frequently asked questions and their answers based on this document." using document report and call the result faq.
+
+Output "".
+Output "=== FAQ ===".
+Output faq.
+
+-- ── Summarise for executive audience ─────────────────────────────────────────
+@model(temperature: 0.2, max_tokens: 250)
+Ask anthropic/claude-sonnet-4-6 to "Write a 3-sentence executive summary of this document suitable for a CEO who has 30 seconds to read it." using document report and call the result exec_summary.
+
+Output "".
+Output "=== Executive Summary ===".
+Output exec_summary.
+
+-- ── Risk / concern detection ──────────────────────────────────────────────────
+@model(temperature: 0, max_tokens: 300, format: json)
+Ask claude to "Identify any risks, concerns, action items, or open questions in this document. Return as JSON with keys: risks (list), action_items (list), open_questions (list)." using document report and call the result risks.
+
+Output "".
+Output "=== Risks & Actions ===".
+Output risks.

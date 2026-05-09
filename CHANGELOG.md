@@ -5,6 +5,75 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.0.1] — 2026-05-09 — Multimodal File Support + Open Source
+
+### Added
+
+#### File Runtime (`src/runtime/files.js`)
+- `loadFile(kind, path, opts)` — universal file loader returning typed values
+- **Image loader** — JPG, PNG, WEBP, GIF, BMP, SVG → `{ type, filename, mimeType, base64, dataUri, size }`
+- **Audio loader** — MP3, WAV, FLAC, OGG, M4A, AAC → `{ type, filename, mimeType, base64, size }`
+- **Video loader** — MP4, MOV, AVI, MKV, WEBM → `{ type, filename, mimeType, base64, size, frames }`
+- **Document loader** — PDF (via pdf-parse), DOCX (via mammoth), TXT, MD, CSV, JSON, XML, HTML → `{ type, filename, text, size }`
+- `loadFromBuffer(buffer, filename, mimeType)` — for HTTP uploads; same typed return values
+- Auto-detects file kind from extension when using `read file "path"`
+
+#### Parser
+- `load image "path"` expression → `LoadFile` AST node (kind: image)
+- `load audio "path"` expression → `LoadFile` AST node (kind: audio)
+- `load video "path" [sampled at N frames per second]` → `LoadFile` node with fps
+- `load document "path"` / `read file "path"` → `LoadFile` node (kind: document)
+
+#### Executor
+- `LoadFile` case in `evalExpr` — calls `files.loadFile` and returns typed value
+- File values flow transparently through scope, loops, and function calls
+
+#### Providers — Multimodal Content Blocks
+- **Anthropic:** image inputs sent as `{ type: "image", source: { type: "base64", ... } }` content blocks
+- **OpenAI:** image inputs sent as `{ type: "image_url", image_url: { url: "data:..." } }` parts
+- **Google Gemini:** image, audio, and video inputs sent as `{ inline_data: { mime_type, data } }` parts
+- Document text is always extracted and appended to the text content for all providers
+- File inputs and text inputs are cleanly separated in the call pipeline
+
+#### `fluent serve` — Multipart File Upload
+- Added `multer` for `multipart/form-data` uploads (memory storage, 50 MB limit)
+- All routes automatically accept: `file`, `files`, `image`, `images`, `audio`, `video`, `document`, `documents`, `attachment`, `attachments`
+- Uploaded files are loaded into scope by field name AND by detected kind
+- `POST /upload` — generic endpoint: receives any file, runs the full program, returns scope
+- Response includes `uploaded` summary (no base64 in response body), `scope`, and `meta`
+
+#### Examples
+- `examples/vision.fl` — multi-provider image analysis pipeline (Claude + GPT-4o + Gemini)
+- `examples/document-qa.fl` — PDF/DOCX Q&A with metadata extraction, FAQ, executive summary
+- `examples/audio-transcribe.fl` — Whisper transcription → action items → decisions → summary
+- `examples/multimodal-api.fl` — HTTP API with `/analyse-image`, `/analyse-document`, `/transcribe`, `/smart-extract`
+- `examples/assets/sample.jpg` — minimal JPEG for CI testing
+- `examples/assets/sample.txt` — sample text document for CI testing
+
+#### Tests
+- `tests/test_files.fl` — 8 new file-loading tests (no API keys required)
+- **Total: 44/44 tests passing**
+
+#### Open Source
+- `LICENSE` — MIT License (Datacules LLC, 2026)
+- `CODE_OF_CONDUCT.md` — Contributor Covenant v2.1
+- `SECURITY.md` — Vulnerability reporting, credential safety, prompt injection guidance
+- `.github/ISSUE_TEMPLATE/bug_report.md`
+- `.github/ISSUE_TEMPLATE/feature_request.md`
+- `.github/ISSUE_TEMPLATE/provider_request.md`
+- `.github/PULL_REQUEST_TEMPLATE.md`
+- `.github/workflows/test.yml` — CI matrix: Node 18/20/22, dry-run, build, cost estimate, npm audit
+- `.github/workflows/publish.yml` — npm publish on GitHub release
+
+#### Dependencies
+- Added `multer@^1.4.5-lts.1` — multipart file upload
+- Added `mime-types@^2.1.35` — MIME type detection from file extensions
+- Optional: `pdf-parse@^1.1.1` (PDF text extraction)
+- Optional: `mammoth@^1.7.1` (DOCX text extraction)
+
+
+---
+
 ## [1.0.0] — 2026-05-09 — Initial Release
 
 ### Added

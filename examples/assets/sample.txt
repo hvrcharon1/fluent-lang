@@ -1,0 +1,12 @@
+FLUENT Language Runtime — Sample Document
+
+This is a sample text document used for testing the FLUENT document Q&A pipeline.
+
+Key Points:
+1. FLUENT is a natural language AI programming language
+2. It supports 12+ AI providers out of the box
+3. Programs are written in plain English sentences
+4. File uploads are supported for images, audio, video, and documents
+
+Summary:
+FLUENT makes it easy to build AI-powered applications without boilerplate code.

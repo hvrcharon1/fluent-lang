@@ -189,6 +189,97 @@ fluent› .exit
 
 ---
 
+
+---
+
+## File Upload Support
+
+FLUENT natively handles images, audio, video, and documents — both from disk
+and via HTTP file uploads. No extra configuration needed.
+
+### Loading Files in Programs
+
+```fluent
+-- Load an image from disk
+Let photo be load image "report/chart.png".
+
+-- Load a PDF or Word document (text is extracted automatically)
+Let contract be read file "contracts/nda.pdf".
+Let brief be read file "briefs/q1.docx".
+
+-- Load audio for transcription
+Let meeting be load audio "recordings/standup.mp3".
+
+-- Load video (sent to Gemini or other multimodal models)
+Let demo be load video "demos/walkthrough.mp4".
+Let clip be load video "demo.mp4" sampled at 2 frames per second.
+```
+
+### Passing Files to Models
+
+```fluent
+-- Image → vision model
+Ask claude to "describe everything visible in this chart" using image photo and call the result description.
+
+-- Document → Q&A
+Ask claude to "summarise the key obligations in this contract" using document contract and call the result summary.
+
+-- Audio → transcription + analysis
+Ask openai/gpt-4o to "transcribe this meeting" using audio meeting and call the result transcript.
+Ask claude to "extract action items" using text transcript and call the result actions.
+
+-- Multi-image comparison
+Let before be load image "before.png".
+Let after be load image "after.png".
+Ask openai/gpt-4o to "describe what changed between these screenshots" using images before after and call the result diff.
+```
+
+### Supported File Types
+
+| Kind | Extensions | Auto-extraction |
+|------|-----------|-----------------|
+| Image | jpg jpeg png gif webp bmp svg | Base64 → vision API |
+| Audio | mp3 wav ogg flac m4a aac opus | Base64 → audio API |
+| Video | mp4 mov avi mkv webm m4v | Base64 → Gemini / video API |
+| Document | pdf docx doc txt md csv json xml html | Text extracted automatically |
+
+Install optional extractors for PDF/DOCX:
+```bash
+npm install pdf-parse mammoth
+```
+
+### HTTP File Upload (`fluent serve`)
+
+Every `fluent serve` deployment automatically gets a `/upload` endpoint and
+accepts `multipart/form-data` on all routes:
+
+```bash
+fluent serve examples/multimodal-api.fl --port 8080 --cors
+```
+
+```bash
+# Upload an image
+curl -X POST http://localhost:8080/analyse-image \
+  -F "image=@photo.jpg"
+
+# Upload a document
+curl -X POST http://localhost:8080/analyse-document \
+  -F "document=@report.pdf"
+
+# Upload audio
+curl -X POST http://localhost:8080/transcribe \
+  -F "audio=@meeting.mp3"
+
+# Generic upload — runs the full program with the file in scope
+curl -X POST http://localhost:8080/upload \
+  -F "file=@anything.png"
+```
+
+**Accepted field names:** `file`, `files`, `image`, `images`, `audio`,
+`video`, `document`, `documents`, `attachment`, `attachments`
+
+**Max upload size:** 50 MB per file (memory-buffered, never written to disk)
+
 ## Running Tests
 
 ```bash

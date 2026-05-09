@@ -398,6 +398,11 @@ class Executor {
         return await Promise.all(expr.elements.map(e => this.evalExpr(e, scope)));
       }
 
+      case T.LOAD_FILE: {
+        const { loadFile } = require('../runtime/files');
+        return await loadFile(expr.kind, expr.path, { fps: expr.fps });
+      }
+
       case T.FUNCTION_CALL: {
         return this.callFunction(expr.raw, scope);
       }

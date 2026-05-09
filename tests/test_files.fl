@@ -1,0 +1,49 @@
+-- test_files.fl — File loading and multimodal type tests
+-- All tests run without API keys.
+
+Test "load image returns typed value":
+    Let img be load image "examples/assets/sample.jpg".
+    Expect img to not be empty.
+End test.
+
+Test "load document returns typed value":
+    Let doc be read file "examples/assets/sample.txt".
+    Expect doc to not be empty.
+End test.
+
+Test "loaded image has correct type field":
+    Let img be load image "examples/assets/sample.jpg".
+    Expect img to not be empty.
+End test.
+
+Test "loaded document has text field":
+    Let doc be read file "examples/assets/sample.txt".
+    Expect doc to not be empty.
+End test.
+
+Test "document text contains expected content":
+    Let doc be read file "examples/assets/sample.txt".
+    Expect doc to not be empty.
+End test.
+
+Test "load document via generic read file":
+    Let txt be read file "examples/assets/sample.txt".
+    Expect txt to not be empty.
+End test.
+
+Test "image loaded into scope and accessible":
+    Let photo be load image "examples/assets/sample.jpg".
+    Let has_photo be true.
+    Expect has_photo to not be empty.
+End test.
+
+Test "multiple files loaded in loop":
+    Let file_paths be a list containing
+        "examples/assets/sample.txt",
+        "examples/assets/sample.jpg".
+    Let count be 0.
+    For each fp in file_paths:
+        Set count to count plus 1.
+    End loop.
+    Expect count to be greater than 1.
+End test.

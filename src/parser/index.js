@@ -37,6 +37,7 @@ const T = {
   EXPECT:        'Expect',           // Expect x to not be empty.
   STOP:          'Stop',             // Stop with error "...".
   RAW:           'Raw',              // Unrecognised — stored as raw text for fallback
+  LOAD_FILE:     'LoadFile',         // load image/audio/video/document "path"
   // Expression nodes
   LITERAL:       'Literal',
   IDENTIFIER:    'Identifier',
@@ -139,6 +140,14 @@ function parseExpression(s) {
   // an optional [type]
   const optional = s.match(/^an optional .+$/i);
   if (optional) return { type: T.LITERAL, kind: 'null', value: null };
+
+  // load image/audio/video/document/file "path" [sampled at N fps]
+  const loadMatch = s.match(/^(?:load (image|audio|video|document)|read (file|document))\s+"([^"]+)"(?:\s+sampled at\s+([\d.]+)\s+frames? per second)?$/i);
+  if (loadMatch) {
+    const kind = (loadMatch[1] || loadMatch[2] || 'document').toLowerCase()
+      .replace('file', 'document');
+    return { type: T.LOAD_FILE, kind, path: loadMatch[3], fps: loadMatch[4] ? parseFloat(loadMatch[4]) : null };
+  }
 
   // field.access
   if (/^[\w_]+\.[\w_.]+$/.test(s)) {

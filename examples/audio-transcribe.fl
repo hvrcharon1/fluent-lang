@@ -1,0 +1,46 @@
+-- audio-transcribe.fl — Audio transcription and meeting intelligence
+-- Demonstrates: load audio, Whisper transcription, multi-step analysis
+-- Usage: fluent run examples/audio-transcribe.fl
+-- Requires: OPENAI_API_KEY (Whisper), ANTHROPIC_API_KEY (analysis)
+
+-- ── Load audio file ───────────────────────────────────────────────────────────
+-- Supports: MP3, WAV, FLAC, OGG, M4A, AAC
+-- Replace with your own audio file path.
+Let recording be load audio "examples/assets/meeting.mp3".
+
+Output "=== Audio Intelligence Pipeline ===".
+Output "".
+Output "Audio loaded:".
+Output recording.
+
+-- ── Step 1: Transcribe with Whisper ─────────────────────────────────────────
+@model(temperature: 0, max_tokens: 4000)
+Ask openai/gpt-4o-audio-preview to "Transcribe this audio recording accurately. Include speaker labels if multiple speakers are detected. Format as: SPEAKER_1: ... SPEAKER_2: ..." using audio recording and call the result transcript.
+
+Output "".
+Output "=== Transcript ===".
+Output transcript.
+
+-- ── Step 2: Extract action items ────────────────────────────────────────────
+@model(temperature: 0, max_tokens: 400, format: json)
+Ask claude to "Extract all action items from this meeting transcript. Return JSON with: action_items (list of objects with owner, task, deadline if mentioned)." using text transcript and call the result actions.
+
+Output "".
+Output "=== Action Items ===".
+Output actions.
+
+-- ── Step 3: Identify decisions made ────────────────────────────────────────
+@model(temperature: 0, max_tokens: 300)
+Ask claude to "List all decisions that were made during this meeting as a numbered list." using text transcript and call the result decisions.
+
+Output "".
+Output "=== Decisions Made ===".
+Output decisions.
+
+-- ── Step 4: Meeting summary ──────────────────────────────────────────────────
+@model(temperature: 0.3, max_tokens: 300)
+Ask anthropic/claude-sonnet-4-6 to "Write a concise meeting summary in 3-4 sentences. Include what was discussed, what was decided, and what comes next." using text transcript and call the result summary.
+
+Output "".
+Output "=== Meeting Summary ===".
+Output summary.

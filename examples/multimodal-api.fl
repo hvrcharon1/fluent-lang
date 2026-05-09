@@ -1,0 +1,54 @@
+-- multimodal-api.fl — Multimodal HTTP API
+-- Exposes endpoints that accept file uploads via multipart/form-data.
+-- Deploy: fluent serve examples/multimodal-api.fl --port 8080 --cors
+--
+-- Endpoints:
+--   POST /analyse-image    multipart field: image
+--   POST /analyse-document multipart field: document
+--   POST /transcribe       multipart field: audio
+--   POST /smart-extract    multipart fields: image OR document (auto-detect)
+--   POST /upload           generic — any file, runs full analysis
+
+-- ── Image analysis endpoint ──────────────────────────────────────────────────
+@expose(as: http, path: "/analyse-image", method: POST)
+To analyse an uploaded image (image):
+    @model(temperature: 0.3, max_tokens: 400)
+    Ask claude to "Describe this image in detail. Note all objects, text, people, colours, and overall composition." using image image and call the result description.
+
+    @model(temperature: 0, max_tokens: 60, format: json)
+    Ask openai/gpt-4o to "Return a JSON object with: category (string), has_text (boolean), has_people (boolean), dominant_colour (string), safe_for_work (boolean)." using image image and call the result metadata.
+
+    Output description.
+    Return a record with description description metadata metadata.
+End of analyse an uploaded image.
+
+-- ── Document Q&A endpoint ────────────────────────────────────────────────────
+@expose(as: http, path: "/analyse-document", method: POST)
+To analyse an uploaded document (document):
+    @model(temperature: 0, max_tokens: 600, format: json)
+    Ask claude to "Analyse this document and return JSON with: title, summary (2 sentences), key_points (list of 5), word_count_estimate (number), document_type (string)." using document document and call the result analysis.
+
+    Output analysis.
+    Return analysis.
+End of analyse an uploaded document.
+
+-- ── Audio transcription endpoint ─────────────────────────────────────────────
+@expose(as: http, path: "/transcribe", method: POST)
+To transcribe uploaded audio (audio):
+    @model(temperature: 0, max_tokens: 2000)
+    Ask openai/gpt-4o to "Transcribe this audio. Return the full transcript with punctuation." using audio audio and call the result transcript.
+
+    @model(temperature: 0, max_tokens: 200)
+    Ask claude to "Summarise this transcript in 2 sentences." using text transcript and call the result summary.
+
+    Return a record with transcript transcript summary summary.
+End of transcribe uploaded audio.
+
+-- ── Smart extraction (auto-detect file type) ─────────────────────────────────
+@expose(as: http, path: "/smart-extract", method: POST)
+To smart extract from upload (file):
+    @model(temperature: 0, max_tokens: 500, format: json)
+    Ask claude to "Analyse this content and extract the most useful structured information. Return as JSON." using document file and call the result extracted.
+
+    Return extracted.
+End of smart extract from upload.

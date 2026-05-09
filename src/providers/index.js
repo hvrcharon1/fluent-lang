@@ -86,24 +86,35 @@ async function call(modelRef, instruction, inputs = [], options = {}) {
 
   // Build the messages array
   const systemPrompt = options.system || null;
-  let userContent = '';
+  // Build text instruction
+  const instructionText = typeof instruction === 'string'
+    ? instruction
+    : String(instruction);
 
-  if (typeof instruction === 'string') {
-    userContent = instruction;
-  } else {
-    // instruction is an expression result
-    userContent = String(instruction);
-  }
+  // Separate file inputs from text inputs
+  const fileInputs = inputs.filter(i => i.value && typeof i.value === 'object' &&
+    ['image','audio','video','document'].includes(i.value.type));
+  const textInputs = inputs.filter(i => !(i.value && typeof i.value === 'object' &&
+    ['image','audio','video','document'].includes(i.value.type)));
 
-  // Append input data to user content
-  for (const inp of inputs) {
-    const val = typeof inp.value === 'object' ? JSON.stringify(inp.value, null, 2) : String(inp.value ?? '');
-    if (inp.kind === 'text') userContent += `\n\n${val}`;
+  // Build plain-text content (for text inputs only)
+  let userContent = instructionText;
+  for (const inp of textInputs) {
+    const val = typeof inp.value === 'object'
+      ? JSON.stringify(inp.value, null, 2)
+      : String(inp.value ?? '');
+    if (inp.kind === 'text')     userContent += `\n\n${val}`;
     else if (inp.kind === 'data') userContent += `\n\nData:\n${val}`;
     else if (inp.kind === 'context') userContent += `\n\nContext:\n${val}`;
     else if (inp.kind === 'document') userContent += `\n\nDocument:\n${val}`;
     else if (inp.kind === 'question') userContent += `\n\nQuestion: ${val}`;
     else userContent += `\n\n[${inp.kind}]: ${val}`;
+  }
+  // Append extracted document text from file inputs
+  for (const inp of fileInputs) {
+    if (inp.value.type === 'document' && inp.value.text) {
+      userContent += `\n\nDocument (${inp.value.filename || 'file'}):\n${inp.value.text}`;
+    }
   }
 
   const callOpts = {
@@ -111,6 +122,7 @@ async function call(modelRef, instruction, inputs = [], options = {}) {
     max_tokens:   options.max_tokens   ?? 1024,
     systemPrompt: options.system       ?? null,
     format:       options.format       ?? null,
+    fileInputs,   // pass structured file objects through to provider
   };
 
   if (options.format === 'json') {
@@ -170,10 +182,28 @@ function requireKey(envKey) {
 
 async function callAnthropic(model, systemPrompt, userContent, opts) {
   const apiKey = requireKey('ANTHROPIC_API_KEY');
+
+  // Build multimodal content array
+  const contentParts = [];
+  // Add image/audio/video file inputs BEFORE the text instruction
+  for (const inp of (opts.fileInputs || [])) {
+    const f = inp.value;
+    if (f.type === 'image') {
+      contentParts.push({
+        type: 'image',
+        source: { type: 'base64', media_type: f.mimeType, data: f.base64 },
+      });
+    }
+    // Anthropic does not currently support audio/video as binary blobs;
+    // document text is already appended to userContent above.
+  }
+  // Always add the text instruction last
+  contentParts.push({ type: 'text', text: userContent });
+
   const body = {
     model,
     max_tokens: opts.max_tokens,
-    messages: [{ role: 'user', content: userContent }],
+    messages: [{ role: 'user', content: contentParts }],
   };
   if (systemPrompt) body.system = systemPrompt;
   if (opts.temperature !== undefined) body.temperature = opts.temperature;
@@ -206,7 +236,26 @@ async function callOpenAI(model, systemPrompt, userContent, opts) {
   const apiKey = requireKey('OPENAI_API_KEY');
   const messages = [];
   if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
-  messages.push({ role: 'user', content: userContent });
+
+  // Build multimodal content array for user message
+  const hasImages = (opts.fileInputs || []).some(i => i.value?.type === 'image');
+  let userMsg;
+  if (hasImages) {
+    const parts = [{ type: 'text', text: userContent }];
+    for (const inp of (opts.fileInputs || [])) {
+      const f = inp.value;
+      if (f.type === 'image') {
+        parts.push({
+          type: 'image_url',
+          image_url: { url: `data:${f.mimeType};base64,${f.base64}`, detail: 'auto' },
+        });
+      }
+    }
+    userMsg = { role: 'user', content: parts };
+  } else {
+    userMsg = { role: 'user', content: userContent };
+  }
+  messages.push(userMsg);
 
   const body = { model, messages, max_tokens: opts.max_tokens };
   if (opts.temperature !== undefined) body.temperature = opts.temperature;
@@ -234,7 +283,24 @@ async function callOpenAI(model, systemPrompt, userContent, opts) {
 async function callGoogle(model, systemPrompt, userContent, opts) {
   const apiKey = requireKey('GOOGLE_API_KEY');
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-  const contents = [{ role: 'user', parts: [{ text: userContent }] }];
+
+  // Build multimodal parts
+  const parts = [];
+  for (const inp of (opts.fileInputs || [])) {
+    const f = inp.value;
+    if (f.type === 'image') {
+      parts.push({ inline_data: { mime_type: f.mimeType, data: f.base64 } });
+    } else if (f.type === 'video') {
+      // Gemini supports inline video
+      parts.push({ inline_data: { mime_type: f.mimeType, data: f.base64 } });
+    } else if (f.type === 'audio') {
+      parts.push({ inline_data: { mime_type: f.mimeType, data: f.base64 } });
+    }
+    // document text is already in userContent
+  }
+  parts.push({ text: userContent });
+
+  const contents = [{ role: 'user', parts }];
   const body = { contents };
   if (systemPrompt) body.systemInstruction = { parts: [{ text: systemPrompt }] };
   body.generationConfig = { maxOutputTokens: opts.max_tokens, temperature: opts.temperature };
