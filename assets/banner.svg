@@ -1,0 +1,262 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+
+    <!-- Main background gradient -->
+    <linearGradient id="mainBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#100e0c"/>
+      <stop offset="55%"  stop-color="#0d0d0e"/>
+      <stop offset="100%" stop-color="#0c100e"/>
+    </linearGradient>
+
+    <!-- Orange radial glow top-left -->
+    <radialGradient id="glowOrange" cx="20%" cy="30%" r="45%">
+      <stop offset="0%"   stop-color="#c8410a" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#c8410a" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Green radial glow bottom-right -->
+    <radialGradient id="glowGreen" cx="80%" cy="72%" r="40%">
+      <stop offset="0%"   stop-color="#1a5c38" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#1a5c38" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Amber glow center -->
+    <radialGradient id="glowCenter" cx="50%" cy="50%" r="30%">
+      <stop offset="0%"   stop-color="#8a5010" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#8a5010" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Icon gradients (same as mark) -->
+    <linearGradient id="iconBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#c8410a"/>
+      <stop offset="100%" stop-color="#1a5c38"/>
+    </linearGradient>
+    <linearGradient id="iconBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1a1714"/>
+      <stop offset="100%" stop-color="#0d0d0e"/>
+    </linearGradient>
+    <linearGradient id="tf1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#e05a28" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#e05a28" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="tf2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#c8410a" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#c8410a" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="mf1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#a86b18" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#a86b18" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="mf2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#1a5c38" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#1a5c38" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Word gradient -->
+    <linearGradient id="wordG" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#f0e6d0"/>
+      <stop offset="45%"  stop-color="#f5f0e8"/>
+      <stop offset="100%" stop-color="#d8ead2"/>
+    </linearGradient>
+
+    <!-- Divider gradient -->
+    <linearGradient id="divG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#3a3530" stop-opacity="0"/>
+      <stop offset="30%"  stop-color="#3a3530" stop-opacity="0.8"/>
+      <stop offset="70%"  stop-color="#3a3530" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#3a3530" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glow filter for the icon -->
+    <filter id="iconGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="12" result="blur"/>
+      <feFlood flood-color="#c8410a" flood-opacity="0.25" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Text glow -->
+    <filter id="textGlow" x="-5%" y="-20%" width="110%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="blur"/>
+      <feFlood flood-color="#c8410a" flood-opacity="0.15" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Stem glow filter -->
+    <filter id="stemGlowB">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="4" result="blur"/>
+      <feFlood flood-color="#f5f0e8" flood-opacity="0.15" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+  </defs>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- BACKGROUND                                                      -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <rect width="1280" height="640" fill="url(#mainBg)"/>
+  <rect width="1280" height="640" fill="url(#glowOrange)"/>
+  <rect width="1280" height="640" fill="url(#glowGreen)"/>
+  <rect width="1280" height="640" fill="url(#glowCenter)"/>
+
+  <!-- ── Fine grid ──────────────────────────────────────────────── -->
+  <g opacity="0.028" stroke="#f5f0e8" stroke-width="0.5">
+    <!-- Horizontal -->
+    <line x1="0" y1="80"  x2="1280" y2="80"/>
+    <line x1="0" y1="160" x2="1280" y2="160"/>
+    <line x1="0" y1="240" x2="1280" y2="240"/>
+    <line x1="0" y1="320" x2="1280" y2="320"/>
+    <line x1="0" y1="400" x2="1280" y2="400"/>
+    <line x1="0" y1="480" x2="1280" y2="480"/>
+    <line x1="0" y1="560" x2="1280" y2="560"/>
+    <!-- Vertical -->
+    <line x1="160"  y1="0" x2="160"  y2="640"/>
+    <line x1="320"  y1="0" x2="320"  y2="640"/>
+    <line x1="480"  y1="0" x2="480"  y2="640"/>
+    <line x1="640"  y1="0" x2="640"  y2="640"/>
+    <line x1="800"  y1="0" x2="800"  y2="640"/>
+    <line x1="960"  y1="0" x2="960"  y2="640"/>
+    <line x1="1120" y1="0" x2="1120" y2="640"/>
+  </g>
+
+  <!-- ── Top edge accent bar ────────────────────────────────────── -->
+  <rect width="1280" height="3" fill="url(#iconBorder)" opacity="0.7"/>
+
+  <!-- ── Bottom edge accent bar ───────────────────────────────────── -->
+  <rect y="637" width="1280" height="3" fill="url(#iconBorder)" opacity="0.4"/>
+
+  <!-- ── Decorative vertical lines (sides) ──────────────────────── -->
+  <rect x="0"    y="0" width="3" height="640" fill="url(#divG)" opacity="0.4"/>
+  <rect x="1277" y="0" width="3" height="640" fill="url(#divG)" opacity="0.4"/>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- LARGE ICON (220×220, centred vertically, left of centre)       -->
+  <!-- Placed at x=148, y=210 ; scaled 1.1× from 200×200 base        -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g transform="translate(148,210) scale(1.1)" filter="url(#iconGlow)">
+    <rect width="200" height="200" rx="30" fill="url(#iconBorder)"/>
+    <rect x="2.5" y="2.5" width="195" height="195" rx="27.5" fill="url(#iconBg)"/>
+    <!-- Faint inner grid -->
+    <g opacity="0.045" stroke="#f5f0e8" stroke-width="0.5">
+      <line x1="0"   y1="66"  x2="200" y2="66"/>
+      <line x1="0"   y1="100" x2="200" y2="100"/>
+      <line x1="0"   y1="134" x2="200" y2="134"/>
+      <line x1="66"  y1="0"   x2="66"  y2="200"/>
+      <line x1="100" y1="0"   x2="100" y2="200"/>
+      <line x1="134" y1="0"   x2="134" y2="200"/>
+    </g>
+    <!-- Stem -->
+    <rect x="44" y="38" width="16" height="126" rx="3"
+          fill="#f5f0e8" filter="url(#stemGlowB)"/>
+    <!-- Top crossbar A -->
+    <rect x="44" y="38"  width="112" height="9"  rx="4.5" fill="url(#tf1)"/>
+    <!-- Top crossbar B -->
+    <rect x="44" y="53"  width="96"  height="9"  rx="4.5" fill="url(#tf2)"/>
+    <!-- Mid crossbar C -->
+    <rect x="44" y="94"  width="80"  height="9"  rx="4.5" fill="url(#mf1)"/>
+    <!-- Mid crossbar D -->
+    <rect x="44" y="109" width="62"  height="9"  rx="4.5" fill="url(#mf2)"/>
+    <!-- Bottom green accent -->
+    <rect x="44" y="162" width="40" height="3" rx="1.5" fill="#1a5c38" opacity="0.8"/>
+    <rect x="44" y="162" width="16" height="3" rx="1.5" fill="#f5f0e8" opacity="0.5"/>
+    <!-- Signal dots -->
+    <circle cx="126" cy="148" r="3.5" fill="#c8410a" opacity="0.6"/>
+    <circle cx="140" cy="148" r="2.5" fill="#8a5010" opacity="0.45"/>
+    <circle cx="152" cy="148" r="1.8" fill="#1a5c38" opacity="0.4"/>
+    <!-- Corner accents -->
+    <path d="M168 32 L176 32 L176 40" stroke="#c8410a" stroke-width="2"
+          fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+    <path d="M32 160 L32 168 L40 168" stroke="#1a5c38" stroke-width="2"
+          fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- TEXT BLOCK (right of icon, centred on 640)                     -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ── Micro label ────────────────────────────────────────────── -->
+  <text x="420" y="222"
+        font-family="'Helvetica Neue','Arial',monospace"
+        font-weight="500" font-size="13" letter-spacing="5"
+        fill="#c8410a" opacity="0.85">LANGUAGE SPECIFICATION · V 1.0 · 2026</text>
+
+  <!-- ── Primary wordmark ───────────────────────────────────────── -->
+  <text x="416" y="340"
+        font-family="'Helvetica Neue','Arial Black','Impact',sans-serif"
+        font-weight="900" font-size="148" letter-spacing="10"
+        fill="url(#wordG)" filter="url(#textGlow)">FLUENT</text>
+
+  <!-- ── Tagline ────────────────────────────────────────────────── -->
+  <text x="420" y="390"
+        font-family="'Helvetica Neue','Arial',sans-serif"
+        font-weight="300" font-size="20" letter-spacing="5"
+        fill="#8a8078">Natural Language · AI-Native · Provider-Agnostic</text>
+
+  <!-- ── Divider line ───────────────────────────────────────────── -->
+  <line x1="420" y1="416" x2="960" y2="416"
+        stroke="#3a3530" stroke-width="1" opacity="0.6"/>
+
+  <!-- ── Feature pills ──────────────────────────────────────────── -->
+  <!-- Pill 1: Ask claude to -->
+  <rect x="420" y="432" width="136" height="28" rx="5"
+        fill="#c8410a" fill-opacity="0.12"
+        stroke="#c8410a" stroke-width="1" stroke-opacity="0.35"/>
+  <text x="488" y="451"
+        font-family="'Helvetica Neue','Arial',monospace"
+        font-weight="500" font-size="11" letter-spacing="0.5"
+        fill="#c8410a" text-anchor="middle">Ask claude to</text>
+
+  <!-- Pill 2: 12 Providers -->
+  <rect x="568" y="432" width="120" height="28" rx="5"
+        fill="#8a5010" fill-opacity="0.12"
+        stroke="#8a5010" stroke-width="1" stroke-opacity="0.35"/>
+  <text x="628" y="451"
+        font-family="'Helvetica Neue','Arial',monospace"
+        font-weight="500" font-size="11" letter-spacing="0.5"
+        fill="#a86b18" text-anchor="middle">12 Providers</text>
+
+  <!-- Pill 3: In parallel -->
+  <rect x="700" y="432" width="108" height="28" rx="5"
+        fill="#1a5c38" fill-opacity="0.12"
+        stroke="#1a5c38" stroke-width="1" stroke-opacity="0.35"/>
+  <text x="754" y="451"
+        font-family="'Helvetica Neue','Arial',monospace"
+        font-weight="500" font-size="11" letter-spacing="0.5"
+        fill="#2a8050" text-anchor="middle">In parallel</text>
+
+  <!-- Pill 4: 36 Tests -->
+  <rect x="820" y="432" width="96" height="28" rx="5"
+        fill="#2563a8" fill-opacity="0.12"
+        stroke="#2563a8" stroke-width="1" stroke-opacity="0.35"/>
+  <text x="868" y="451"
+        font-family="'Helvetica Neue','Arial',monospace"
+        font-weight="500" font-size="11" letter-spacing="0.5"
+        fill="#4a88cc" text-anchor="middle">36/36 Tests</text>
+
+  <!-- ── Bottom-right: GitHub handle ───────────────────────────── -->
+  <text x="1240" y="612"
+        font-family="'Helvetica Neue','Arial',monospace"
+        font-weight="400" font-size="13" letter-spacing="2"
+        fill="#3a3530" text-anchor="end">github.com/hvrcharon1/fluent-lang</text>
+
+  <!-- ── Corner bracket ornaments ──────────────────────────────── -->
+  <!-- Top-left -->
+  <path d="M 30 30 L 30 56 M 30 30 L 56 30"
+        stroke="#c8410a" stroke-width="2" fill="none"
+        stroke-linecap="round" opacity="0.4"/>
+  <!-- Top-right -->
+  <path d="M 1250 30 L 1250 56 M 1250 30 L 1224 30"
+        stroke="#1a5c38" stroke-width="2" fill="none"
+        stroke-linecap="round" opacity="0.4"/>
+  <!-- Bottom-left -->
+  <path d="M 30 610 L 30 584 M 30 610 L 56 610"
+        stroke="#1a5c38" stroke-width="2" fill="none"
+        stroke-linecap="round" opacity="0.4"/>
+  <!-- Bottom-right -->
+  <path d="M 1250 610 L 1250 584 M 1250 610 L 1224 610"
+        stroke="#c8410a" stroke-width="2" fill="none"
+        stroke-linecap="round" opacity="0.4"/>
+
+</svg>

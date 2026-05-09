@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 120" width="560" height="120">
+  <defs>
+    <linearGradient id="borderG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#c8410a"/>
+      <stop offset="100%" stop-color="#1a5c38"/>
+    </linearGradient>
+    <linearGradient id="bgG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#171410"/>
+      <stop offset="100%" stop-color="#0d0d0e"/>
+    </linearGradient>
+    <linearGradient id="topFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#e05a28" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#e05a28" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="topFade2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#c8410a" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#c8410a" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="midFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#a86b18" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#a86b18" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="midFade2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#1a5c38" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#1a5c38" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Wordmark gradient: orange → cream → green -->
+    <linearGradient id="wordGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#e8ddc8"/>
+      <stop offset="50%"  stop-color="#f5f0e8"/>
+      <stop offset="100%" stop-color="#d8e8d4"/>
+    </linearGradient>
+    <filter id="stemGlow" x="-50%" y="-10%" width="200%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur"/>
+      <feFlood flood-color="#f5f0e8" flood-opacity="0.1" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ── Icon (100×100, centred at y=10) ─────────────────────── -->
+  <g transform="translate(10, 10) scale(0.5)">
+    <!-- Border ring -->
+    <rect width="200" height="200" rx="30" fill="url(#borderG)"/>
+    <!-- Dark bg -->
+    <rect x="2.5" y="2.5" width="195" height="195" rx="27.5" fill="url(#bgG)"/>
+    <!-- Faint grid -->
+    <g opacity="0.04" stroke="#f5f0e8" stroke-width="0.5">
+      <line x1="0" y1="66"  x2="200" y2="66"/>
+      <line x1="0" y1="100" x2="200" y2="100"/>
+      <line x1="0" y1="134" x2="200" y2="134"/>
+      <line x1="66" y1="0"  x2="66"  y2="200"/>
+      <line x1="100" y1="0" x2="100" y2="200"/>
+      <line x1="134" y1="0" x2="134" y2="200"/>
+    </g>
+    <!-- Stem -->
+    <rect x="44" y="38" width="16" height="126" rx="3"
+          fill="#f5f0e8" filter="url(#stemGlow)"/>
+    <!-- Top crossbar A -->
+    <rect x="44" y="38"  width="112" height="9" rx="4.5" fill="url(#topFade)"/>
+    <!-- Top crossbar B -->
+    <rect x="44" y="53"  width="96"  height="9" rx="4.5" fill="url(#topFade2)"/>
+    <!-- Mid crossbar C -->
+    <rect x="44" y="94"  width="80"  height="9" rx="4.5" fill="url(#midFade)"/>
+    <!-- Mid crossbar D -->
+    <rect x="44" y="109" width="62"  height="9" rx="4.5" fill="url(#midFade2)"/>
+    <!-- Green accent -->
+    <rect x="44" y="162" width="40"  height="3" rx="1.5" fill="#1a5c38" opacity="0.8"/>
+    <rect x="44" y="162" width="16"  height="3" rx="1.5" fill="#f5f0e8" opacity="0.5"/>
+    <!-- Signal dots -->
+    <circle cx="126" cy="148" r="3.5" fill="#c8410a" opacity="0.55"/>
+    <circle cx="140" cy="148" r="2.5" fill="#8a5010" opacity="0.40"/>
+    <circle cx="152" cy="148" r="1.8" fill="#1a5c38" opacity="0.35"/>
+    <!-- Corner marks -->
+    <path d="M 168 32 L 176 32 L 176 40" stroke="#c8410a" stroke-width="2"
+          fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+    <path d="M 32 160 L 32 168 L 40 168" stroke="#1a5c38" stroke-width="2"
+          fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+  </g>
+
+  <!-- ── Thin divider ─────────────────────────────────────────── -->
+  <line x1="118" y1="22" x2="118" y2="98"
+        stroke="#3a3530" stroke-width="1" opacity="0.6"/>
+
+  <!-- ── Wordmark: FLUENT ──────────────────────────────────────── -->
+  <text x="134" y="73"
+        font-family="'Helvetica Neue','Arial Black','Haettenschweiler',sans-serif"
+        font-weight="900"
+        font-size="52"
+        letter-spacing="6"
+        fill="url(#wordGrad)">FLUENT</text>
+
+  <!-- ── Tagline ───────────────────────────────────────────────── -->
+  <text x="136" y="95"
+        font-family="'Helvetica Neue','Arial',sans-serif"
+        font-weight="400"
+        font-size="11"
+        letter-spacing="3.5"
+        fill="#6b6560">NATURAL LANGUAGE · AI · UNIVERSAL</text>
+
+  <!-- ── Version badge ─────────────────────────────────────────── -->
+  <rect x="490" y="20" width="58" height="18" rx="3" fill="#c8410a" opacity="0.18"/>
+  <text x="519" y="33"
+        font-family="'Helvetica Neue','Arial',monospace"
+        font-size="9.5"
+        font-weight="600"
+        letter-spacing="1.5"
+        fill="#c8410a"
+        text-anchor="middle">V 1.0</text>
+
+</svg>

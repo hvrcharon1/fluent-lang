@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#c8410a"/>
+      <stop offset="100%" stop-color="#1a5c38"/>
+    </linearGradient>
+    <linearGradient id="tf" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#e05a28" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#e05a28" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="mf" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#1a5c38" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#1a5c38" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Border -->
+  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  <!-- Dark bg -->
+  <rect x="1" y="1" width="30" height="30" rx="5" fill="#0d0d0e"/>
+  <!-- Stem -->
+  <rect x="8"  y="6"  width="3"  height="20" rx="1" fill="#f5f0e8"/>
+  <!-- Top crossbar -->
+  <rect x="8"  y="6"  width="17" height="3"  rx="1.5" fill="url(#tf)"/>
+  <!-- Mid crossbar -->
+  <rect x="8"  y="14" width="12" height="3"  rx="1.5" fill="url(#mf)"/>
+</svg>

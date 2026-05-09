@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+
+    <!-- Border gradient: orange TL → green BR -->
+    <linearGradient id="borderG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#c8410a"/>
+      <stop offset="100%" stop-color="#1a5c38"/>
+    </linearGradient>
+
+    <!-- Background fill -->
+    <linearGradient id="bgG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#171410"/>
+      <stop offset="100%" stop-color="#0d0d0e"/>
+    </linearGradient>
+
+    <!-- Top crossbar fade: orange → transparent -->
+    <linearGradient id="topFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#e05a28" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#e05a28" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Top crossbar 2 fade: slightly deeper -->
+    <linearGradient id="topFade2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#c8410a" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#c8410a" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Middle crossbar fade: amber → transparent -->
+    <linearGradient id="midFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#a86b18" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#a86b18" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Middle crossbar 2: green start -->
+    <linearGradient id="midFade2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#1a5c38" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#1a5c38" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glow filter for the stem -->
+    <filter id="stemGlow" x="-50%" y="-10%" width="200%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#f5f0e8" flood-opacity="0.12" result="color"/>
+      <feComposite in="color" in2="blur" operator="in" result="glow"/>
+      <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Clip to rounded square -->
+    <clipPath id="roundClip">
+      <rect width="196" height="196" x="2" y="2" rx="28"/>
+    </clipPath>
+
+  </defs>
+
+  <!-- ── Outer border (gradient ring) ─────────────────────────── -->
+  <rect width="200" height="200" rx="30" fill="url(#borderG)"/>
+
+  <!-- ── Inner background ──────────────────────────────────────── -->
+  <rect x="2.5" y="2.5" width="195" height="195" rx="27.5" fill="url(#bgG)"/>
+
+  <!-- ── Subtle grid lines (very faint) ───────────────────────── -->
+  <g opacity="0.04" stroke="#f5f0e8" stroke-width="0.5">
+    <line x1="0" y1="66" x2="200" y2="66"/>
+    <line x1="0" y1="100" x2="200" y2="100"/>
+    <line x1="0" y1="134" x2="200" y2="134"/>
+    <line x1="66" y1="0" x2="66" y2="200"/>
+    <line x1="100" y1="0" x2="100" y2="200"/>
+    <line x1="134" y1="0" x2="134" y2="200"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ── The "Waveform F" mark ─────────────────────────────────── -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Stem: solid vertical bar -->
+  <rect x="44" y="38" width="16" height="126" rx="3" fill="#f5f0e8" filter="url(#stemGlow)"/>
+
+  <!-- ─── Top crossbar — two fading lines ─── -->
+  <!-- Line A: full width, orange fade -->
+  <rect x="44" y="38" width="112" height="9" rx="4.5"
+        fill="url(#topFade)"/>
+  <!-- Line B: slightly shorter, deeper orange -->
+  <rect x="44" y="53" width="96"  height="9" rx="4.5"
+        fill="url(#topFade2)"/>
+
+  <!-- ─── Gap between crossbars ─── (lines 3-5 are stem only, already drawn) -->
+
+  <!-- ─── Middle crossbar — two fading lines ─── -->
+  <!-- Line C: medium width, amber fade -->
+  <rect x="44" y="94" width="80"  height="9" rx="4.5"
+        fill="url(#midFade)"/>
+  <!-- Line D: shorter, green fade -->
+  <rect x="44" y="109" width="62" height="9" rx="4.5"
+        fill="url(#midFade2)"/>
+
+  <!-- ─── Bottom green accent under stem ─── -->
+  <rect x="44" y="162" width="40" height="3" rx="1.5" fill="#1a5c38" opacity="0.8"/>
+  <rect x="44" y="162" width="16" height="3" rx="1.5" fill="#f5f0e8" opacity="0.5"/>
+
+  <!-- ─── Signal dots (bottom-right quadrant) ─── -->
+  <circle cx="126" cy="148" r="3.5" fill="#c8410a" opacity="0.55"/>
+  <circle cx="140" cy="148" r="2.5" fill="#8a5010" opacity="0.40"/>
+  <circle cx="152" cy="148" r="1.8" fill="#1a5c38" opacity="0.35"/>
+
+  <!-- ─── Corner accent marks ─── -->
+  <!-- Top-right: orange tick -->
+  <path d="M 168 32 L 176 32 L 176 40" stroke="#c8410a" stroke-width="2"
+        fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+  <!-- Bottom-left: green tick -->
+  <path d="M 32 160 L 32 168 L 40 168" stroke="#1a5c38" stroke-width="2"
+        fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+
+</svg>

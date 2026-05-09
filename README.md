@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="assets/banner.svg" alt="FLUENT — Natural Language AI Programming Language" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/logo-mark.svg" alt="FLUENT logo mark" width="80" height="80">
+</p>
+
 # FLUENT — Natural Language AI Programming Language
 
 > *Write AI programs in plain English. Every model, every provider, one sentence away.*
