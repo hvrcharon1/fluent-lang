@@ -1,0 +1,94 @@
+-- pattern-matching.fl — New control flow constructs demo
+-- Run: fluent run examples/pattern-matching.fl
+
+Output "═══════════════════════════════════════".
+Output "  Control Flow & Pattern Matching Demo".
+Output "═══════════════════════════════════════".
+Output "".
+
+-- ── MATCH (Pattern Matching) ──────────────────────────────────────────────────
+Output "── Match ──".
+
+Let statuses be a list containing "active", "pending", "error", "archived", "active".
+
+For each status in statuses:
+    Match status:
+        When "active":   Output "  ✓ Service is running.".
+        When "pending":  Output "  ⏳ Awaiting confirmation.".
+        When "error":    Output "  ✗ Alert: service failed!".
+        When "archived": Output "  📦 Archived — no action needed.".
+        Otherwise:       Output "  ? Unknown status.".
+    End match.
+End loop.
+
+Output "".
+
+-- ── REPEAT ────────────────────────────────────────────────────────────────────
+Output "── Repeat ──".
+
+Let fibonacci be a list containing 0, 1.
+
+-- Build first 8 Fibonacci numbers using Repeat
+Let a be 0.
+Let b be 1.
+
+Repeat 6 times:
+    Let c be a plus b.
+    Set a to b.
+    Set b to c.
+    Output b.
+End repeat.
+
+Output "".
+
+-- ── UNLESS ────────────────────────────────────────────────────────────────────
+Output "── Unless ──".
+
+Let users be a list containing
+    a record with name "Alice" verified true,
+    a record with name "Bob" verified false,
+    a record with name "Carol" verified true.
+
+For each user in users:
+    Unless user.verified is false:
+        Output "  Sending email to verified user:".
+        Output user.
+    End unless.
+End loop.
+
+Output "".
+
+-- ── USING MODEL (scoped config) ───────────────────────────────────────────────
+Output "── Using Model (scoped config) ──".
+
+-- This block would apply temperature:0 to all Ask calls inside
+-- (runs in mock mode without an API key)
+Using model claude with temperature 0:
+    Output "  Scoped model config active.".
+    Output "  All Ask calls inside this block use temperature: 0.".
+End using.
+
+Output "  Back to default model config.".
+Output "".
+
+-- ── APPEND TO FILE ────────────────────────────────────────────────────────────
+Output "── File Append ──".
+
+Let log_entry be "fluent-lang demo ran at 2026".
+Append log_entry to "demo_run.log".
+Output "  Log entry written to demo_run.log".
+Output "".
+
+-- ── EMIT EVENTS ───────────────────────────────────────────────────────────────
+Output "── Events ──".
+
+Let result be "pipeline_complete".
+Emit "pipeline_done" with result.
+
+Let events be the result of the count of __events__.
+Output "  Events emitted.".
+Output "".
+
+Output "═══════════════════════════════════════".
+Output "  All constructs demonstrated.".
+Output "═══════════════════════════════════════".

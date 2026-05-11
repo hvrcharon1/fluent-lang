@@ -5,6 +5,193 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.1.0] — 2026-05-10 — Enhanced Programming Capabilities
+
+### Added
+
+#### Standard Library (`src/stdlib/index.js`) — 100+ built-in functions, no API calls needed
+
+**String** — split, join, trim, upper, lower, capitalize, titleCase, replace, replaceAll,
+length, wordCount, slice, first, last, includes, startsWith, endsWith, padStart, padEnd,
+repeat, reverse, countOccurrences, matchPattern, extractNumbers, removeWhitespace,
+collapseWhitespace, slugify, truncate, lines, template
+
+**Math** — round, floor, ceil, abs, sqrt, cbrt, pow, log, log2, log10, min, max, clamp,
+random, randomInt, sign, isEven, isOdd, percentage, add, subtract, multiply, divide,
+modulo, PI, E, TAU
+
+**List** — first, last, nth, count, sum, average, min, max, unique, reverse, flatten,
+compact, chunk, zip, range, shuffle, sample, intersection, difference, union, includes,
+indexOf, frequencies, pluck, groupBy, sortBy, sumBy, countBy, append, prepend, without,
+take, drop
+
+**Date** — now, today, parse, format, addDays, addHours, addMonths, diffDays, diffHours,
+isBefore, isAfter, isSameDay, dayOfWeek, monthName, year, month, day, timestamp,
+fromTimestamp
+
+**JSON** — parse, stringify, get, set, keys, values, entries, merge, pick, omit, flatten,
+isValid
+
+**Type** — toNumber, toText, toBoolean, toList, typeOf, isNull, isNotNull, isEmpty,
+isNumber, isText, isList, isRecord, coerce
+
+**HTTP** — get, post, put, delete (async, returns `{status, ok, body}`)
+
+#### 14 New Language Constructs (Parser + Executor)
+
+**Match (Pattern Matching)**
+```fluent
+Match sentiment:
+    When "positive": Output "Great!".
+    When "negative": Output "Sorry.".
+    Otherwise: Output "Neutral.".
+End match.
+```
+
+**Repeat N Times**
+```fluent
+Repeat 5 times:
+    Set count to count plus 1.
+End repeat.
+-- Exposes: iteration (1-based), index (0-based)
+```
+
+**Unless**
+```fluent
+Unless user.verified is false:
+    Output "Welcome, verified user!".
+End unless.
+```
+
+**Using Model (Scoped Config)**
+```fluent
+Using model claude with temperature 0:
+    Ask claude to "classify this" using text input and call the result r.
+End using.
+```
+
+**Filter**
+```fluent
+Filter employees where salary is greater than 90000 and call the result senior.
+```
+
+**Map**
+```fluent
+Map employees to name and call the result names.
+```
+
+**Sort**
+```fluent
+Sort employees by salary descending and call the result ranked.
+```
+
+**Group**
+```fluent
+Group employees by dept and call the result by_department.
+```
+
+**Reduce**
+```fluent
+Reduce scores to sum and call the result total.
+-- Operations: sum, count, average, min, max, product
+```
+
+**Fetch**
+```fluent
+Fetch "https://api.example.com/data" and call the result response.
+```
+
+**Post**
+```fluent
+Post to "https://api.example.com/items" with body payload and call the result created.
+```
+
+**Pipe**
+```fluent
+Pass input through clean text, then through classify sentiment and call the result output.
+```
+
+**Append to File**
+```fluent
+Append log_entry to "run.log".
+```
+
+**Emit Event**
+```fluent
+Emit "pipeline_done" with result.
+```
+
+#### Natural Language Stdlib Expressions (in `Let x be the result of ...`)
+
+```fluent
+-- String
+Let upper    be the result of uppercase of name.
+Let lower    be the result of lowercase of name.
+Let words    be the result of split sentence by " ".
+Let joined   be the result of join words with ", ".
+Let slug     be the result of slugify title.
+Let n        be the result of the length of text.
+Let wc       be the result of the word count of text.
+Let short    be the result of truncate text to 80 characters.
+Let prefix   be the result of the first 10 characters of text.
+Let replaced be the result of replace "old" with "new" in text.
+
+-- Math
+Let rounded  be the result of round score to 2 decimal places.
+Let floored  be the result of floor of n.
+Let ceiled   be the result of ceiling of n.
+Let absval   be the result of absolute value of n.
+Let root     be the result of square root of area.
+Let powered  be the result of base to the power of exp.
+Let rand     be the result of a random number between 1 and 100.
+
+-- List
+Let total    be the result of the sum of scores.
+Let avg      be the result of the average of scores.
+Let first    be the result of the first item of list.
+Let last     be the result of the last item of list.
+Let unique   be the result of unique items from list.
+Let nums     be the result of a range from 1 to 10.
+
+-- Date
+Let today    be the result of the current date.
+Let tomorrow be the result of today plus 1 days.
+Let diff     be the result of days between start and end.
+
+-- Type
+Let n        be the result of text_val converted to number.
+Let s        be the result of num_val converted to text.
+
+-- HTTP
+Fetch "https://api.example.com" and call the result response.
+```
+
+#### Bug Fixes in Parser
+- `parseRecord` rewritten with tokeniser — handles both `name "Alice" value 90`
+  (space-delimited) and `name "Alice", value 90` (comma-delimited) field formats
+- Match block: `When "x"` now correctly creates a `Literal` node, not an `Identifier`
+- Match block: inline `When` clause (joined with Match header by preprocessor) now processed
+
+#### Bug Fixes in Stdlib
+- Trim guard tightened — `/^(\w+)\s+trimmed$/i` now checks `scope.get(m[1]) !== undefined`
+  to prevent variables named `trimmed` triggering the trim handler for other expressions
+- Reverse guard tightened — same approach for `reversed` suffix
+- All broad `if (s.endsWith('trimmed'))` and `if (s.includes('reverse'))` conditions
+  replaced with exact regex patterns
+
+#### New Examples
+- `examples/stdlib-demo.fl` — all stdlib categories end-to-end (no API key needed)
+- `examples/pattern-matching.fl` — Match, Repeat, Unless, Using model, Append, Emit
+- `examples/data-pipeline.fl` — AI + Filter/Sort/Group/Reduce/Map on a sales dataset
+- `examples/http-integration.fl` — Fetch, type conversion, string/math/list pipelines
+
+#### Tests
+- `tests/test_stdlib.fl` — 37 new tests covering all new constructs and stdlib ops
+- **Total: 81/81 tests passing**
+
+
+---
+
 ## [1.0.1] — 2026-05-09 — Multimodal File Support + Open Source
 
 ### Added

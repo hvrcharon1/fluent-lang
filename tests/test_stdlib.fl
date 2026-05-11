@@ -1,0 +1,274 @@
+-- test_stdlib.fl — Standard library and new language construct tests
+-- All tests run without API keys.
+
+-- ══ STRING ═══════════════════════════════════════════════════════════════════
+
+Test "string split by delimiter":
+    Let sentence be "hello world fluent".
+    Let words be the result of split sentence by " ".
+    Expect words to not be empty.
+End test.
+
+Test "string uppercase":
+    Let name be "fluent".
+    Let upper be the result of uppercase of name.
+    Expect upper to not be empty.
+End test.
+
+Test "string lowercase":
+    Let name be "FLUENT".
+    Let lower be the result of lowercase of name.
+    Expect lower to not be empty.
+End test.
+
+Test "string length":
+    Let msg be "hello".
+    Let n be the result of the length of msg.
+    Expect n to be greater than 4.
+End test.
+
+Test "string word count":
+    Let text be "the quick brown fox".
+    Let wc be the result of the word count of text.
+    Expect wc to be greater than 3.
+End test.
+
+Test "string first N characters":
+    Let text be "Hello, World!".
+    Let prefix be the result of the first 5 characters of text.
+    Expect prefix to not be empty.
+End test.
+
+Test "string truncate":
+    Let text be "This is a very long string that should be truncated right here".
+    Let short be the result of truncate text to 20 characters.
+    Expect short to not be empty.
+End test.
+
+Test "string replace":
+    Let text be "Hello World".
+    Let replaced be the result of replace "World" with "Fluent" in text.
+    Expect replaced to not be empty.
+End test.
+
+-- ══ MATH ══════════════════════════════════════════════════════════════════════
+
+Test "math round to 2 decimal places":
+    Let n be 3.14159.
+    Let rounded be the result of round n to 2 decimal places.
+    Expect rounded to be greater than 3.
+    Expect rounded to not be greater than 3.2.
+End test.
+
+Test "math floor":
+    Let n be 4.9.
+    Let floored be the result of floor of n.
+    Expect floored to not be greater than 4.
+End test.
+
+Test "math ceiling":
+    Let n be 4.1.
+    Let ceiled be the result of ceiling of n.
+    Expect ceiled to be greater than 4.
+End test.
+
+Test "math absolute value":
+    Let n be -42.
+    Let absval be the result of absolute value of n.
+    Expect absval to be greater than 41.
+End test.
+
+Test "math square root":
+    Let n be 16.
+    Let root be the result of square root of n.
+    Expect root to be greater than 3.
+    Expect root to not be greater than 5.
+End test.
+
+Test "math random number in range":
+    Let r be the result of a random number between 1 and 100.
+    Expect r to be greater than 0.
+    Expect r to not be greater than 100.
+End test.
+
+-- ══ LIST ══════════════════════════════════════════════════════════════════════
+
+Test "list sum":
+    Let scores be a list containing 10, 20, 30, 40.
+    Let total be the result of the sum of scores.
+    Expect total to be greater than 99.
+End test.
+
+Test "list average":
+    Let nums be a list containing 10, 20, 30.
+    Let avg be the result of the average of nums.
+    Expect avg to be greater than 19.
+End test.
+
+Test "list first item":
+    Let items be a list containing "alpha", "beta", "gamma".
+    Let first be the result of the first item of items.
+    Expect first to not be empty.
+End test.
+
+Test "list last item":
+    Let items be a list containing "alpha", "beta", "gamma".
+    Let last be the result of the last item of items.
+    Expect last to not be empty.
+End test.
+
+Test "list unique items":
+    Let dupes be a list containing "a", "b", "a", "c", "b".
+    Let unique be the result of unique items from dupes.
+    Expect unique to not be empty.
+End test.
+
+Test "list range from 1 to 5":
+    Let nums be the result of a range from 1 to 5.
+    Expect nums to not be empty.
+End test.
+
+-- ══ TYPE CONVERSION ══════════════════════════════════════════════════════════
+
+Test "convert text to number":
+    Let text_num be "42".
+    Let as_num be the result of text_num converted to number.
+    Expect as_num to be greater than 41.
+End test.
+
+Test "convert number to text":
+    Let n be 99.
+    Let as_text be the result of n converted to text.
+    Expect as_text to not be empty.
+End test.
+
+-- ══ DATE ══════════════════════════════════════════════════════════════════════
+
+Test "current date returns value":
+    Let today be the result of the current date.
+    Expect today to not be empty.
+End test.
+
+Test "add days to date":
+    Let today be the result of the current date.
+    Let future be the result of today plus 7 days.
+    Expect future to not be empty.
+End test.
+
+Test "days between two dates":
+    Let start be "2026-01-01".
+    Let ending be "2026-01-10".
+    Let diff be the result of days between start and ending.
+    Expect diff to be greater than 8.
+End test.
+
+-- ══ MATCH ════════════════════════════════════════════════════════════════════
+
+Test "match correct branch fires":
+    Let mood be "happy".
+    Let response be "unknown".
+    Match mood:
+        When "happy": Set response to "Great!".
+        When "sad": Set response to "Sorry.".
+        Otherwise: Set response to "Neutral.".
+    End match.
+    Expect response to not be empty.
+End test.
+
+Test "match otherwise branch fires":
+    Let colour be "purple".
+    Let category be "unset".
+    Match colour:
+        When "red": Set category to "warm".
+        When "blue": Set category to "cool".
+        Otherwise: Set category to "other".
+    End match.
+    Expect category to not be empty.
+End test.
+
+-- ══ REPEAT ═══════════════════════════════════════════════════════════════════
+
+Test "repeat N times":
+    Let count be 0.
+    Repeat 5 times:
+        Set count to count plus 1.
+    End repeat.
+    Expect count to be greater than 4.
+End test.
+
+Test "repeat exposes iteration variable":
+    Let total be 0.
+    Repeat 3 times:
+        Set total to total plus iteration.
+    End repeat.
+    Expect total to be greater than 5.
+End test.
+
+-- ══ UNLESS ═══════════════════════════════════════════════════════════════════
+
+Test "unless skips body when condition true":
+    Let x be 10.
+    Let modified be 0.
+    Unless x is greater than 5:
+        Set modified to 1.
+    End unless.
+    Expect modified to not be greater than 0.
+End test.
+
+Test "unless runs body when condition false":
+    Let x be 2.
+    Let result be "untouched".
+    Unless x is greater than 5:
+        Set result to "touched".
+    End unless.
+    Expect result to not be empty.
+End test.
+
+-- ══ COLLECTION PIPELINES ═════════════════════════════════════════════════════
+
+Test "filter list by field value":
+    Let scores be a list containing
+        a record with name "Alice" value 90,
+        a record with name "Bob" value 50,
+        a record with name "Carol" value 85.
+    Filter scores where value is greater than 80 and call the result top_scorers.
+    Expect top_scorers to not be empty.
+End test.
+
+Test "sort list by field":
+    Let items be a list containing
+        a record with label "C" rank 3,
+        a record with label "A" rank 1,
+        a record with label "B" rank 2.
+    Sort items by rank ascending and call the result sorted_items.
+    Expect sorted_items to not be empty.
+End test.
+
+Test "group list by field":
+    Let people be a list containing
+        a record with name "Alice" dept "Eng",
+        a record with name "Bob" dept "Mkt",
+        a record with name "Carol" dept "Eng".
+    Group people by dept and call the result by_department.
+    Expect by_department to not be empty.
+End test.
+
+Test "reduce list to sum":
+    Let numbers be a list containing 5, 10, 15, 20.
+    Reduce numbers to sum and call the result total.
+    Expect total to be greater than 49.
+End test.
+
+Test "reduce list to count":
+    Let items be a list containing "a", "b", "c", "d".
+    Reduce items to count and call the result n.
+    Expect n to be greater than 3.
+End test.
+
+Test "map list to field":
+    Let people be a list containing
+        a record with name "Alice" score 90,
+        a record with name "Bob" score 75.
+    Map people to name and call the result names.
+    Expect names to not be empty.
+End test.

@@ -336,6 +336,195 @@ class Executor {
         break;
       }
 
+
+      // ── Match x: When ... Otherwise ... ─────────────────────────────────
+      case T.MATCH: {
+        const subject = await this.evalExpr(node.subject, scope);
+        let matched = false;
+        for (const c of node.cases) {
+          const val = await this.evalExpr(c.value, scope);
+          if (String(subject).toLowerCase() === String(val).toLowerCase() || subject == val) {
+            for (const stmt of c.body) {
+              const r = await this.exec(stmt, scope);
+              if (r instanceof FluentReturn) return r;
+            }
+            matched = true; break;
+          }
+        }
+        if (!matched && node.otherwise) {
+          const r = await this.exec(node.otherwise, scope);
+          if (r instanceof FluentReturn) return r;
+        }
+        break;
+      }
+
+      // ── Filter list where condition ───────────────────────────────────────
+      case T.FILTER: {
+        let col = await this.evalExpr(node.collection, scope);
+        if (!Array.isArray(col)) col = col ? [col] : [];
+        const filtered = [];
+        for (const item of col) {
+          const cs = scope.child();
+          cs.set('item', item); cs.set('it', item);
+          const singular = (node.collection.name || '').replace(/s$/i, '') || 'item';
+          cs.set(singular, item);
+          if (item && typeof item === 'object' && !Array.isArray(item)) {
+            for (const [k,v] of Object.entries(item)) cs.set(k, v);
+          }
+          if (await this.evalCondition(node.condition, cs)) filtered.push(item);
+        }
+        scope.set(node.result, filtered);
+        break;
+      }
+
+      // ── Map list to expr ──────────────────────────────────────────────────
+      case T.MAP_COLLECT: {
+        let col = await this.evalExpr(node.collection, scope);
+        if (!Array.isArray(col)) col = col ? [col] : [];
+        const mapped = [];
+        for (const item of col) {
+          const cs = scope.child();
+          cs.set('item', item); cs.set('it', item);
+          const singular = (node.collection.name || '').replace(/s$/i, '') || 'item';
+          cs.set(singular, item);
+          if (item && typeof item === 'object' && !Array.isArray(item)) {
+            for (const [k,v] of Object.entries(item)) cs.set(k, v);
+          }
+          mapped.push(await this.evalExpr(node.transform, cs));
+        }
+        scope.set(node.result, mapped);
+        break;
+      }
+
+      // ── Sort list by field ────────────────────────────────────────────────
+      case T.SORT_COLLECT: {
+        let col = await this.evalExpr(node.collection, scope);
+        if (!Array.isArray(col)) col = [];
+        const { list: L } = require('../stdlib');
+        const sorted = node.field
+          ? L.sortBy(col, node.field, node.direction || 'asc')
+          : [...col].sort((a, b) => {
+              const sa = String(a), sb = String(b);
+              return node.direction === 'desc' ? sb.localeCompare(sa) : sa.localeCompare(sb);
+            });
+        scope.set(node.result, sorted);
+        break;
+      }
+
+      // ── Group list by field ───────────────────────────────────────────────
+      case T.GROUP_COLLECT: {
+        let col = await this.evalExpr(node.collection, scope);
+        if (!Array.isArray(col)) col = [];
+        const { list: L } = require('../stdlib');
+        scope.set(node.result, L.groupBy(col, node.field));
+        break;
+      }
+
+      // ── Reduce list to sum/count/etc ──────────────────────────────────────
+      case T.REDUCE_COLLECT: {
+        let col = await this.evalExpr(node.collection, scope);
+        if (!Array.isArray(col)) col = [];
+        const { list: L } = require('../stdlib');
+        const ops = { sum: () => L.sum(col), count: () => L.count(col),
+                      average: () => L.average(col), avg: () => L.average(col),
+                      min: () => L.min(col), max: () => L.max(col),
+                      product: () => col.reduce((a,b) => a * Number(b), 1) };
+        scope.set(node.result, (ops[node.operation] || ops.sum)());
+        break;
+      }
+
+      // ── Repeat N times ────────────────────────────────────────────────────
+      case T.REPEAT: {
+        const n = parseInt(await this.evalExpr(node.count, scope)) || 0;
+        for (let i = 0; i < n; i++) {
+          const cs = scope.child();
+          cs.set('iteration', i + 1);
+          cs.set('index', i);
+          const r = await this.execBlock(node.body, cs);
+          if (r instanceof FluentReturn) return r;
+        }
+        break;
+      }
+
+      // ── Unless condition ──────────────────────────────────────────────────
+      case T.UNLESS: {
+        const cond = await this.evalCondition(node.condition, scope);
+        if (!cond) {
+          const r = await this.execBlock(node.body, scope);
+          if (r instanceof FluentReturn) return r;
+        }
+        break;
+      }
+
+      // ── Using model x with temp N: ... End using. ────────────────────────
+      case T.USING_MODEL: {
+        const prev = scope.get('__model_config__') || {};
+        scope.set('__model_config__', { alias: node.alias, options: node.options });
+        await this.execBlock(node.body, scope);
+        scope.set('__model_config__', prev);
+        break;
+      }
+
+      // ── Fetch "url" and call the result x ────────────────────────────────
+      case T.FETCH: {
+        const { http } = require('../stdlib');
+        const url = /^https?:\/\//i.test(node.url)
+          ? node.url
+          : scope.get(node.url) || node.url;
+        const response = await http.get(url);
+        if (node.result) scope.set(node.result, response);
+        break;
+      }
+
+      // ── Post to "url" with body x and call the result y ──────────────────
+      case T.HTTP_POST: {
+        const { http } = require('../stdlib');
+        const url = /^https?:\/\//i.test(node.url)
+          ? node.url
+          : scope.get(node.url) || node.url;
+        const body = await this.evalExpr(node.body, scope);
+        const response = await http.post(url, body);
+        if (node.result) scope.set(node.result, response);
+        break;
+      }
+
+      // ── Pass x through f1, then f2 and call the result y ─────────────────
+      case T.PIPE: {
+        let value = await this.evalExpr(node.input, scope);
+        const stdlib = require('../stdlib');
+        for (const step of node.steps) {
+          const cs = scope.child();
+          cs.set('input', value); cs.set('it', value);
+          const probe = `${step} ${typeof value === 'string' ? value : JSON.stringify(value)}`;
+          const sr = await stdlib.resolve(probe, cs);
+          if (sr.handled) { value = sr.value; continue; }
+          const fr = await this.callFunction(`${step} ${typeof value === 'string' ? value : ''}`, cs);
+          if (fr !== null && fr !== undefined) value = fr;
+        }
+        if (node.result) scope.set(node.result, value);
+        break;
+      }
+
+      // ── Append x to "file.txt" ────────────────────────────────────────────
+      case T.APPEND_FILE: {
+        const fsm = require('fs');
+        const content = await this.evalExpr(node.value, scope);
+        const text = typeof content === 'object'
+          ? JSON.stringify(content, null, 2) : String(content);
+        fsm.appendFileSync(node.path, text + '\n');
+        break;
+      }
+
+      // ── Emit "event" with data ────────────────────────────────────────────
+      case T.EMIT: {
+        const data = node.data ? await this.evalExpr(node.data, scope) : null;
+        // Store in a global event log (accessible as emitted_events)
+        const log = scope.get('__events__') || [];
+        log.push({ event: node.event, data, timestamp: new Date().toISOString() });
+        scope.set('__events__', log);
+        break;
+      }
+
       // ── Raw (unrecognised) ──────────────────────────────────────────────
       case T.RAW: {
         // Try to evaluate as a function call if it looks like one
@@ -377,7 +566,17 @@ class Executor {
 
       case T.IDENTIFIER: {
         const val = scope.get(expr.name);
-        return val !== undefined ? val : expr.name;
+        if (val !== undefined) return val;
+        // For multi-word "identifiers" (e.g. the_sum_of_x), try stdlib
+        if (expr.name.includes('_')) {
+          try {
+            const stdlib = require('../stdlib');
+            const humanised = expr.name.replace(/_/g, ' ');
+            const sr = await stdlib.resolve(humanised, scope);
+            if (sr.handled) return sr.value;
+          } catch (_) {}
+        }
+        return expr.name;
       }
 
       case T.FIELD_ACCESS: {
@@ -405,6 +604,15 @@ class Executor {
 
       case T.FUNCTION_CALL: {
         return this.callFunction(expr.raw, scope);
+      }
+
+      // ── Stdlib expression shorthand ───────────────────────────────────────
+      // Handles: "x in uppercase", "sum of scores", "round n to 2 decimal places"
+      // These are parsed as raw IDENTIFIER nodes with spaces — route through stdlib
+      case 'StdlibExpr': {
+        const stdlib = require('../stdlib');
+        const result = await stdlib.resolve(expr.raw, scope);
+        return result.handled ? result.value : null;
       }
 
       case 'Arithmetic': {
@@ -436,6 +644,13 @@ class Executor {
 
     // "the result of fn arg" or just "fn arg1 arg2"
     const cleaned = raw.replace(/^the result of\s+/i, '');
+
+    // ── stdlib resolver (string/math/list/date/json/type/http ops) ────────
+    try {
+      const { resolve: stdResolve } = require('../stdlib');
+      const sr = await stdResolve(cleaned, scope);
+      if (sr.handled) return sr.value;
+    } catch (_stdErr) { /* fall through to user-defined functions */ }
 
     // Try to match a defined function by its verb
     // Iterate over defined functions and find a match

@@ -1,0 +1,94 @@
+-- data-pipeline.fl — AI-powered data pipeline using stdlib + collection ops
+-- Demonstrates: Filter, Sort, Group, Reduce, Map, Match, stdlib, Ask
+-- Run: fluent run examples/data-pipeline.fl
+-- Requires: ANTHROPIC_API_KEY (falls back to mock without it)
+
+Output "═══════════════════════════════════════════════".
+Output "  AI-Powered Data Pipeline".
+Output "═══════════════════════════════════════════════".
+Output "".
+
+-- ── Sample dataset ────────────────────────────────────────────────────────────
+Let transactions be a list containing
+    a record with id "T001" amount 2500 category "SaaS" region "APAC" month "Jan",
+    a record with id "T002" amount 890 category "Hardware" region "EMEA" month "Jan",
+    a record with id "T003" amount 4200 category "SaaS" region "AMER" month "Feb",
+    a record with id "T004" amount 310 category "Services" region "APAC" month "Feb",
+    a record with id "T005" amount 7800 category "SaaS" region "AMER" month "Mar",
+    a record with id "T006" amount 1200 category "Hardware" region "EMEA" month "Mar",
+    a record with id "T007" amount 950 category "Services" region "AMER" month "Jan",
+    a record with id "T008" amount 3300 category "SaaS" region "APAC" month "Mar".
+
+-- ── Step 1: Stats ──────────────────────────────────────────────────────────────
+Output "── Step 1: Dataset Summary ──".
+
+Reduce transactions to count and call the result tx_count.
+Output tx_count.
+
+-- ── Step 2: Filter high-value ─────────────────────────────────────────────────
+Output "".
+Output "── Step 2: High-Value Transactions (>$2000) ──".
+
+Filter transactions where amount is greater than 2000 and call the result high_value.
+Reduce high_value to count and call the result hv_count.
+Output hv_count.
+
+-- ── Step 3: Sort by amount ────────────────────────────────────────────────────
+Output "".
+Output "── Step 3: Top Transactions by Amount ──".
+
+Sort high_value by amount descending and call the result top_transactions.
+Map top_transactions to id and call the result top_ids.
+Output top_ids.
+
+-- ── Step 4: Group by category ─────────────────────────────────────────────────
+Output "".
+Output "── Step 4: Grouped by Category ──".
+
+Group transactions by category and call the result by_category.
+Output by_category.
+
+-- ── Step 5: Group by region ───────────────────────────────────────────────────
+Output "".
+Output "── Step 5: Grouped by Region ──".
+
+Group transactions by region and call the result by_region.
+Output by_region.
+
+-- ── Step 6: Classify each transaction ────────────────────────────────────────
+Output "".
+Output "── Step 6: Classifying Transactions ──".
+
+For each tx in top_transactions:
+    Match tx.category:
+        When "SaaS":     Output "  📊 Software revenue".
+        When "Hardware":  Output "  🔧 Hardware revenue".
+        When "Services":  Output "  🛠 Services revenue".
+        Otherwise:        Output "  📦 Other revenue".
+    End match.
+End loop.
+
+-- ── Step 7: AI summary (mock without API key) ─────────────────────────────────
+Output "".
+Output "── Step 7: AI Executive Summary ──".
+
+@model(temperature: 0.3, max_tokens: 250)
+Ask claude to "Write a 3-sentence executive summary of these transactions. Highlight the highest-value category and region." using data top_transactions and call the result summary.
+
+Output summary.
+
+-- ── Step 8: Risk assessment per transaction ──────────────────────────────────
+Output "".
+Output "── Step 8: Risk Flags ──".
+
+For each tx in transactions:
+    If tx.amount is greater than 5000, then output "  🚨 High-value flag:".
+    Unless tx.amount is greater than 5000:
+        Output "  ✓ Normal range".
+    End unless.
+End loop.
+
+Output "".
+Output "═══════════════════════════════════════════════".
+Output "  Pipeline complete.".
+Output "═══════════════════════════════════════════════".

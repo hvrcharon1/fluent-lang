@@ -382,6 +382,92 @@ fluent-lang/
 
 ---
 
+---
+
+## Standard Library (No API Key Required)
+
+FLUENT v1.1 ships with 100+ built-in functions across 7 categories — all execute locally without any model calls.
+
+```fluent
+-- String
+Let upper    be the result of uppercase of name.
+Let slug     be the result of slugify title.
+Let words    be the result of split sentence by " ".
+Let joined   be the result of join words with ", ".
+Let short    be the result of truncate text to 80 characters.
+Let n        be the result of the length of text.
+Let wc       be the result of the word count of text.
+Let replaced be the result of replace "old" with "new" in text.
+
+-- Math
+Let rounded  be the result of round score to 2 decimal places.
+Let root     be the result of square root of area.
+Let absval   be the result of absolute value of n.
+Let rand     be the result of a random number between 1 and 100.
+
+-- List
+Let total    be the result of the sum of scores.
+Let avg      be the result of the average of scores.
+Let first    be the result of the first item of list.
+Let unique   be the result of unique items from dupes.
+Let nums     be the result of a range from 1 to 10.
+
+-- Date
+Let today    be the result of the current date.
+Let tomorrow be the result of today plus 1 days.
+Let diff     be the result of days between start and end.
+
+-- Type conversion
+Let n        be the result of raw_text converted to number.
+Let s        be the result of score converted to text.
+
+-- HTTP fetch
+Fetch "https://api.example.com/data" and call the result response.
+Post to "https://api.example.com/items" with body payload and call the result created.
+```
+
+---
+
+## New Language Constructs (v1.1)
+
+```fluent
+-- Pattern Matching
+Match status:
+    When "active":   Output "Running.".
+    When "error":    Output "Failed!".
+    Otherwise:       Output "Unknown.".
+End match.
+
+-- Repeat
+Repeat 5 times:
+    Set count to count plus 1.
+End repeat.
+
+-- Unless
+Unless user.verified is false:
+    Output "Welcome, verified user.".
+End unless.
+
+-- Scoped Model Config
+Using model claude with temperature 0:
+    Ask claude to "classify this" using text input and call the result r.
+End using.
+
+-- Collection Pipelines
+Filter employees where salary is greater than 90000 and call the result senior.
+Map    employees to name                              and call the result names.
+Sort   employees by salary descending                 and call the result ranked.
+Group  employees by dept                              and call the result by_dept.
+Reduce scores    to sum                               and call the result total.
+
+-- Pipe
+Pass input through uppercase, then through slugify and call the result slug.
+
+-- Append to file / Emit event
+Append log_entry to "run.log".
+Emit "pipeline_done" with result.
+```
+
 ## Contributing
 
 Contributions are very welcome — new providers, language features, examples,

@@ -1,0 +1,160 @@
+-- stdlib-demo.fl — FLUENT Standard Library Showcase
+-- Demonstrates all stdlib categories without API calls.
+-- Run: fluent run examples/stdlib-demo.fl
+
+Output "═══════════════════════════════════".
+Output "  FLUENT Standard Library Demo".
+Output "═══════════════════════════════════".
+Output "".
+
+-- ── STRING OPERATIONS ────────────────────────────────────────────────────────
+Output "── Strings ──".
+
+Let sentence be "  Hello, World from FLUENT!  ".
+Let trimmed be the result of trim sentence.
+Let lower be the result of lowercase of trimmed.
+Let words be the result of split lower by " ".
+Let word_count be the result of the word count of trimmed.
+Let slug be the result of slugify trimmed.
+
+Output trimmed.
+Output lower.
+Output word_count.
+Output slug.
+
+Let replaced be the result of replace "World" with "Universe" in trimmed.
+Output replaced.
+
+Let first10 be the result of the first 10 characters of trimmed.
+Output first10.
+
+Let short be the result of truncate trimmed to 15 characters.
+Output short.
+
+Output "".
+
+-- ── MATH OPERATIONS ──────────────────────────────────────────────────────────
+Output "── Math ──".
+
+Let pi be 3.14159265358979.
+Let rounded_pi be the result of round pi to 4 decimal places.
+Output rounded_pi.
+
+Let n be -73.6.
+Let abs_n be the result of absolute value of n.
+Let floor_n be the result of floor of n.
+Let ceil_n be the result of ceiling of n.
+Output abs_n.
+Output floor_n.
+Output ceil_n.
+
+Let area be 144.
+Let side be the result of square root of area.
+Output side.
+
+Let base be 2.
+Let exp be 10.
+Let powered be the result of base to the power of exp.
+Output powered.
+
+Let rand be the result of a random number between 1 and 100.
+Output rand.
+
+Output "".
+
+-- ── LIST OPERATIONS ──────────────────────────────────────────────────────────
+Output "── Lists ──".
+
+Let scores be a list containing 88, 73, 95, 61, 82, 99, 47.
+
+Let total be the result of the sum of scores.
+Let avg be the result of the average of scores.
+Let min_score be the result of the minimum of scores.
+Let max_score be the result of the maximum of scores.
+Let first_score be the result of the first item of scores.
+Let last_score be the result of the last item of scores.
+
+Output total.
+Output avg.
+Output min_score.
+Output max_score.
+Output first_score.
+Output last_score.
+
+Let dupes be a list containing "a", "b", "a", "c", "b", "d".
+Let unique_items be the result of unique items from dupes.
+Output unique_items.
+
+Let nums be the result of a range from 1 to 10.
+Output nums.
+
+Output "".
+
+-- ── DATE OPERATIONS ──────────────────────────────────────────────────────────
+Output "── Dates ──".
+
+Let today be the result of the current date.
+Let tomorrow be the result of today plus 1 days.
+Let next_week be the result of today plus 7 days.
+
+Output today.
+Output tomorrow.
+
+Let start be "2026-01-01".
+Let end be "2026-12-31".
+Let days_in_year be the result of days between start and end.
+Output days_in_year.
+
+Output "".
+
+-- ── TYPE CONVERSION ──────────────────────────────────────────────────────────
+Output "── Types ──".
+
+Let raw_score be "95".
+Let numeric_score be the result of raw_score converted to number.
+Let doubled be numeric_score plus numeric_score.
+Output doubled.
+
+Let flag_text be "true".
+Let flag_bool be the result of flag_text converted to boolean.
+Output flag_bool.
+
+Let record_val be a record with name "FLUENT" version 1.
+Output record_val.
+
+Output "".
+
+-- ── COLLECTION PIPELINES ─────────────────────────────────────────────────────
+Output "── Collection Pipelines ──".
+
+Let employees be a list containing
+    a record with name "Alice" dept "Engineering" salary 95000,
+    a record with name "Bob" dept "Marketing" salary 72000,
+    a record with name "Carol" dept "Engineering" salary 88000,
+    a record with name "Dave" dept "Marketing" salary 65000,
+    a record with name "Eve" dept "Engineering" salary 102000.
+
+-- Filter: senior engineers only
+Filter employees where salary is greater than 90000 and call the result senior.
+Output senior.
+
+-- Sort: by salary descending
+Sort employees by salary descending and call the result ranked.
+Output ranked.
+
+-- Group: by department
+Group employees by dept and call the result by_dept.
+Output by_dept.
+
+-- Reduce: total payroll
+Reduce employees to count and call the result headcount.
+Output headcount.
+
+-- Map: extract names only
+Map employees to name and call the result names.
+Output names.
+
+Output "".
+Output "═══════════════════════════════════".
+Output "  All stdlib operations complete.".
+Output "═══════════════════════════════════".

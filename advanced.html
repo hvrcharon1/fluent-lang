@@ -558,6 +558,7 @@
   <a href="#packages">Packages</a>
   <a href="#grammar">Formal Grammar</a>
   <a href="#roadmap">Roadmap</a>
+  <a href="#stdlib">Stdlib v1.1</a>
 </nav>
 
 <div class="container">
@@ -1582,6 +1583,126 @@ fluent lock</pre>
   </section>
 
 </div>
+
+
+  <!-- ── STDLIB v1.1 ── -->
+  <section id="stdlib">
+    <span class="section-label">27 — Standard Library & New Constructs (v1.1)</span>
+    <h2>Standard Library</h2>
+    <p>FLUENT v1.1 adds <strong>100+ built-in functions</strong> that execute locally — no model call, no API key, no latency. Invoked through the same <code>the result of</code> expression form as everything else.</p>
+
+    <h3>Pattern Matching</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">match.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="kw">Match</span> <span class="var">status</span>:
+    <span class="kw">When</span> <span class="str">"active"</span>:   <span class="kw">Output</span> <span class="str">"✓ Running."</span>.
+    <span class="kw">When</span> <span class="str">"error"</span>:    <span class="kw">Output</span> <span class="str">"✗ Failed!"</span>.
+    <span class="kw">When</span> <span class="str">"pending"</span>:  <span class="kw">Output</span> <span class="str">"⏳ Waiting."</span>.
+    <span class="kw">Otherwise</span>:       <span class="kw">Output</span> <span class="str">"? Unknown."</span>.
+<span class="kw">End match</span>.</pre>
+    </div>
+
+    <h3>Repeat / Unless / Scoped Model</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">constructs.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- Repeat N times (exposes: iteration, index)</span>
+<span class="kw">Repeat</span> <span class="num">5</span> <span class="kw">times</span>:
+    <span class="kw">Set</span> <span class="var">count</span> <span class="kw">to</span> <span class="var">count</span> <span class="op">plus</span> <span class="var">iteration</span>.
+<span class="kw">End repeat</span>.
+
+<span class="cmt">-- Unless (inverse of If)</span>
+<span class="kw">Unless</span> <span class="var">user</span><span class="op">.</span>verified <span class="kw">is</span> false:
+    <span class="kw">Output</span> <span class="str">"Welcome, verified user."</span>.
+<span class="kw">End unless</span>.
+
+<span class="cmt">-- Scoped model configuration</span>
+<span class="kw">Using model</span> <span class="mod">claude</span> <span class="kw">with</span> temperature <span class="num">0</span>:
+    <span class="kw">Ask</span> <span class="mod">claude</span> <span class="kw">to</span> <span class="str">"classify this text"</span> <span class="kw">using text</span> <span class="var">input</span> <span class="kw">and call the result</span> <span class="var">r</span>.
+<span class="kw">End using</span>.</pre>
+    </div>
+
+    <h3>Collection Pipelines</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">collections.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="kw">Let</span> <span class="var">employees</span> <span class="kw">be</span> a list containing
+    a record with name <span class="str">"Alice"</span> dept <span class="str">"Engineering"</span> salary <span class="num">95000</span>,
+    a record with name <span class="str">"Bob"</span>   dept <span class="str">"Marketing"</span>   salary <span class="num">72000</span>,
+    a record with name <span class="str">"Eve"</span>   dept <span class="str">"Engineering"</span> salary <span class="num">102000</span>.
+
+<span class="cmt">-- Filter</span>
+<span class="kw">Filter</span> <span class="var">employees</span> <span class="kw">where</span> salary <span class="kw">is greater than</span> <span class="num">90000</span> <span class="kw">and call the result</span> <span class="var">senior</span>.
+
+<span class="cmt">-- Map</span>
+<span class="kw">Map</span> <span class="var">employees</span> <span class="kw">to</span> name <span class="kw">and call the result</span> <span class="var">names</span>.
+
+<span class="cmt">-- Sort</span>
+<span class="kw">Sort</span> <span class="var">employees</span> <span class="kw">by</span> salary <span class="kw">descending and call the result</span> <span class="var">ranked</span>.
+
+<span class="cmt">-- Group</span>
+<span class="kw">Group</span> <span class="var">employees</span> <span class="kw">by</span> dept <span class="kw">and call the result</span> <span class="var">by_dept</span>.
+
+<span class="cmt">-- Reduce: sum | count | average | min | max | product</span>
+<span class="kw">Reduce</span> <span class="var">employees</span> <span class="kw">to</span> count <span class="kw">and call the result</span> <span class="var">headcount</span>.</pre>
+    </div>
+
+    <h3>Standard Library — Quick Reference</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="filename">stdlib.fl</span><span class="lang-tag">Fluent</span></div>
+      <pre><span class="cmt">-- ── String ──────────────────────────────────────────────────────────────</span>
+<span class="kw">Let</span> <span class="var">upper</span>    <span class="kw">be the result of</span> uppercase of <span class="var">name</span>.
+<span class="kw">Let</span> <span class="var">lower</span>    <span class="kw">be the result of</span> lowercase of <span class="var">name</span>.
+<span class="kw">Let</span> <span class="var">words</span>    <span class="kw">be the result of</span> split <span class="var">sentence</span> by <span class="str">" "</span>.
+<span class="kw">Let</span> <span class="var">joined</span>   <span class="kw">be the result of</span> join <span class="var">words</span> with <span class="str">", "</span>.
+<span class="kw">Let</span> <span class="var">slug</span>     <span class="kw">be the result of</span> slugify <span class="var">title</span>.
+<span class="kw">Let</span> <span class="var">length</span>   <span class="kw">be the result of</span> the length of <span class="var">text</span>.
+<span class="kw">Let</span> <span class="var">wc</span>       <span class="kw">be the result of</span> the word count of <span class="var">text</span>.
+<span class="kw">Let</span> <span class="var">short</span>    <span class="kw">be the result of</span> truncate <span class="var">text</span> to <span class="num">80</span> characters.
+<span class="kw">Let</span> <span class="var">prefix</span>   <span class="kw">be the result of</span> the first <span class="num">10</span> characters of <span class="var">text</span>.
+<span class="kw">Let</span> <span class="var">replaced</span> <span class="kw">be the result of</span> replace <span class="str">"old"</span> with <span class="str">"new"</span> in <span class="var">text</span>.
+
+<span class="cmt">-- ── Math ────────────────────────────────────────────────────────────────</span>
+<span class="kw">Let</span> <span class="var">rounded</span>  <span class="kw">be the result of</span> round <span class="var">n</span> to <span class="num">2</span> decimal places.
+<span class="kw">Let</span> <span class="var">floored</span>  <span class="kw">be the result of</span> floor of <span class="var">n</span>.
+<span class="kw">Let</span> <span class="var">ceiled</span>   <span class="kw">be the result of</span> ceiling of <span class="var">n</span>.
+<span class="kw">Let</span> <span class="var">absval</span>   <span class="kw">be the result of</span> absolute value of <span class="var">n</span>.
+<span class="kw">Let</span> <span class="var">root</span>     <span class="kw">be the result of</span> square root of <span class="var">area</span>.
+<span class="kw">Let</span> <span class="var">powered</span>  <span class="kw">be the result of</span> <span class="var">base</span> to the power of <span class="var">exp</span>.
+<span class="kw">Let</span> <span class="var">rand</span>     <span class="kw">be the result of</span> a random number between <span class="num">1</span> and <span class="num">100</span>.
+<span class="kw">Let</span> <span class="var">pct</span>      <span class="kw">be the result of</span> percentage of <span class="var">part</span> out of <span class="var">total</span>.
+
+<span class="cmt">-- ── List ────────────────────────────────────────────────────────────────</span>
+<span class="kw">Let</span> <span class="var">total</span>    <span class="kw">be the result of</span> the sum of <span class="var">scores</span>.
+<span class="kw">Let</span> <span class="var">avg</span>      <span class="kw">be the result of</span> the average of <span class="var">scores</span>.
+<span class="kw">Let</span> <span class="var">first</span>    <span class="kw">be the result of</span> the first item of <span class="var">list</span>.
+<span class="kw">Let</span> <span class="var">last</span>     <span class="kw">be the result of</span> the last item of <span class="var">list</span>.
+<span class="kw">Let</span> <span class="var">unique</span>   <span class="kw">be the result of</span> unique items from <span class="var">dupes</span>.
+<span class="kw">Let</span> <span class="var">nums</span>     <span class="kw">be the result of</span> a range from <span class="num">1</span> to <span class="num">10</span>.
+<span class="kw">Let</span> <span class="var">shuffled</span> <span class="kw">be the result of</span> shuffle <span class="var">list</span>.
+
+<span class="cmt">-- ── Date ────────────────────────────────────────────────────────────────</span>
+<span class="kw">Let</span> <span class="var">today</span>    <span class="kw">be the result of</span> the current date.
+<span class="kw">Let</span> <span class="var">future</span>   <span class="kw">be the result of</span> <span class="var">today</span> plus <span class="num">7</span> days.
+<span class="kw">Let</span> <span class="var">diff</span>     <span class="kw">be the result of</span> days between <span class="var">start</span> and <span class="var">end</span>.
+<span class="kw">Let</span> <span class="var">fmt</span>      <span class="kw">be the result of</span> <span class="var">today</span> formatted as <span class="str">"DD/MM/YYYY"</span>.
+
+<span class="cmt">-- ── Type ────────────────────────────────────────────────────────────────</span>
+<span class="kw">Let</span> <span class="var">n</span>        <span class="kw">be the result of</span> <span class="var">raw</span> converted to number.
+<span class="kw">Let</span> <span class="var">s</span>        <span class="kw">be the result of</span> <span class="var">score</span> converted to text.
+<span class="kw">Let</span> <span class="var">kind</span>     <span class="kw">be the result of</span> the type of <span class="var">value</span>.
+
+<span class="cmt">-- ── HTTP ────────────────────────────────────────────────────────────────</span>
+<span class="kw">Fetch</span> <span class="str">"https://api.example.com/data"</span> <span class="kw">and call the result</span> <span class="var">response</span>.
+<span class="kw">Post</span> <span class="kw">to</span> <span class="str">"https://api.example.com/items"</span> <span class="kw">with body</span> <span class="var">payload</span> <span class="kw">and call the result</span> <span class="var">created</span>.
+
+<span class="cmt">-- ── IO / Events ─────────────────────────────────────────────────────────</span>
+<span class="kw">Append</span> <span class="var">log_entry</span> <span class="kw">to</span> <span class="str">"run.log"</span>.
+<span class="kw">Emit</span> <span class="str">"pipeline_done"</span> <span class="kw">with</span> <span class="var">result</span>.</pre>
+    </div>
+
+    <div class="callout tip">
+      <strong>Demo:</strong> Run <code>fluent run examples/stdlib-demo.fl</code> to see all stdlib categories in action — no API key required. Produces real output entirely from local computation.
+    </div>
+  </section>
 
 <footer>
   <div><strong>FLUENT</strong> Advanced Technical Specification · Part II · v1.0 · 2026</div>

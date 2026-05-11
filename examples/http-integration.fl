@@ -1,0 +1,89 @@
+-- http-integration.fl — HTTP fetch, JSON parsing, type conversion
+-- Demonstrates: Fetch URL, Post to URL, parsed as JSON, converted to number
+-- Run: fluent run examples/http-integration.fl
+
+Output "═══════════════════════════════════════".
+Output "  HTTP Integration Demo".
+Output "═══════════════════════════════════════".
+Output "".
+
+-- ── Fetch a public API ────────────────────────────────────────────────────────
+Output "── Fetch: Public JSON API ──".
+
+Try to fetch "https://jsonplaceholder.typicode.com/posts/1" and call the result post_response.
+If that fails, let post_response be a record with status 503 ok false body "Offline".
+
+Output post_response.
+Output "".
+
+-- ── Parse the response body ────────────────────────────────────────────────────
+Output "── Parse & Extract ──".
+
+If post_response.ok is true:
+    Let post_body be the result of post_response.body.
+    Output post_body.
+Otherwise, Output "  Could not fetch post — working offline.".
+
+Output "".
+
+-- ── Type conversion pipeline ───────────────────────────────────────────────────
+Output "── Type Conversions ──".
+
+Let raw_values be a list containing "42", "3.14", "100", "7".
+
+For each raw in raw_values:
+    Let as_num be the result of raw converted to number.
+    Let doubled be as_num plus as_num.
+    Output doubled.
+End loop.
+
+Output "".
+
+-- ── JSON round-trip ────────────────────────────────────────────────────────────
+Output "── JSON Ops ──".
+
+Let payload be a record with
+    model "claude-sonnet-4-6"
+    temperature 0.7
+    max_tokens 1024.
+
+Output payload.
+
+-- ── String pipeline ────────────────────────────────────────────────────────────
+Output "".
+Output "── String Pipeline ──".
+
+Let title be "  FLUENT Natural Language Programming Language  ".
+Let cleaned be the result of trim title.
+Let slug be the result of slugify cleaned.
+Let words be the result of split cleaned by " ".
+Let word_count be the result of the word count of cleaned.
+
+Output slug.
+Output word_count.
+
+-- ── Math pipeline ─────────────────────────────────────────────────────────────
+Output "".
+Output "── Math Pipeline ──".
+
+Let raw_score be 87.456789.
+Let rounded be the result of round raw_score to 2 decimal places.
+Let percentage be the result of round raw_score to 0 decimal places.
+Output rounded.
+Output percentage.
+
+Let prices be a list containing 19.99, 49.99, 9.99, 99.99, 29.99.
+Let total_price be the result of the sum of prices.
+Let avg_price be the result of the average of prices.
+Let min_price be the result of the minimum of prices.
+Let max_price be the result of the maximum of prices.
+
+Output total_price.
+Output avg_price.
+Output min_price.
+Output max_price.
+
+Output "".
+Output "═══════════════════════════════════════".
+Output "  HTTP integration demo complete.".
+Output "═══════════════════════════════════════".

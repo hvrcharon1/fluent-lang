@@ -38,6 +38,21 @@ const T = {
   STOP:          'Stop',             // Stop with error "...".
   RAW:           'Raw',              // Unrecognised — stored as raw text for fallback
   LOAD_FILE:     'LoadFile',         // load image/audio/video/document "path"
+  // ── New v1.1 constructs ─────────────────────────────────────────────────────
+  MATCH:         'Match',            // Match x: When "a": ... End match.
+  FILTER:        'Filter',           // Filter list where cond and call result x.
+  MAP_COLLECT:   'MapCollect',       // Map list to expr and call result x.
+  SORT_COLLECT:  'SortCollect',      // Sort list by field desc and call result x.
+  GROUP_COLLECT: 'GroupCollect',     // Group list by field and call result x.
+  REDUCE_COLLECT:'ReduceCollect',    // Reduce list to sum and call result x.
+  REPEAT:        'Repeat',           // Repeat N times: ... End repeat.
+  UNLESS:        'Unless',           // Unless condition: ... End unless.
+  USING_MODEL:   'UsingModel',       // Using model x with temp 0: ... End using.
+  FETCH:         'Fetch',            // Fetch "url" and call result x.
+  HTTP_POST:     'HttpPost',         // Post to "url" with body x and call result y.
+  PIPE:          'Pipe',             // Pass x through f1, then f2 and call result y.
+  APPEND_FILE:   'AppendFile',       // Append x to "file".
+  EMIT:          'Emit',             // Emit "event" with data.
   // Expression nodes
   LITERAL:       'Literal',
   IDENTIFIER:    'Identifier',
@@ -179,15 +194,75 @@ function parseExpression(s) {
   return ident(s.replace(/\s+/g, '_').toLowerCase());
 }
 
+// Tokenise a record string into alternating key/value tokens
+function tokeniseRecord(s) {
+  const tokens = [];
+  let i = 0;
+  while (i < s.length) {
+    if (/\s/.test(s[i])) { i++; continue; }
+    if (s[i] === '"') {
+      let j = i + 1;
+      while (j < s.length && s[j] !== '"') j++;
+      tokens.push({ kind: 'string', raw: s.slice(i, j + 1), val: s.slice(i + 1, j) });
+      i = j + 1;
+    } else {
+      let j = i;
+      while (j < s.length && !/\s/.test(s[j])) j++;
+      const word = s.slice(i, j);
+      if (/^-?\d+(\.\d+)?$/.test(word)) tokens.push({ kind: 'number', raw: word, val: parseFloat(word) });
+      else tokens.push({ kind: 'word', raw: word, val: word });
+      i = j;
+    }
+  }
+  return tokens;
+}
+
 function parseRecord(s) {
-  // "name "Alice", age 30, city "Mumbai""
   const fields = {};
-  // Split by comma that is not inside quotes
+  // If there are commas outside quotes → comma-delimited fields
   const parts = splitByComma(s);
-  for (const part of parts) {
-    const trimmed = part.trim();
-    const m = trimmed.match(/^(\w+)\s+(.+)$/);
-    if (m) fields[m[1]] = parseExpression(m[2]);
+  if (parts.length > 1) {
+    for (const part of parts) {
+      const trimmed = part.trim();
+      const m = trimmed.match(/^(\w+)\s+(.+)$/);
+      if (m) fields[m[1]] = parseExpression(m[2].trim());
+    }
+    return { type: T.RECORD, fields };
+  }
+  // No commas → tokenise and pair key/value tokens
+  // Pattern: WORD (string|number|bool|nothing)  WORD (string|number|bool|nothing) ...
+  const tokens = tokeniseRecord(s);
+  let i = 0;
+  while (i < tokens.length) {
+    const keyTok = tokens[i];
+    if (!keyTok || keyTok.kind !== 'word') { i++; continue; }
+    const valTok = tokens[i + 1];
+    if (!valTok) break;
+    const key = keyTok.val;
+    let value = null;
+    if (valTok.kind === 'string') {
+      value = strLit(valTok.val); i += 2;
+    } else if (valTok.kind === 'number') {
+      value = numLit(valTok.val); i += 2;
+    } else if (valTok.kind === 'word') {
+      const w = valTok.val.toLowerCase();
+      if (w === 'true' || w === 'yes')   { value = boolLit(true);  i += 2; }
+      else if (w === 'false' || w === 'no') { value = boolLit(false); i += 2; }
+      else if (w === 'nothing' || w === 'null') { value = { type: T.LITERAL, kind: 'null', value: null }; i += 2; }
+      else {
+        // Two consecutive words — first is key, second might be the start of a value
+        // Peek ahead: if the next-next token is a value type, treat current pair as key/identifier-value
+        const nextTok = tokens[i + 2];
+        if (!nextTok || nextTok.kind === 'word') {
+          // Skip — probably ambiguous; try treating valTok as start of next key
+          i++;
+        } else {
+          // valTok is a variable reference
+          value = ident(valTok.val); i += 2;
+        }
+      }
+    } else { i++; continue; }
+    if (value !== null) fields[key] = value;
   }
   return { type: T.RECORD, fields };
 }
@@ -405,6 +480,67 @@ function parseStatement(group) {
     return { type: T.RECALL, query: recMatch[1], result: recMatch[2] };
   }
 
+
+  // ── Filter / Map / Sort / Group / Reduce ────────────────────────────────
+  const filterMatch = t.match(/^Filter\s+(\w+)\s+where\s+(.+?)\s+and call the result\s+(\w+)$/i);
+  if (filterMatch) {
+    return { type: T.FILTER, annotations, collection: ident(filterMatch[1]), condition: parseCondition(filterMatch[2]), result: filterMatch[3] };
+  }
+
+  const mapMatch = t.match(/^Map\s+(\w+)\s+to\s+(\w+(?:\.\w+)*)\s+and call the result\s+(\w+)$/i);
+  if (mapMatch) {
+    return { type: T.MAP_COLLECT, annotations, collection: ident(mapMatch[1]), transform: parseExpression(mapMatch[2]), result: mapMatch[3] };
+  }
+
+  const sortMatch = t.match(/^Sort\s+(\w+)\s+by\s+(\w+(?:\.\w+)*)\s+(ascending|descending|asc|desc)?\s*and call the result\s+(\w+)$/i);
+  if (sortMatch) {
+    return {
+      type: T.SORT_COLLECT, annotations,
+      collection: ident(sortMatch[1]),
+      field: sortMatch[2],
+      direction: (sortMatch[3] || 'asc').toLowerCase().startsWith('desc') ? 'desc' : 'asc',
+      result: sortMatch[4],
+    };
+  }
+
+  const groupMatch = t.match(/^Group\s+(\w+)\s+by\s+(\w+(?:\.\w+)*)\s+and call the result\s+(\w+)$/i);
+  if (groupMatch) {
+    return { type: T.GROUP_COLLECT, annotations, collection: ident(groupMatch[1]), field: groupMatch[2], result: groupMatch[3] };
+  }
+
+  const reduceMatch = t.match(/^Reduce\s+(\w+)\s+to\s+(sum|count|product|min|max|average|avg)\s+and call the result\s+(\w+)$/i);
+  if (reduceMatch) {
+    return { type: T.REDUCE_COLLECT, annotations, collection: ident(reduceMatch[1]), operation: reduceMatch[2].toLowerCase(), result: reduceMatch[3] };
+  }
+
+  // ── Fetch / Post / Pipe / Append / Emit ─────────────────────────────────
+  const fetchMatch = t.match(/^Fetch\s+"([^"]+)"\s+and call the result\s+(\w+)$/i) ||
+                     t.match(/^Fetch\s+(\w+)\s+and call the result\s+(\w+)$/i);
+  if (fetchMatch) {
+    return { type: T.FETCH, annotations, url: fetchMatch[1], method: 'GET', result: fetchMatch[2] };
+  }
+
+  const postMatch = t.match(/^Post\s+to\s+"([^"]+)"\s+with\s+body\s+(\w+)\s+and call the result\s+(\w+)$/i);
+  if (postMatch) {
+    return { type: T.HTTP_POST, annotations, url: postMatch[1], body: ident(postMatch[2]), result: postMatch[3] };
+  }
+
+  const pipeMatch = t.match(/^Pass\s+(\w+)\s+through\s+(.+?)\s+and call the result\s+(\w+)$/i);
+  if (pipeMatch) {
+    const steps = pipeMatch[2].split(/,\s*then\s+through\s+|,\s*then\s+/i).map(s => s.replace(/^through\s+/i,'').trim());
+    return { type: T.PIPE, annotations, input: ident(pipeMatch[1]), steps, result: pipeMatch[3] };
+  }
+
+  const appendMatch = t.match(/^Append\s+(\w+)\s+to\s+"([^"]+)"$/i);
+  if (appendMatch) {
+    return { type: T.APPEND_FILE, annotations, value: ident(appendMatch[1]), path: appendMatch[2] };
+  }
+
+  const emitMatch = t.match(/^Emit\s+"([^"]+)"(?:\s+with\s+(\w+))?$/i);
+  if (emitMatch) {
+    return { type: T.EMIT, annotations, event: emitMatch[1], data: emitMatch[2] ? ident(emitMatch[2]) : null };
+  }
+
   // ── Expect ... (inside test blocks) ─────────────────────────────────────
   const expectMatch = t.match(/^Expect\s+(.+?)\s+to\s+(.+)$/i);
   if (expectMatch) {
@@ -590,6 +726,96 @@ function parseGroups(groups) {
 
     // ── Otherwise (top-level; skip if hanging) ───────────────────────────
     if (/^Otherwise/i.test(text)) { i++; continue; }
+
+
+    // ── Match x: When "a": ... Otherwise: ... End match. ─────────────────
+    const matchKeyword = text.match(/^Match\s+(.+?)\s*:\s*(.*)$/i);
+    if (matchKeyword) {
+      const subjectStr = matchKeyword[1];
+      const inlineRest = matchKeyword[2].trim(); // may contain "When ... : ..."
+      const cases = [];
+      let otherwise = null;
+
+      // Helper to parse one When/Otherwise line
+      function parseWhenLine(ct) {
+        const wq = ct.match(/^When\s+"([^"]+)"\s*:\s*(.+)$/i);
+        if (wq) { cases.push({ value: strLit(wq[1]), body: [parseStatement({ annotations: [], lines: [wq[2]] })] }); return true; }
+        const wu = ct.match(/^When\s+(\S+)\s*:\s*(.+)$/i);
+        if (wu) { cases.push({ value: parseExpression(wu[1]), body: [parseStatement({ annotations: [], lines: [wu[2]] })] }); return true; }
+        const ow = ct.match(/^Otherwise\s*:\s*(.+)$/i);
+        if (ow) { otherwise = parseStatement({ annotations: [], lines: [ow[1]] }); return true; }
+        const ow2 = ct.match(/^Otherwise\s*:\s*$/i);
+        if (ow2) { return true; }
+        return false;
+      }
+
+      // If the Match line itself carried a When clause after the colon, parse it first
+      if (inlineRest) parseWhenLine(inlineRest);
+
+      i++;
+      while (i < groups.length) {
+        const ct = groups[i].lines.join(' ').trim();
+        if (/^End\s+match\.?$/i.test(ct)) { i++; break; }
+        parseWhenLine(ct);
+        i++;
+      }
+      nodes.push({ type: T.MATCH, annotations: parseAnnotations(group.annotations || []), subject: parseExpression(subjectStr), cases, otherwise });
+      continue;
+    }
+
+    // ── Repeat N times: ... End repeat. ──────────────────────────────────
+    const repeatM = text.match(/^Repeat\s+(\d+|\w+)\s+times?\s*:\s*(.*)$/i);
+    if (repeatM) {
+      const countExpr = isNaN(repeatM[1]) ? ident(repeatM[1]) : numLit(parseInt(repeatM[1]));
+      const bodyGroups = [];
+      if (repeatM[2].trim()) bodyGroups.push({ annotations: [], lines: [repeatM[2].trim()] });
+      i++;
+      while (i < groups.length) {
+        const bt = groups[i].lines.join(' ').trim();
+        if (/^End\s+repeat\.?$/i.test(bt)) { i++; break; }
+        bodyGroups.push(groups[i]); i++;
+      }
+      nodes.push({ type: T.REPEAT, annotations: parseAnnotations(group.annotations || []), count: countExpr, body: parseGroups(bodyGroups) });
+      continue;
+    }
+
+    // ── Unless condition: ... End unless. ─────────────────────────────────
+    const unlessM = text.match(/^Unless\s+(.+?)\s*:\s*(.*)$/i);
+    if (unlessM) {
+      const bodyGroups = [];
+      if (unlessM[2].trim()) bodyGroups.push({ annotations: [], lines: [unlessM[2].trim()] });
+      i++;
+      while (i < groups.length) {
+        const bt = groups[i].lines.join(' ').trim();
+        if (/^End\s+unless\.?$/i.test(bt)) { i++; break; }
+        bodyGroups.push(groups[i]); i++;
+      }
+      nodes.push({ type: T.UNLESS, annotations: parseAnnotations(group.annotations || []), condition: parseCondition(unlessM[1]), body: parseGroups(bodyGroups) });
+      continue;
+    }
+
+    // ── Using model x [with temp 0]: ... End using. ───────────────────────
+    const usingM = text.match(/^Using\s+model\s+(\w+)(?:\s+with\s+(.+?))?\s*:\s*(.*)$/i);
+    if (usingM) {
+      const alias = usingM[1];
+      const opts = {};
+      if (usingM[2]) {
+        const tM = usingM[2].match(/temperature\s+([\d.]+)/i);
+        if (tM) opts.temperature = parseFloat(tM[1]);
+        const mM = usingM[2].match(/max_tokens\s+(\d+)/i);
+        if (mM) opts.max_tokens = parseInt(mM[1]);
+      }
+      const bodyGroups = [];
+      if (usingM[3].trim()) bodyGroups.push({ annotations: [], lines: [usingM[3].trim()] });
+      i++;
+      while (i < groups.length) {
+        const bt = groups[i].lines.join(' ').trim();
+        if (/^End\s+using\.?$/i.test(bt)) { i++; break; }
+        bodyGroups.push(groups[i]); i++;
+      }
+      nodes.push({ type: T.USING_MODEL, annotations: parseAnnotations(group.annotations || []), alias, options: opts, body: parseGroups(bodyGroups) });
+      continue;
+    }
 
     // ── Single-line statement ────────────────────────────────────────────
     nodes.push(parseStatement(group));
