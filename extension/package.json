@@ -1,0 +1,122 @@
+{
+  "name": "fluent-lang",
+  "displayName": "FLUENT — Natural Language AI Programming",
+  "description": "Syntax highlighting, snippets, and language support for the FLUENT natural language AI programming language (.fl files)",
+  "version": "1.1.0",
+  "publisher": "datacules",
+  "icon": "icons/logo-mark.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hvrcharon1/fluent-lang"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Formatters"
+  ],
+  "keywords": [
+    "fluent",
+    "natural language",
+    "AI",
+    "LLM",
+    "claude",
+    "openai",
+    "programming language"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "fluent",
+        "aliases": ["FLUENT", "fluent", "Fluent"],
+        "extensions": [".fl"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/logo-mark.png",
+          "dark":  "./icons/logo-mark.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "fluent",
+        "scopeName": "source.fluent",
+        "path": "./syntaxes/fluent.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "fluent",
+        "path": "./snippets/fluent.json"
+      }
+    ],
+    "themes": [],
+    "commands": [
+      {
+        "command": "fluent.runFile",
+        "title": "FLUENT: Run This Program",
+        "icon": "$(play)"
+      },
+      {
+        "command": "fluent.estimateCost",
+        "title": "FLUENT: Estimate API Cost"
+      },
+      {
+        "command": "fluent.dryRun",
+        "title": "FLUENT: Validate (Dry Run)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "fluent.runFile",
+          "when": "resourceExtname == .fl",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "fluent.runFile",
+          "when": "resourceExtname == .fl",
+          "group": "fluent@1"
+        },
+        {
+          "command": "fluent.estimateCost",
+          "when": "resourceExtname == .fl",
+          "group": "fluent@2"
+        },
+        {
+          "command": "fluent.dryRun",
+          "when": "resourceExtname == .fl",
+          "group": "fluent@3"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "FLUENT Language",
+      "properties": {
+        "fluent.executablePath": {
+          "type": "string",
+          "default": "fluent",
+          "description": "Path to the fluent CLI executable"
+        },
+        "fluent.defaultModel": {
+          "type": "string",
+          "default": "claude",
+          "enum": ["claude", "gpt", "gemini", "mistral", "llama", "groq"],
+          "description": "Default AI model alias for new programs"
+        },
+        "fluent.showCostOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show cost estimate in the status bar when a .fl file is saved"
+        }
+      }
+    }
+  }
+}

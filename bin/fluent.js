@@ -116,6 +116,55 @@ program
     await build(file, opts);
   });
 
+
+// ── fluent init [name] ──────────────────────────────────────────────────────
+program
+  .command('init [name]')
+  .description('Scaffold a new Fluent project')
+  .option('--force', 'Overwrite existing files')
+  .action(async (name, opts) => {
+    const { init } = require('../src/cli/init');
+    await init(name, opts);
+  });
+
+// ── fluent lint [target] ────────────────────────────────────────────────────
+program
+  .command('lint [target]')
+  .description('Static analysis and best-practice checks on .fl files')
+  .option('--quiet', 'Only show files with issues')
+  .option('--rule <id>', 'Run only the specified rule')
+  .action(async (target = '.', opts) => {
+    const { lint } = require('../src/cli/lint');
+    await lint(target, opts);
+  });
+
+// ── fluent trace ────────────────────────────────────────────────────────────
+const traceCmd = program.command('trace').description('Inspect execution trace files');
+
+traceCmd
+  .command('view <file>')
+  .description('Pretty-print a trace JSON file')
+  .action((file) => {
+    const { traceView } = require('../src/cli/trace');
+    traceView(file);
+  });
+
+traceCmd
+  .command('cost <file>')
+  .description('Show cost breakdown by model')
+  .action((file) => {
+    const { traceCost } = require('../src/cli/trace');
+    traceCost(file);
+  });
+
+traceCmd
+  .command('diff <file1> <file2>')
+  .description('Compare two trace files semantically')
+  .action((f1, f2) => {
+    const { traceDiff } = require('../src/cli/trace');
+    traceDiff(f1, f2);
+  });
+
 program.parse(process.argv);
 
 if (!process.argv.slice(2).length) {

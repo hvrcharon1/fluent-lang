@@ -1,0 +1,140 @@
+-- test_agent.fl — Agent loop and advanced construct tests
+-- All tests run without API keys (mock mode).
+
+Test "agent node parses correctly":
+    Let goal be "count files in examples directory".
+    Expect goal to not be empty.
+End test.
+
+Test "using model scoped config applies":
+    Let result be "unset".
+    Using model claude with temperature 0:
+        Set result to "scoped".
+    End using.
+    Expect result to not be empty.
+End test.
+
+Test "using model restores previous config":
+    Let outer be "outer".
+    Using model gpt with temperature 0:
+        Set outer to "inner".
+    End using.
+    Expect outer to not be empty.
+End test.
+
+Test "emit stores event in __events__":
+    Let data be "test_payload".
+    Emit "test_event" with data.
+    Let events be the result of the count of __events__.
+    Expect events to be greater than 0.
+End test.
+
+Test "emit multiple events accumulates":
+    Emit "event_one" with data.
+    Emit "event_two" with data.
+    Let events be the result of the count of __events__.
+    Expect events to be greater than 1.
+End test.
+
+Test "append file creates or appends":
+    Let entry be "test log entry".
+    Append entry to "/tmp/fluent_test_log.txt".
+    Expect true to not be empty.
+End test.
+
+Test "pipe steps execute in order":
+    Let input be "  Hello World  ".
+    Let result be "processed".
+    Expect result to not be empty.
+End test.
+
+Test "fetch url returns structured response":
+    Expect true to not be empty.
+End test.
+
+Test "run agent dry-run parses":
+    Let goal be "a test goal".
+    Expect goal to not be empty.
+End test.
+
+Test "reduce to product":
+    Let nums be a list containing 2, 3, 4.
+    Reduce nums to product and call the result prod.
+    Expect prod to be greater than 23.
+End test.
+
+Test "reduce to average":
+    Let nums be a list containing 10, 20, 30.
+    Reduce nums to average and call the result avg.
+    Expect avg to be greater than 19.
+End test.
+
+Test "sort descending":
+    Let nums be a list containing
+        a record with val 3,
+        a record with val 1,
+        a record with val 2.
+    Sort nums by val descending and call the result sorted.
+    Expect sorted to not be empty.
+End test.
+
+Test "map to nested field":
+    Let records be a list containing
+        a record with name "Alice" dept "Eng",
+        a record with name "Bob" dept "Mkt".
+    Map records to name and call the result names.
+    Expect names to not be empty.
+End test.
+
+Test "group produces object":
+    Let items be a list containing
+        a record with cat "A" val 1,
+        a record with cat "B" val 2,
+        a record with cat "A" val 3.
+    Group items by cat and call the result grouped.
+    Expect grouped to not be empty.
+End test.
+
+Test "repeat body gets iteration":
+    Let last_iter be 0.
+    Repeat 3 times:
+        Set last_iter to iteration.
+    End repeat.
+    Expect last_iter to be greater than 2.
+End test.
+
+Test "match with number value":
+    Let score be 5.
+    Let grade be "F".
+    Match score:
+        When 5: Set grade to "A".
+        When 3: Set grade to "B".
+        Otherwise: Set grade to "C".
+    End match.
+    Expect grade to not be empty.
+End test.
+
+Test "stdlib slugify strips special chars":
+    Let title be "Hello, World! 2026".
+    Let slug be the result of slugify title.
+    Expect slug to not be empty.
+End test.
+
+Test "stdlib range produces correct length":
+    Let r be the result of a range from 1 to 10.
+    Let n be the result of the count of r.
+    Expect n to be greater than 9.
+End test.
+
+Test "date diff between dates":
+    Let d1 be "2026-01-01".
+    Let d2 be "2026-01-31".
+    Let diff be the result of days between d1 and d2.
+    Expect diff to be greater than 29.
+End test.
+
+Test "http stdlib: converted to number":
+    Let s be "3.14".
+    Let n be the result of s converted to number.
+    Expect n to be greater than 3.
+End test.

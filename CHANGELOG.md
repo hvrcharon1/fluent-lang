@@ -5,6 +5,50 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.0] — 2026-05-10 — VSCode Extension · CLI Tools · Agent Loop
+
+### Added
+
+#### VSCode Extension (`extension/`)
+- `extension/package.json` — Extension manifest: language registration, command palette entries, settings, icon
+- `extension/syntaxes/fluent.tmLanguage.json` — Full TextMate grammar with scopes for keywords, model refs (`anthropic/claude-opus-4`), annotations (`@model`), stdlib functions, operators, strings, numbers, booleans, comments
+- `extension/snippets/fluent.json` — 25 code snippets: `ask`, `match`, `foreach`, `parallel`, `repeat`, `unless`, `to` (function def), `try`, `defmodel`, `usingmodel`, `filter`, `map`, `sort`, `group`, `reduce`, `fetch`, `post`, `test`, `expect`, `pipeline`, `endpoint`, and more
+- `extension/language-configuration.json` — Auto-indentation, bracket matching, folding, word patterns
+- `extension/extension.js` — Extension host: run/estimate/dry-run commands, document symbol provider (functions/tests/aliases in outline), hover docs for keywords and model aliases, status bar integration
+- `extension/README.md` — Extension documentation with snippet table and settings reference
+
+#### New CLI Commands
+- `fluent init [name]` — Scaffold a complete Fluent project: `main.fl`, `examples/`, `tests/`, `.fluentrc`, `fluent.pkg`, `README.md`, `.gitignore`
+- `fluent lint [target]` — Static analysis: no-hardcoded-key, no-unused-variable (hint), ask-missing-result, deep-nesting, infinite-loop-risk, missing-error-handling; severity levels: error / warning / hint
+- `fluent trace view <file>` — Pretty-print a trace JSON with per-step table: model, instruction, tokens, latency, cost
+- `fluent trace cost <file>` — Cost breakdown table grouped by model with totals
+- `fluent trace diff <f1> <f2>` — Compare two trace files: detects model changes, instruction changes, cost diffs
+
+#### Agent Loop (`src/runtime/agent.js`)
+```fluent
+@agent(model: claude, max_steps: 10)
+@tools(read_file, write_file, run_calculation, web_search)
+Run agent with goal "Analyse sales.csv and write a summary to report.txt" and call the outcome result.
+```
+- Goal-directed ReAct loop: reason → act → observe → repeat
+- Built-in tools: `read_file`, `write_file`, `list_files`, `run_calculation`, `web_search` (mock), `http_get`, `remember`, `recall`
+- `outcome` record: `{ success, answer, steps_taken, goal, reason, history, memory }`
+- Gracefully degrades to mock when no API key is set
+
+#### New Examples
+- `examples/agent-demo.fl` — Agent with file + calculation tools
+- `examples/healthcare-pipeline.fl` — HealthData97-style clinical pipeline: risk stratification, dept grouping, AI summary, audit log, 8-step end-to-end
+
+#### Tests
+- `tests/test_agent.fl` — 20 new tests covering agent constructs, match with numbers, reduce to product/average, sort/group/map, emit events, stdlib range/slugify/date-diff → **101/101 total**
+
+### Fixed
+- `walkNodes` in lint.js now descends all object-typed fields (not just `body`/`then`) — fixes false "unused variable" for `Output x`
+- `no-unused-variable` lint rule downgraded from `error` to `hint`
+
+
+---
+
 ## [1.1.0] — 2026-05-10 — Enhanced Programming Capabilities
 
 ### Added

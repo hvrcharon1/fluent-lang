@@ -1,6 +1,6 @@
 {
   "name": "fluent-lang",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "FLUENT — Natural Language AI Programming Language. Write AI programs in plain English.",
   "bin": {
     "fluent": "./bin/fluent.js"

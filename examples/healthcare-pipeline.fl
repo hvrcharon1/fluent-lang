@@ -1,0 +1,133 @@
+-- healthcare-pipeline.fl — Clinical Data Intelligence Pipeline
+-- Demonstrates a HealthData97-style AI pipeline combining:
+--   stdlib collection ops, AI analysis, risk scoring, and structured output.
+-- Run: fluent run examples/healthcare-pipeline.fl
+-- Requires: ANTHROPIC_API_KEY (falls back to mock without it)
+
+Output "═══════════════════════════════════════════════════════".
+Output "  HealthData97 — Clinical Data Intelligence Pipeline".
+Output "═══════════════════════════════════════════════════════".
+Output "".
+
+-- ── Sample patient dataset ───────────────────────────────────────────────────
+Let patients be a list containing
+    a record with id "P001" name "Ravi Kumar"     age 68 dept "Cardiology"  bp 145 glucose 110 admitted "2026-05-01",
+    a record with id "P002" name "Priya Sharma"   age 34 dept "Orthopedics" bp 118 glucose 95  admitted "2026-05-03",
+    a record with id "P003" name "Arun Patel"     age 72 dept "Neurology"   bp 162 glucose 140 admitted "2026-05-04",
+    a record with id "P004" name "Sunita Rao"     age 45 dept "Cardiology"  bp 128 glucose 102 admitted "2026-05-05",
+    a record with id "P005" name "Vikram Singh"   age 81 dept "ICU"         bp 178 glucose 195 admitted "2026-05-06",
+    a record with id "P006" name "Meera Nair"     age 29 dept "Orthopedics" bp 112 glucose 88  admitted "2026-05-07",
+    a record with id "P007" name "Deepak Joshi"   age 58 dept "Neurology"   bp 155 glucose 125 admitted "2026-05-07",
+    a record with id "P008" name "Kavita Menon"   age 63 dept "ICU"         bp 172 glucose 188 admitted "2026-05-08".
+
+-- ── Step 1: Dataset overview ─────────────────────────────────────────────────
+Output "── Step 1: Dataset Overview ──".
+
+Reduce patients to count and call the result total_patients.
+Output total_patients.
+
+-- Age statistics
+Map patients to age and call the result ages.
+Let avg_age be the result of the average of ages.
+Let rounded_age be the result of round avg_age to 1 decimal places.
+Output rounded_age.
+
+-- ── Step 2: High-risk flagging ───────────────────────────────────────────────
+Output "".
+Output "── Step 2: High-Risk Patients (BP > 160 OR Glucose > 180) ──".
+
+Filter patients where bp is greater than 160 and call the result high_bp.
+Filter patients where glucose is greater than 180 and call the result high_glucose.
+
+Reduce high_bp to count and call the result hbp_count.
+Reduce high_glucose to count and call the result hg_count.
+
+Output hbp_count.
+Output hg_count.
+
+-- Sort high-risk by BP descending
+Sort high_bp by bp descending and call the result critical_bp.
+Map critical_bp to name and call the result critical_names.
+Output critical_names.
+
+-- ── Step 3: Department grouping ─────────────────────────────────────────────
+Output "".
+Output "── Step 3: Patients by Department ──".
+
+Group patients by dept and call the result by_department.
+Output by_department.
+
+-- ── Step 4: ICU patients — immediate attention ──────────────────────────────
+Output "".
+Output "── Step 4: ICU Patients ──".
+
+Filter patients where dept is "ICU" and call the result icu_patients.
+For each patient in icu_patients:
+    Let risk_label be "unknown".
+    Match patient.dept:
+        When "ICU": Set risk_label to "CRITICAL".
+        When "Cardiology": Set risk_label to "HIGH".
+        When "Neurology": Set risk_label to "ELEVATED".
+        Otherwise: Set risk_label to "MODERATE".
+    End match.
+    Output risk_label.
+    Output patient.
+End loop.
+
+-- ── Step 5: Admission timeline ──────────────────────────────────────────────
+Output "".
+Output "── Step 5: Admission Timeline ──".
+
+Sort patients by admitted ascending and call the result by_admission.
+Map by_admission to admitted and call the result admission_dates.
+Let unique_dates be the result of unique items from admission_dates.
+Output unique_dates.
+
+-- ── Step 6: AI clinical summary ──────────────────────────────────────────────
+Output "".
+Output "── Step 6: AI Clinical Summary ──".
+
+@model(temperature: 0.2, max_tokens: 350)
+Ask claude to "Write a brief clinical summary of this patient cohort. Highlight the most critical cases, note any concerning patterns in the vitals, and suggest priority actions for the medical team." using data patients and call the result clinical_summary.
+
+Output clinical_summary.
+
+-- ── Step 7: Risk stratification ─────────────────────────────────────────────
+Output "".
+Output "── Step 7: Risk Stratification ──".
+
+For each patient in patients:
+    Let risk_score be 0.
+
+    If patient.age is greater than 70, then set risk_score to risk_score plus 2.
+    If patient.bp is greater than 160, then set risk_score to risk_score plus 3.
+    If patient.glucose is greater than 150, then set risk_score to risk_score plus 3.
+    If patient.dept is "ICU", then set risk_score to risk_score plus 2.
+
+    Let risk_level be "Low".
+    Match risk_score:
+        When 0: Set risk_level to "Low".
+        When 1: Set risk_level to "Low".
+        When 2: Set risk_level to "Moderate".
+        When 3: Set risk_level to "Moderate".
+        When 4: Set risk_level to "High".
+        When 5: Set risk_level to "High".
+        Otherwise: Set risk_level to "Critical".
+    End match.
+
+    Output risk_level.
+End loop.
+
+-- ── Step 8: Append audit log ─────────────────────────────────────────────────
+Output "".
+Output "── Step 8: Audit Log ──".
+
+Let timestamp be the result of the current date.
+Let audit_entry be "AI pipeline ran on".
+Append audit_entry to "examples/assets/pipeline_audit.log".
+Output "Audit entry written.".
+
+Output "".
+Output "═══════════════════════════════════════════════════════".
+Output "  Pipeline complete.".
+Output "═══════════════════════════════════════════════════════".

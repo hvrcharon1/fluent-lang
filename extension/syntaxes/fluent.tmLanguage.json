@@ -1,0 +1,193 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "FLUENT",
+  "scopeName": "source.fluent",
+  "fileTypes": ["fl"],
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#annotation" },
+    { "include": "#string" },
+    { "include": "#number" },
+    { "include": "#boolean" },
+    { "include": "#model-ref" },
+    { "include": "#block-keyword" },
+    { "include": "#statement-keyword" },
+    { "include": "#clause-keyword" },
+    { "include": "#stdlib-fn" },
+    { "include": "#operator" }
+  ],
+
+  "repository": {
+
+    "comment": {
+      "name": "comment.line.double-dash.fluent",
+      "match": "--.*$"
+    },
+
+    "annotation": {
+      "patterns": [
+        {
+          "name": "meta.annotation.fluent",
+          "match": "(@\\w+)(?:\\(([^)]*)\\))?",
+          "captures": {
+            "1": { "name": "entity.name.tag.annotation.fluent" },
+            "2": { "name": "string.other.annotation-args.fluent" }
+          }
+        }
+      ]
+    },
+
+    "string": {
+      "name": "string.quoted.double.fluent",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "name": "constant.character.escape.fluent", "match": "\\\\." }
+      ]
+    },
+
+    "number": {
+      "name": "constant.numeric.fluent",
+      "match": "\\b-?\\d+(\\.\\d+)?\\b"
+    },
+
+    "boolean": {
+      "name": "constant.language.boolean.fluent",
+      "match": "\\b(true|false|yes|no|nothing|empty)\\b"
+    },
+
+    "model-ref": {
+      "patterns": [
+        {
+          "comment": "Fully-qualified provider/model",
+          "name": "entity.name.class.model-qualified.fluent",
+          "match": "\\b(anthropic|openai|google|mistral|groq|meta|deepseek|xai|perplexity|cohere|huggingface|hf)/(\\S+)\\b",
+          "captures": {
+            "1": { "name": "support.class.provider.fluent" },
+            "2": { "name": "support.function.model.fluent" }
+          }
+        },
+        {
+          "comment": "Model alias after Ask/Using model/Define model",
+          "name": "support.function.model-alias.fluent",
+          "match": "(?<=\\b(?:Ask|Using model|Define model|ask|using model|define model)\\s+)(claude|gpt|gemini|mistral|llama|groq|deepseek|grok|perplexity|cohere|hf)\\b"
+        }
+      ]
+    },
+
+    "block-keyword": {
+      "patterns": [
+        {
+          "comment": "Block openers",
+          "name": "keyword.control.block.fluent",
+          "match": "\\b(For each|In parallel|While|To |Repeat|Unless|Using model|Match|Test|Validate|When testing|Every|On error)\\b"
+        },
+        {
+          "comment": "Block closers",
+          "name": "keyword.control.end.fluent",
+          "match": "\\b(End loop|End while|End parallel|End of|End repeat|End unless|End using|End match|End test|End validate|End when|End schedule|End parallel loop)\\b"
+        },
+        {
+          "comment": "Conditional keywords",
+          "name": "keyword.control.conditional.fluent",
+          "match": "\\b(If|When|Otherwise|Otherwise when|Finally|Unless|Match|When)\\b"
+        },
+        {
+          "comment": "Error handling",
+          "name": "keyword.control.error.fluent",
+          "match": "\\b(Try to|If that fails|If that also fails|Stop with error)\\b"
+        }
+      ]
+    },
+
+    "statement-keyword": {
+      "patterns": [
+        {
+          "comment": "Declaration / Assignment",
+          "name": "keyword.other.declaration.fluent",
+          "match": "\\b(Let|Set)\\b"
+        },
+        {
+          "comment": "Model invocation",
+          "name": "keyword.other.ask.fluent",
+          "match": "\\bAsk\\b"
+        },
+        {
+          "comment": "Output / Return",
+          "name": "keyword.other.output.fluent",
+          "match": "\\b(Output|Return|Emit|Append)\\b"
+        },
+        {
+          "comment": "Define / Register / Use",
+          "name": "keyword.other.define.fluent",
+          "match": "\\b(Define|Register|Use|Remember|Recall|Search|Embed|Fetch|Post|Pass|Filter|Map|Sort|Group|Reduce|Validate|Expect|Run|Generate)\\b"
+        },
+        {
+          "comment": "Collection pipeline verbs",
+          "name": "keyword.other.pipeline.fluent",
+          "match": "\\b(Filter|Map|Sort|Group|Reduce|Pass|Through)\\b"
+        }
+      ]
+    },
+
+    "clause-keyword": {
+      "patterns": [
+        {
+          "comment": "Prepositions and connectors",
+          "name": "keyword.operator.clause.fluent",
+          "match": "\\b(be|is|are|to|by|of|in|as|at|on|from|for|with|and|or|not|then|where|through|using|and call the result|and call the outcome|be the result of|the result of|and return the result|and stream the result|and stream each chunk)\\b"
+        },
+        {
+          "comment": "Input kind labels",
+          "name": "keyword.other.input-kind.fluent",
+          "match": "\\b(using text|using data|using image|using images|using audio|using video|using document|using context|using question|using schema|using previous draft)\\b"
+        },
+        {
+          "comment": "Comparison operators",
+          "name": "keyword.operator.comparison.fluent",
+          "match": "\\b(is greater than|is less than|is at least|is at most|is greater than or equal to|is less than or equal to|is not|contains|does not contain|exists|does not exist|is empty|is not empty|ascending|descending|asc|desc)\\b"
+        },
+        {
+          "comment": "Arithmetic operators",
+          "name": "keyword.operator.arithmetic.fluent",
+          "match": "\\b(plus|minus|times|divided by|modulo|to the power of)\\b"
+        }
+      ]
+    },
+
+    "stdlib-fn": {
+      "patterns": [
+        {
+          "comment": "String stdlib",
+          "name": "support.function.string.fluent",
+          "match": "\\b(uppercase of|lowercase of|slugify|truncate|the length of|the word count of|split .+ by|join .+ with|capitalize|title case|the first \\d+ characters of|the last \\d+ characters of|replace .+ with .+ in|trim)\\b"
+        },
+        {
+          "comment": "Math stdlib",
+          "name": "support.function.math.fluent",
+          "match": "\\b(round|floor of|ceiling of|absolute value of|square root of|to the power of|the minimum of|the maximum of|a random number between|percentage of)\\b"
+        },
+        {
+          "comment": "List stdlib",
+          "name": "support.function.list.fluent",
+          "match": "\\b(the sum of|the average of|the first item of|the last item of|the count of|unique items from|a range from|shuffle|sample from|reverse)\\b"
+        },
+        {
+          "comment": "Date stdlib",
+          "name": "support.function.date.fluent",
+          "match": "\\b(the current date|the current datetime|days between|formatted as|plus \\d+ days|plus \\d+ hours)\\b"
+        },
+        {
+          "comment": "Type stdlib",
+          "name": "support.function.type.fluent",
+          "match": "\\b(converted to|parsed as JSON|stringified as JSON|the type of)\\b"
+        }
+      ]
+    },
+
+    "operator": {
+      "name": "punctuation.separator.fluent",
+      "match": "[.,:()\\.]{1}"
+    }
+  }
+}

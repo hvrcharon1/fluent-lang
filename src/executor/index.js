@@ -525,6 +525,53 @@ class Executor {
         break;
       }
 
+
+      // ── Run agent with goal ─────────────────────────────────────────────
+      case T.RUN_AGENT: {
+        const { runAgent } = require('../runtime/agent');
+        const { Tracer }   = require('../runtime/tracer');
+
+        const ann      = this.collectAnnotations(node.annotations || []);
+        const maxSteps = ann.max_steps ? parseInt(ann.max_steps) : 20;
+        const verbose  = ann.verbose === 'true' || this.options.verbose || false;
+
+        // Resolve goal — could be a string literal or variable
+        const goal = typeof node.goal === 'string' ? node.goal
+          : await this.evalExpr(node.goal, scope);
+
+        // Collect @tools annotation
+        const toolsAnn = (node.annotations || []).find(a => a.name === 'tools');
+        const tools = toolsAnn
+          ? Object.values(toolsAnn.args).join(',').split(',').map(t => t.trim()).filter(Boolean)
+          : ['read_file', 'write_file', 'run_calculation', 'web_search'];
+
+        // Resolve model
+        const modelRef = this.resolveModelRef(
+          (node.annotations || []).find(a => a.name === 'agent')?.args?.model
+            ? { alias: (node.annotations || []).find(a => a.name === 'agent').args.model }
+            : { alias: 'claude' },
+          scope, ann
+        );
+
+        this.output(`[Agent] Starting: "${String(goal).slice(0, 80)}"`);
+
+        const outcome = await runAgent(
+          { goal, model: modelRef, tools, max_steps: maxSteps, verbose },
+          scope,
+          this.tracer
+        );
+
+        if (node.result) scope.set(node.result, outcome);
+
+        if (outcome.success) {
+          this.output(`[Agent] ✓ Completed in ${outcome.steps_taken} step(s).`);
+          if (outcome.answer) this.output(outcome.answer);
+        } else {
+          this.output(`[Agent] ⚑ Stopped: ${outcome.reason}`);
+        }
+        break;
+      }
+
       // ── Raw (unrecognised) ──────────────────────────────────────────────
       case T.RAW: {
         // Try to evaluate as a function call if it looks like one

@@ -11,7 +11,7 @@
 > *Write AI programs in plain English. Every model, every provider, one sentence away.*
 
 [![npm version](https://img.shields.io/badge/npm-1.0.1-orange)](https://www.npmjs.com/package/fluent-lang)
-[![tests](https://img.shields.io/badge/tests-44%20passed-brightgreen)](https://github.com/hvrcharon1/fluent-lang/actions)
+[![tests](https://img.shields.io/badge/tests-101%20passed-brightgreen)](https://github.com/hvrcharon1/fluent-lang/actions)
 [![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/hvrcharon1/fluent-lang/blob/main/LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D18-green)](https://nodejs.org)
 [![CI](https://github.com/hvrcharon1/fluent-lang/actions/workflows/test.yml/badge.svg)](https://github.com/hvrcharon1/fluent-lang/actions/workflows/test.yml)
@@ -38,19 +38,31 @@ node bin/fluent.js --help
 ## CLI Commands
 
 ```bash
-fluent run program.fl          # Run a Fluent program
-fluent test ./tests/           # Run test files (36/36 ✓)
-fluent serve api.fl --port 8080  # Expose as HTTP API
-fluent estimate program.fl     # Estimate API cost before running
-fluent repl                    # Interactive REPL
-fluent build program.fl        # Parse and emit .ast.json bundle
-fluent env set KEY=value       # Store API credentials securely
-fluent env list                # List configured credentials
-fluent run program.fl --dry-run        # Validate only, no execution
-fluent run program.fl --trace out.json # Write execution trace
-fluent estimate program.fl --json      # JSON cost breakdown
-fluent test ./tests/ --filter "arithmetic"  # Filter test names
-fluent serve api.fl --port 8080 --cors --auth mytoken
+# Core
+fluent run program.fl                   # Run a Fluent program
+fluent run program.fl --dry-run         # Validate only, no execution
+fluent run program.fl --trace out.json  # Write execution trace
+fluent test ./tests/                    # Run test files (101/101 ✓)
+fluent test ./tests/ --filter "name"    # Filter by test name
+fluent serve api.fl --port 8080 --cors  # Expose as HTTP API
+fluent estimate program.fl              # Estimate API cost
+fluent estimate program.fl --json       # JSON cost breakdown
+fluent repl                             # Interactive REPL
+fluent build program.fl                 # Parse and emit .ast.json bundle
+
+# Project
+fluent init my-project                  # Scaffold a new project
+fluent lint ./examples/                 # Static analysis
+fluent lint program.fl --quiet          # Only show files with issues
+
+# Traces
+fluent trace view out.json              # Pretty-print execution trace
+fluent trace cost out.json              # Cost breakdown by model
+fluent trace diff run1.json run2.json   # Semantic diff between runs
+
+# Credentials
+fluent env set ANTHROPIC_API_KEY=sk-ant-...
+fluent env list
 ```
 
 ---
@@ -467,6 +479,40 @@ Pass input through uppercase, then through slugify and call the result slug.
 Append log_entry to "run.log".
 Emit "pipeline_done" with result.
 ```
+
+---
+
+## VSCode Extension
+
+The `extension/` directory contains a full VSCode extension for `.fl` files.
+
+**Features:** syntax highlighting · 25 snippets · run/estimate commands · outline view · hover docs · status bar
+
+**Install (manual VSIX):**
+```bash
+cd extension
+npm install -g vsce
+vsce package
+code --install-extension fluent-lang-1.2.0.vsix
+```
+
+**Snippets:** type `ask`, `match`, `foreach`, `pipeline`, `endpoint`, `test` and press Tab.
+
+---
+
+## Agent Loop
+
+```fluent
+@agent(model: claude, max_steps: 10)
+@tools(read_file, write_file, run_calculation, web_search)
+Run agent with goal "Analyse the sales data and write a report" and call the outcome result.
+
+If result.success is true, then output result.answer.
+```
+
+Built-in tools: `read_file` · `write_file` · `list_files` · `run_calculation` · `http_get` · `web_search` · `remember` · `recall`
+
+---
 
 ## Contributing
 

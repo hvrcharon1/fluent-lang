@@ -1,0 +1,216 @@
+{
+  "Let declaration": {
+    "prefix": "let",
+    "body": ["Let ${1:name} be ${2:value}."],
+    "description": "Declare a variable"
+  },
+  "Ask model": {
+    "prefix": "ask",
+    "body": [
+      "Ask ${1:claude} to \"${2:instruction}\" using ${3:text} ${4:input} and call the result ${5:result}."
+    ],
+    "description": "Invoke an AI model"
+  },
+  "Ask model with annotation": {
+    "prefix": "askm",
+    "body": [
+      "@model(temperature: ${1:0.7}, max_tokens: ${2:1024})",
+      "Ask ${3:claude} to \"${4:instruction}\" using ${5:text} ${6:input} and call the result ${7:result}."
+    ],
+    "description": "Invoke an AI model with config annotation"
+  },
+  "If conditional": {
+    "prefix": "if",
+    "body": [
+      "If ${1:condition}, then ${2:action}.",
+      "Otherwise, ${3:fallback}."
+    ],
+    "description": "If / Otherwise conditional"
+  },
+  "Match pattern": {
+    "prefix": "match",
+    "body": [
+      "Match ${1:variable}:",
+      "\tWhen \"${2:value1}\": ${3:Output \"${4:result1}\"}.",
+      "\tWhen \"${5:value2}\": ${6:Output \"${7:result2}\"}.",
+      "\tOtherwise: ${8:Output \"unknown\"}.",
+      "End match."
+    ],
+    "description": "Pattern matching block"
+  },
+  "For each loop": {
+    "prefix": "foreach",
+    "body": [
+      "For each ${1:item} in ${2:collection}:",
+      "\t${3:Output item}.",
+      "End loop."
+    ],
+    "description": "For-each loop"
+  },
+  "Parallel for-each": {
+    "prefix": "parallel",
+    "body": [
+      "In parallel, for each ${1:item} in ${2:collection}:",
+      "\t${3:Ask claude to \"process\" using text item and call the result item.result}.",
+      "End parallel loop."
+    ],
+    "description": "Parallel for-each loop"
+  },
+  "Repeat N times": {
+    "prefix": "repeat",
+    "body": [
+      "Repeat ${1:5} times:",
+      "\t${2:Output iteration}.",
+      "End repeat."
+    ],
+    "description": "Repeat N times"
+  },
+  "While loop": {
+    "prefix": "while",
+    "body": [
+      "While ${1:condition}:",
+      "\t${2:Set counter to counter plus 1}.",
+      "End while."
+    ],
+    "description": "While loop"
+  },
+  "Unless block": {
+    "prefix": "unless",
+    "body": [
+      "Unless ${1:condition}:",
+      "\t${2:Output \"Condition was false\"}.",
+      "End unless."
+    ],
+    "description": "Unless (inverse if) block"
+  },
+  "Function definition": {
+    "prefix": "to",
+    "body": [
+      "To ${1:verb phrase} (${2:param}):",
+      "\t${3:Ask claude to \"process\" using text param and call the result result}.",
+      "\tReturn ${4:result}.",
+      "End of ${1:verb phrase}."
+    ],
+    "description": "Define a reusable procedure"
+  },
+  "Try / fallback": {
+    "prefix": "try",
+    "body": [
+      "Try to ${1:ask claude to \"process\" using text input and call the result result}.",
+      "If that fails, ${2:let result be \"fallback value\"}."
+    ],
+    "description": "Try with fallback"
+  },
+  "Define model alias": {
+    "prefix": "defmodel",
+    "body": [
+      "Define model ${1:my_model} as ${2:anthropic/claude-sonnet-4-6} with temperature ${3:0.3}, max_tokens ${4:1024}, system \"${5:You are a helpful assistant.}\"."
+    ],
+    "description": "Define a reusable model alias"
+  },
+  "Using model scoped": {
+    "prefix": "usingmodel",
+    "body": [
+      "Using model ${1:claude} with temperature ${2:0}:",
+      "\t${3:Ask claude to \"classify this\" using text input and call the result result}.",
+      "End using."
+    ],
+    "description": "Scoped model configuration block"
+  },
+  "Filter collection": {
+    "prefix": "filter",
+    "body": [
+      "Filter ${1:items} where ${2:field} is greater than ${3:0} and call the result ${4:filtered}."
+    ],
+    "description": "Filter a collection by condition"
+  },
+  "Map collection": {
+    "prefix": "map",
+    "body": [
+      "Map ${1:items} to ${2:item.field} and call the result ${3:mapped}."
+    ],
+    "description": "Map a collection to a field or expression"
+  },
+  "Sort collection": {
+    "prefix": "sort",
+    "body": [
+      "Sort ${1:items} by ${2:field} ${3|ascending,descending|} and call the result ${4:sorted}."
+    ],
+    "description": "Sort a collection by field"
+  },
+  "Group collection": {
+    "prefix": "group",
+    "body": [
+      "Group ${1:items} by ${2:field} and call the result ${3:grouped}."
+    ],
+    "description": "Group a collection by a field"
+  },
+  "Reduce collection": {
+    "prefix": "reduce",
+    "body": [
+      "Reduce ${1:items} to ${2|sum,count,average,min,max|} and call the result ${3:total}."
+    ],
+    "description": "Reduce a collection to a scalar"
+  },
+  "Fetch URL": {
+    "prefix": "fetch",
+    "body": [
+      "Fetch \"${1:https://api.example.com/endpoint}\" and call the result ${2:response}."
+    ],
+    "description": "HTTP GET request"
+  },
+  "Post to URL": {
+    "prefix": "post",
+    "body": [
+      "Post to \"${1:https://api.example.com/endpoint}\" with body ${2:payload} and call the result ${3:response}."
+    ],
+    "description": "HTTP POST request"
+  },
+  "Test block": {
+    "prefix": "test",
+    "body": [
+      "Test \"${1:description}\":",
+      "\t${2:Let result be the result of some operation}.",
+      "\tExpect ${3:result} to not be empty.",
+      "End test."
+    ],
+    "description": "Test block"
+  },
+  "Expect assertion": {
+    "prefix": "expect",
+    "body": [
+      "Expect ${1:value} to ${2|not be empty,be greater than 0,contain \"expected\",not be greater than 100|}."
+    ],
+    "description": "Assertion inside a test block"
+  },
+  "Full pipeline": {
+    "prefix": "pipeline",
+    "body": [
+      "-- Step 1: Load data",
+      "Let ${1:data} be a list containing ${2:\"item1\", \"item2\"}.",
+      "",
+      "-- Step 2: Filter",
+      "Filter ${1:data} where ${3:field} is greater than ${4:0} and call the result ${5:filtered}.",
+      "",
+      "-- Step 3: AI analysis",
+      "@model(temperature: 0.3, max_tokens: 500)",
+      "Ask ${6:claude} to \"${7:analyse these items}\" using data ${5:filtered} and call the result ${8:analysis}.",
+      "",
+      "-- Step 4: Output",
+      "Output ${8:analysis}."
+    ],
+    "description": "Full data pipeline skeleton"
+  },
+  "HTTP API endpoint": {
+    "prefix": "endpoint",
+    "body": [
+      "@expose(as: http, path: \"/${1:endpoint-name}\", method: POST)",
+      "To ${2:handle request} (${3:input}):",
+      "\t@model(temperature: ${4:0.3}, max_tokens: ${5:500})",
+      "\tAsk ${6:claude} to \"${7:process this request}\" using ${8:text} ${3:input} and call the result ${9:result}.",
+      "\tReturn ${9:result}.",
+      "End of ${2:handle request}."
+    ],
+    "description": "HTTP API endpoint with @expose"
+  }
+}

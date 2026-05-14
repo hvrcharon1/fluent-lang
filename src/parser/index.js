@@ -53,6 +53,7 @@ const T = {
   PIPE:          'Pipe',             // Pass x through f1, then f2 and call result y.
   APPEND_FILE:   'AppendFile',       // Append x to "file".
   EMIT:          'Emit',             // Emit "event" with data.
+  RUN_AGENT:     'RunAgent',          // Run agent with goal "..." and call the outcome x.
   // Expression nodes
   LITERAL:       'Literal',
   IDENTIFIER:    'Identifier',
@@ -550,7 +551,32 @@ function parseStatement(group) {
   // ── If condition, then ... [Otherwise, ...] ──────────────────────────────
   // (handled at block level — see parseBlocks)
 
-  // ── Raw fallthrough ──────────────────────────────────────────────────────
+
+  // ── Run agent with goal ──────────────────────────────────────────────────
+  const agentMatch = t.match(/^Run\s+agent\s+with\s+goal\s+"([^"]+)"(?:\s+and\s+call\s+the\s+outcome\s+(\w+))?$/i) ||
+                     t.match(/^Run\s+agent\s+(\w+)\s+with\s+goal\s+"([^"]+)"(?:\s+and\s+call\s+the\s+outcome\s+(\w+))?$/i);
+  if (agentMatch) {
+    const isNamed = agentMatch[2] && !/^with$/i.test(agentMatch[2]);
+    return {
+      type: T.RUN_AGENT, annotations,
+      goal:   agentMatch[1],
+      agent:  null,
+      result: agentMatch[2] || null,
+    };
+  }
+
+  // ── Run multi-agent team ─────────────────────────────────────────────────
+  const teamMatch = t.match(/^Run\s+multi-agent\s+team\s+(.+?)\s+on\s+(?:project\s+)?(.+?)\s+and\s+call\s+the\s+outcome\s+(\w+)$/i);
+  if (teamMatch) {
+    return {
+      type: T.RUN_AGENT, annotations,
+      goal:   teamMatch[2].replace(/^"(.*)"$/, '$1'),
+      agents: teamMatch[1].split(/,\s*/),
+      result: teamMatch[3],
+    };
+  }
+
+  // ── Raw fallthrough ──────────────────────────────────────────────────
   return { type: T.RAW, annotations, text: t };
 }
 

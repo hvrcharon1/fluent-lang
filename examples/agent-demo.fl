@@ -1,0 +1,40 @@
+-- agent-demo.fl — Autonomous Agent Demo
+-- Demonstrates the Run agent with goal construct.
+-- The agent reasons, picks tools, and completes the goal step by step.
+-- Run: fluent run examples/agent-demo.fl
+-- No API key = mock mode (agent runs with simulated responses)
+
+Output "═══════════════════════════════════════════════".
+Output "  Autonomous Agent Demo".
+Output "═══════════════════════════════════════════════".
+Output "".
+
+-- ── Agent 1: File analysis task ──────────────────────────────────────────────
+Output "── Agent 1: File Task ──".
+
+@agent(model: claude, max_steps: 8)
+@tools(read_file, write_file, run_calculation)
+Run agent with goal "Read the file examples/assets/sample.txt, count its words, then write a one-sentence summary to examples/assets/agent_output.txt" and call the outcome file_task.
+
+Output "".
+If file_task.success is true, then output "Agent completed the file task.".
+Otherwise, output "Agent stopped early.".
+Output file_task.steps_taken.
+
+Output "".
+
+-- ── Agent 2: Calculation chain ──────────────────────────────────────────────
+Output "── Agent 2: Math Task ──".
+
+@agent(model: claude, max_steps: 5)
+@tools(run_calculation, remember, recall)
+Run agent with goal "Calculate the compound interest on $10,000 at 5% annual rate for 3 years, then remember the result" and call the outcome math_task.
+
+Output "".
+If math_task.success is true, then output "Math agent answer:".
+If math_task.success is true, then output math_task.answer.
+
+Output "".
+Output "═══════════════════════════════════════════════".
+Output "  Agent demo complete.".
+Output "═══════════════════════════════════════════════".
