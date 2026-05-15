@@ -12,6 +12,8 @@
 
 [![npm version](https://img.shields.io/badge/npm-1.0.1-orange)](https://www.npmjs.com/package/fluent-lang)
 [![tests](https://img.shields.io/badge/tests-101%20passed-brightgreen)](https://github.com/hvrcharon1/fluent-lang/actions)
+<!-- Logo: Bold gradient F with neural-network speech-bubble cutout. Cyan→Blue→Purple. -->
+
 [![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/hvrcharon1/fluent-lang/blob/main/LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D18-green)](https://nodejs.org)
 [![CI](https://github.com/hvrcharon1/fluent-lang/actions/workflows/test.yml/badge.svg)](https://github.com/hvrcharon1/fluent-lang/actions/workflows/test.yml)

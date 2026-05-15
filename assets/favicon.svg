@@ -1,26 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="72 90 424 388" width="32" height="32">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#c8410a"/>
-      <stop offset="100%" stop-color="#1a5c38"/>
+    <linearGradient id="fg" gradientUnits="userSpaceOnUse" x1="195" y1="106" x2="315" y2="466">
+      <stop offset="0%"   stop-color="#00C4FF"/>
+      <stop offset="42%"  stop-color="#2244EE"/>
+      <stop offset="100%" stop-color="#8822BB"/>
     </linearGradient>
-    <linearGradient id="tf" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%"   stop-color="#e05a28" stop-opacity="1"/>
-      <stop offset="100%" stop-color="#e05a28" stop-opacity="0"/>
-    </linearGradient>
-    <linearGradient id="mf" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%"   stop-color="#1a5c38" stop-opacity="1"/>
-      <stop offset="100%" stop-color="#1a5c38" stop-opacity="0"/>
+    <linearGradient id="ng" gradientUnits="userSpaceOnUse" x1="130" y1="155" x2="260" y2="340">
+      <stop offset="0%"   stop-color="#55CCFF"/>
+      <stop offset="100%" stop-color="#5533BB"/>
     </linearGradient>
   </defs>
-  <!-- Border -->
-  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
-  <!-- Dark bg -->
-  <rect x="1" y="1" width="30" height="30" rx="5" fill="#0d0d0e"/>
-  <!-- Stem -->
-  <rect x="8"  y="6"  width="3"  height="20" rx="1" fill="#f5f0e8"/>
-  <!-- Top crossbar -->
-  <rect x="8"  y="6"  width="17" height="3"  rx="1.5" fill="url(#tf)"/>
-  <!-- Mid crossbar -->
-  <rect x="8"  y="14" width="12" height="3"  rx="1.5" fill="url(#mf)"/>
+  <path fill-rule="evenodd" fill="url(#fg)" d="
+    M 304 116 C 355 106 418 103 456 113 C 475 122 481 148 477 172
+    C 473 196 456 209 430 213 C 400 217 356 217 318 218
+    C 308 218 304 215 304 210 L 304 252
+    C 314 248 364 244 410 248 C 442 252 462 268 463 292
+    C 464 316 450 332 428 338 C 400 344 361 344 328 342
+    C 309 340 304 333 304 325 L 304 380
+    C 292 388 272 398 252 412 C 235 424 217 440 205 455 L 200 462
+    L 226 450 C 248 438 261 422 267 404 C 273 388 276 375 278 368
+    C 266 360 248 354 228 352 C 206 350 182 350 160 344
+    C 138 338 118 322 104 300 C 90 278 82 250 84 222
+    C 86 194 96 168 114 148 C 132 128 158 114 186 109
+    C 212 104 246 106 274 112 C 290 115 298 116 304 116 Z
+    M 268 246 C 268 196 236 156 196 156 C 156 156 124 196 124 246
+    C 124 296 156 336 196 336 C 236 336 268 296 268 246 Z
+    M 166 332 L 143 396 L 212 354 Z
+  "/>
+  <!-- Minimal nodes at favicon scale -->
+  <circle cx="196" cy="177" r="12" fill="#55CCFF"/>
+  <circle cx="247" cy="240" r="13" fill="#3355EE"/>
+  <circle cx="163" cy="266" r="10" fill="#5533BB"/>
 </svg>
