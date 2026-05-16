@@ -1,0 +1,38 @@
+# FLUENT Language — Zed Editor Configuration
+# File: config.toml
+# Install: copy the entire editors/zed/languages/fluent/ folder to:
+#   ~/.config/zed/languages/fluent/
+#
+# Zed will auto-detect .fl files and apply this config.
+
+name = "FLUENT"
+grammar = "fluent"
+path_suffixes = ["fl"]
+line_comments = ["-- "]
+block_comment = ["", ""]
+
+[language_server]
+# Zed calls this command to start the LSP server
+command = "fluent-language-server"
+args    = ["--stdio"]
+
+[language_server.initialization_options]
+defaultModel  = "claude"
+enableLinting = true
+
+[brackets]
+[brackets.enabled]
+"(" = ")"
+"[" = "]"
+"{" = "}"
+'"' = '"'
+
+[overrides]
+[overrides.string]
+  word_characters = []
+
+[overrides.comment]
+  word_characters = []
+
+[prettier]
+allowed = false

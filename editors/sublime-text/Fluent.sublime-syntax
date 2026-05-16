@@ -1,0 +1,127 @@
+%YAML 1.2
+---
+# FLUENT Language — Sublime Text Syntax Definition
+# File: Fluent.sublime-syntax
+# Install: copy to ~/Library/Application Support/Sublime Text/Packages/FLUENT/
+#   (macOS) or %APPDATA%\Sublime Text\Packages\FLUENT\ (Windows)
+#   or ~/.config/sublime-text/Packages/FLUENT/ (Linux)
+
+name: FLUENT
+file_extensions: [fl]
+scope: source.fluent
+first_line_match: '^--\s*fluent|^\s*Let\s+\w+\s+be'
+
+variables:
+  model_alias: 'claude|gpt|gemini|mistral|llama|groq|deepseek|grok|perplexity|cohere'
+  keyword: 'Let|Set|Ask|Output|Return|If|Otherwise|For each|While|Match|When|Repeat|Unless|Using model|To|Define model|End loop|End while|End match|End repeat|End unless|End using|End test|End of|End parallel|Try to|If that fails'
+  pipeline: 'Filter|Map|Sort|Group|Reduce|Fetch|Post|Pass|Append|Emit'
+
+contexts:
+  main:
+    - include: comments
+    - include: annotations
+    - include: strings
+    - include: numbers
+    - include: booleans
+    - include: model-aliases
+    - include: pipeline-keywords
+    - include: control-keywords
+    - include: declaration-keywords
+    - include: end-keywords
+    - include: stdlib-calls
+    - include: field-access
+    - include: identifiers
+
+  comments:
+    - match: '--.*$'
+      scope: comment.line.double-dash.fluent
+
+  annotations:
+    - match: '@\w+'
+      scope: entity.name.tag.annotation.fluent
+      push:
+        - match: '\('
+          scope: punctuation.section.parens.begin.fluent
+          push:
+            - meta_scope: meta.annotation.args.fluent
+            - match: '\)'
+              scope: punctuation.section.parens.end.fluent
+              pop: true
+            - include: strings
+            - include: numbers
+            - match: '[\w:,\s]+'
+              scope: variable.parameter.fluent
+        - match: '(?=\S)'
+          pop: true
+
+  strings:
+    - match: '"'
+      scope: punctuation.definition.string.begin.fluent
+      push:
+        - meta_scope: string.quoted.double.fluent
+        - match: '\\.'
+          scope: constant.character.escape.fluent
+        - match: '"'
+          scope: punctuation.definition.string.end.fluent
+          pop: true
+
+  numbers:
+    - match: '\b-?\d+(\.\d+)?\b'
+      scope: constant.numeric.fluent
+
+  booleans:
+    - match: '\b(true|false|yes|no|nothing|null|empty)\b'
+      scope: constant.language.fluent
+
+  model-aliases:
+    - match: '\b({{model_alias}})\b'
+      scope: support.class.model.fluent
+
+  pipeline-keywords:
+    - match: '\b({{pipeline}})\b'
+      scope: support.function.builtin.fluent
+
+  declaration-keywords:
+    - match: '\b(Let|Set)\b'
+      scope: keyword.declaration.fluent
+    - match: '\b(Ask)\b'
+      scope: keyword.other.ask.fluent
+    - match: '\b(Output|Return|Emit|Append)\b'
+      scope: keyword.other.output.fluent
+    - match: '\b(To|Define model)\b'
+      scope: keyword.declaration.function.fluent
+    - match: '\b(Test|Expect)\b'
+      scope: keyword.other.test.fluent
+    - match: '\b(Run agent with goal)\b'
+      scope: keyword.other.agent.fluent
+    - match: '\b(Try to|If that fails)\b'
+      scope: keyword.control.exception.fluent
+
+  control-keywords:
+    - match: '\b(If|Unless|Otherwise|Match|When|For each|While|Repeat|Using model|In parallel)\b'
+      scope: keyword.control.fluent
+    - match: '\b(and call the result|and call the outcome|the result of|be the result of|using text|using data|using image|using audio|using document)\b'
+      scope: keyword.operator.fluent
+    - match: '\b(is greater than|is less than|is at least|is at most|is not|contains|does not contain|ascending|descending)\b'
+      scope: keyword.operator.comparison.fluent
+    - match: '\b(plus|minus|times|divided by|to the power of)\b'
+      scope: keyword.operator.arithmetic.fluent
+
+  end-keywords:
+    - match: '\b(End loop|End while|End match|End repeat|End unless|End using|End test|End parallel|End of)\b'
+      scope: keyword.control.end.fluent
+
+  stdlib-calls:
+    - match: '\b(the length of|the word count of|uppercase of|lowercase of|slugify|truncate|the sum of|the average of|the first item of|the last item of|unique items from|a range from|the current date|days between|converted to|the type of|square root of|absolute value of|ceiling of|floor of|round)\b'
+      scope: support.function.stdlib.fluent
+
+  field-access:
+    - match: '(\w+)(\.)([\w]+)'
+      captures:
+        1: variable.other.fluent
+        2: punctuation.accessor.fluent
+        3: variable.other.member.fluent
+
+  identifiers:
+    - match: '\b[a-zA-Z_][a-zA-Z0-9_]*\b'
+      scope: variable.other.fluent

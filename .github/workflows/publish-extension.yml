@@ -1,0 +1,123 @@
+name: Publish VSCode Extension
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Extension version to publish'
+        required: true
+        default: '1.2.0'
+
+jobs:
+  # ── Run full test suite before publishing ───────────────────────────────────
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['18.x', '20.x', '22.x']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '${{ matrix.node }}', cache: npm }
+      - run: npm ci
+      - run: node bin/fluent.js test ./tests/
+      - run: node bin/fluent.js test ./tests/ 2>&1 | grep "101 passed"
+
+  # ── Package and publish the VSCode extension ────────────────────────────────
+  publish-vscode:
+    name: Publish to VS Code Marketplace
+    runs-on: ubuntu-latest
+    needs: test
+    environment: release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with: { node-version: '20.x', cache: npm }
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install extension dependencies
+        run: cd extension && npm ci
+
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Package extension
+        run: |
+          cd extension
+          vsce package --out ../fluent-lang-${{ github.event.release.tag_name || inputs.version }}.vsix
+
+      - name: Publish to Marketplace
+        run: |
+          cd extension
+          vsce publish --pat ${{ secrets.VSCE_PAT }}
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Upload VSIX as release asset
+        uses: actions/upload-release-asset@v1
+        if: github.event_name == 'release'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./fluent-lang-${{ github.event.release.tag_name }}.vsix
+          asset_name: fluent-lang-${{ github.event.release.tag_name }}.vsix
+          asset_content_type: application/zip
+
+  # ── Publish npm package ─────────────────────────────────────────────────────
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: test
+    environment: release
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run tests before publish
+        run: node bin/fluent.js test ./tests/
+
+      - name: Publish fluent-lang to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ── Publish Open VSX (for VSCodium, Eclipse Theia, Gitpod, etc.) ────────────
+  publish-openvsx:
+    name: Publish to Open VSX Registry
+    runs-on: ubuntu-latest
+    needs: test
+    environment: release
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20.x', cache: npm }
+
+      - run: npm ci
+      - run: cd extension && npm ci
+
+      - name: Install ovsx
+        run: npm install -g ovsx
+
+      - name: Package extension
+        run: cd extension && npx vsce package
+
+      - name: Publish to Open VSX
+        run: ovsx publish extension/fluent-lang-*.vsix --pat ${{ secrets.OVSX_PAT }}
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}

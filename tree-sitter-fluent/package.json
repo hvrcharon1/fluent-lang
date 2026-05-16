@@ -1,0 +1,39 @@
+{
+  "name": "tree-sitter-fluent",
+  "version": "1.2.0",
+  "description": "Tree-sitter grammar for the FLUENT Natural Language AI Programming Language",
+  "main": "bindings/node",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hvrcharon1/fluent-lang",
+    "directory": "tree-sitter-fluent"
+  },
+  "license": "MIT",
+  "keywords": ["tree-sitter", "fluent", "natural language", "AI", "parser"],
+  "files": [
+    "grammar.js",
+    "binding.gyp",
+    "bindings/node",
+    "queries",
+    "src"
+  ],
+  "dependencies": {
+    "nan": "^2.20.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.22.0"
+  },
+  "scripts": {
+    "build":     "tree-sitter generate && node-gyp build",
+    "generate":  "tree-sitter generate",
+    "test":      "tree-sitter test",
+    "playground": "tree-sitter playground"
+  },
+  "tree-sitter": [{
+    "scope": "source.fluent",
+    "file-types": ["fl"],
+    "highlights": "queries/highlights.scm",
+    "injection-regex": "^fluent$",
+    "first-line-regex": "^--\\s*fluent|^--.*\\.fl"
+  }]
+}

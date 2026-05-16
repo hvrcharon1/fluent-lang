@@ -1,0 +1,39 @@
+# Files excluded from the .vsix package
+
+# Dev files
+.vscode/**
+.github/**
+node_modules/**
+*.test.js
+*.spec.js
+.eslintrc*
+.prettierrc*
+tsconfig.json
+webpack.config.js
+CONTRIBUTING.md
+
+# Build artefacts
+out/**
+dist/**
+coverage/**
+*.vsix
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Not needed in extension (large project files live in fluent-lang root)
+../node_modules/**
+../src/**
+../bin/fluent.js
+../tests/**
+../examples/**
+
+# KEEP (essential):
+# extension.js
+# language-configuration.json
+# syntaxes/fluent.tmLanguage.json
+# snippets/fluent.json
+# icons/
+# package.json
+# README.md
